@@ -1,0 +1,162 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\repos\\FFXIV-RaidLootAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|d:\\repos\\ffxiv-raidlootapi\\ffxiv-raidlootapi\\controllers\\lootmanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|solutionrelative:ffxiv-raidlootapi\\controllers\\lootmanagementcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|d:\\repos\\ffxiv-raidlootapi\\ffxiv-raidlootapi\\models\\players.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|solutionrelative:ffxiv-raidlootapi\\models\\players.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|d:\\repos\\ffxiv-raidlootapi\\ffxiv-raidlootapi\\models\\static.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|solutionrelative:ffxiv-raidlootapi\\models\\static.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Migrations\\20240517164331_FixPlayersStaticId.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FFXIV-RaidLootAPI\\Migrations\\20240517164331_FixPlayersStaticId.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|d:\\repos\\ffxiv-raidlootapi\\ffxiv-raidlootapi\\models\\gear.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|solutionrelative:ffxiv-raidlootapi\\models\\gear.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Migrations\\20240517160413_Initial.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:FFXIV-RaidLootAPI\\Migrations\\20240517160413_Initial.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|d:\\repos\\ffxiv-raidlootapi\\ffxiv-raidlootapi\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|solutionrelative:ffxiv-raidlootapi\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|d:\\repos\\ffxiv-raidlootapi\\ffxiv-raidlootapi\\models\\raid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DC2D0202-40BB-4C1F-AF58-7B4BD500C948}|FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI.csproj|solutionrelative:ffxiv-raidlootapi\\models\\raid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 220,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "20240517160413_Initial.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Migrations\\20240517160413_Initial.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Migrations\\20240517160413_Initial.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Migrations\\20240517160413_Initial.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Migrations\\20240517160413_Initial.cs",
+              "ViewState": "AQIAAA0AAAAAAAAAAAAgwCsAAABCAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T16:04:13.538Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DataContext.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Data\\DataContext.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Data\\DataContext.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Data\\DataContext.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Data\\DataContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T16:03:08.534Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LootManagementController.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Controllers\\LootManagementController.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Controllers\\LootManagementController.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Controllers\\LootManagementController.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Controllers\\LootManagementController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACAAAABKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T13:41:17.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Raid.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Raid.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Models\\Raid.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Raid.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Models\\Raid.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T13:26:55.802Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Static.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Static.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Models\\Static.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Static.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Models\\Static.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T13:20:51.384Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 180,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "20240517164331_FixPlayersStaticId.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Migrations\\20240517164331_FixPlayersStaticId.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Migrations\\20240517164331_FixPlayersStaticId.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Migrations\\20240517164331_FixPlayersStaticId.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Migrations\\20240517164331_FixPlayersStaticId.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T16:43:31.532Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Players.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Players.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Models\\Players.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Players.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Models\\Players.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAATAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T13:21:14.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Gear.cs",
+              "DocumentMoniker": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Gear.cs",
+              "RelativeDocumentMoniker": "FFXIV-RaidLootAPI\\Models\\Gear.cs",
+              "ToolTip": "D:\\repos\\FFXIV-RaidLootAPI\\FFXIV-RaidLootAPI\\Models\\Gear.cs",
+              "RelativeToolTip": "FFXIV-RaidLootAPI\\Models\\Gear.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-17T13:21:47.417Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
