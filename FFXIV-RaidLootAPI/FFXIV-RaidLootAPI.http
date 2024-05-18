@@ -1,0 +1,6 @@
+@FFXIV_RaidLootAPI_HostAddress = http://localhost:5152
+
+GET {{FFXIV_RaidLootAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
