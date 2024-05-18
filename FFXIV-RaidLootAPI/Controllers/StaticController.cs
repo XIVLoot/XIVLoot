@@ -68,6 +68,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                 UUID = Guid.NewGuid().ToString()
             };
             _context.Statics.Add(newStatic);
+            //Add 8 empty players
+            
             await _context.SaveChangesAsync();
             
             return Ok(await _context.Statics.ToListAsync());
