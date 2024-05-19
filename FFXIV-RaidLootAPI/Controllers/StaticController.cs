@@ -61,15 +61,30 @@ namespace FFXIV_RaidLootAPI.Controllers
         public async Task<ActionResult<List<Static>>> AddStatic(StaticDTO aStatic)
         {
             List<Static> staticList = await _context.Statics.ToListAsync();
+            string uuid = Guid.NewGuid().ToString();
             Static newStatic = new Static
             {
                 Name = aStatic.Name,
                 Players = null,
-                UUID = Guid.NewGuid().ToString()
+                UUID = uuid
             };
             _context.Statics.Add(newStatic);
-            //Add 8 empty players
+            await _context.SaveChangesAsync();
             
+            //Add 8 empty players
+            Players newPlayer = new Players
+            {
+                Name = "Enter the new name here",
+                Role = Role.Empty,
+                Gears = null,
+                Locked = false,
+                staticId = _context.Statics.Single(s => s.UUID == uuid).Id
+            };
+            for (int i = 0; i < 7; i++)
+            {
+                _context.Players.Add(newPlayer);
+            }
+
             await _context.SaveChangesAsync();
             
             return Ok(await _context.Statics.ToListAsync());

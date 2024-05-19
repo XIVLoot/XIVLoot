@@ -17,6 +17,7 @@
 
     public enum Role
     {
+        Empty = 0,
         Tank = 1,
         Healer = 2,
         DPS = 3
