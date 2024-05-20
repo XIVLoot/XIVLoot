@@ -47,7 +47,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         // Player object functions
 
-        public Dictionary<string,Gear> get_gearset_as_dict(bool useBis, DataContext context){    
+        public Task<Dictionary<string,Gear?>> get_gearset_as_dict(bool useBis, DataContext context){    
             /*This function returns the gearset of the player as a dictionnary where keys are name of gear type and
               they map to the Gear object.
               bool useBis -> If set to true uses Bis gear set. If false uses current gearset.
@@ -56,11 +56,11 @@ namespace FFXIV_RaidLootAPI.Models
 
             // TODO : Check if returned gear is null
 
-            Dictionary<string,Gear> GearDict;
+            Dictionary<string,Gear?> GearDict;
 
             if (useBis)
             {
-                GearDict= new Dictionary<string, Gear>() {
+                GearDict= new Dictionary<string, Gear?>() {
                 {"Weapon" , context.Gears.Find(BisWeaponGearId)},
                 {"Head" , context.Gears.Find(BisHeadGearId)},
                 {"Body" , context.Gears.Find(BisBodyGearId)},
@@ -70,12 +70,12 @@ namespace FFXIV_RaidLootAPI.Models
                 {"Earrings" , context.Gears.Find(BisEarringsGearId)},
                 {"Necklace" , context.Gears.Find(BisNecklaceGearId)},
                 {"Bracelets" , context.Gears.Find(BisBraceletsGearId)},
-                {"Ring" , context.Gears.Find(BisLeftRingGearId)},
-                {"Ring" , context.Gears.Find(BisRightRingGearId)}
+                {"RightRing" , context.Gears.Find(BisLeftRingGearId)},
+                {"LeftRing" , context.Gears.Find(BisRightRingGearId)}
             };
             } else 
             {
-                GearDict= new Dictionary<string, Gear>() {
+                GearDict= new Dictionary<string, Gear?>() {
                 {"Weapon" , context.Gears.Find(CurWeaponGearId)},
                 {"Head" , context.Gears.Find(CurHeadGearId)},
                 {"Body" , context.Gears.Find(CurBodyGearId)},
@@ -85,15 +85,15 @@ namespace FFXIV_RaidLootAPI.Models
                 {"Earrings" , context.Gears.Find(CurEarringsGearId)},
                 {"Necklace" , context.Gears.Find(CurNecklaceGearId)},
                 {"Bracelets" , context.Gears.Find(CurBraceletsGearId)},
-                {"Ring" , context.Gears.Find(CurLeftRingGearId)},
-                {"Ring" , context.Gears.Find(CurRightRingGearId)}
+                {"RightRing" , context.Gears.Find(CurLeftRingGearId)},
+                {"LeftRing" , context.Gears.Find(CurRightRingGearId)}
             };
             }
 
             return GearDict;
         }
 
-        public async Task<int> get_avg_item_level(Dictionary<string,Gear>? GearDict=null, bool UseBis=false, DataContext context=null){
+        public async Task<int> get_avg_item_level(Dictionary<string,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
             /*Returns the average item level of the player. If GearDict is given a value uses that GearDict to compute it.
             Otherwise calls get_gearset_as_dict to get it. If GearDict is not null a DataContext must be specified.
             GearDict -> GearDict formatted using get_gearset_as_dict.
@@ -175,11 +175,17 @@ namespace FFXIV_RaidLootAPI.Models
                 else 
                     CurBraceletsGearId = NewGearId;
                 return;
-            case GearType.Ring: // TODO Add logic for both rings.
+            case GearType.RightRing: // TODO Add logic for both rings.
                 if (UseBis)
                     BisRightRingGearId = NewGearId;
                 else 
                     CurRightRingGearId = NewGearId;
+                return;
+            case GearType.LeftRing: // TODO Add logic for both rings.
+                if (UseBis)
+                    BisLeftRingGearId = NewGearId;
+                else 
+                    CurLeftRingGearId = NewGearId;
                 return;
         }
 

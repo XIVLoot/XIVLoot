@@ -32,6 +32,7 @@
         Earrings = 7,
         Necklace = 8,
         Bracelets = 9,
-        Ring = 10
+        RightRing = 10,
+        LeftRing = 11
     }
 }
