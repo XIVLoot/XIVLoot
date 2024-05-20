@@ -73,7 +73,12 @@ namespace FFXIV_RaidLootAPI.Controllers
             var dbStatic = await _context.Statics.SingleAsync(s => s.UUID == uuid);
             if (dbStatic is null)
                 return NotFound("Static not found");
+            var dbPlayers = _context.Players.Where(p => p.staticId == dbStatic.Id).ToList();
 
+            foreach (var aPlayer in dbPlayers)
+            {
+                _context.Players.Remove(aPlayer);
+            }
             _context.Statics.Remove(dbStatic);
             await _context.SaveChangesAsync();
             
