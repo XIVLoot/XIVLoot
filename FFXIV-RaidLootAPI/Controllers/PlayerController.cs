@@ -35,15 +35,16 @@ namespace FFXIV_RaidLootAPI.Controllers
             if (player is null)
                 return NotFound("Player is not found.");
 
-            return player.get_avg_item_level(null,dto.UseBis,_context);
+            int AvgLvl = player.get_avg_item_level(null,dto.UseBis,_context);
+            if (AvgLvl == -1){return NotFound("A context was not provided when it was needed");}
+            return AvgLvl;
         }
 
         // POST
 
         [HttpPut]
         public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        {
 
         Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
@@ -55,8 +56,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 
         [HttpPut]
         public async Task<ActionResult> UpdatePlayerEtro(PlayerDTO dto)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        {
 
         Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
@@ -68,8 +68,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 
         [HttpPut]
         public async Task<ActionResult> UpdateName(PlayerDTO dto)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        {
 
         Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
@@ -81,8 +80,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 
         [HttpPut]
         public async Task<ActionResult> UpdateJob(PlayerDTO dto)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        {
 
         Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
@@ -94,8 +92,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 
         [HttpPut]
         public async Task<ActionResult> UpdateLocked(PlayerDTO dto)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        {
 
         Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
