@@ -3,6 +3,7 @@ using FFXIV_RaidLootAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FFXIV_RaidLootAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240520135051_Removed gear list from Player and added AvgILevel to gear")]
+    partial class RemovedgearlistfromPlayerandaddedAvgILeveltogear
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,10 +32,10 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("GearLevel")
+                    b.Property<int>("GearItemLevel")
                         .HasColumnType("int");
 
-                    b.Property<int>("GearStage")
+                    b.Property<int>("GearLevel")
                         .HasColumnType("int");
 
                     b.Property<int>("GearType")
@@ -55,76 +58,6 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BiSNecklaceGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisBraceletGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisCoatGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisEarringGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisFeetGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisHandGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisHeadGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisLeftRingGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisLegGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisRightRingGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisWeaponGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurBraceletGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurCoatGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurEarringGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurFeetGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurHandGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurHeadGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurLeftRingGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurLegGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurNecklaceGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurRightRingGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurWeaponGearId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EtroBiS")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("Locked")
                         .HasColumnType("bit");
 
@@ -139,6 +72,8 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("staticId");
 
                     b.ToTable("Players");
                 });
@@ -179,6 +114,20 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Statics");
+                });
+
+            modelBuilder.Entity("FFXIV_RaidLootAPI.Models.Players", b =>
+                {
+                    b.HasOne("FFXIV_RaidLootAPI.Models.Static", null)
+                        .WithMany("Players")
+                        .HasForeignKey("staticId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FFXIV_RaidLootAPI.Models.Static", b =>
+                {
+                    b.Navigation("Players");
                 });
 #pragma warning restore 612, 618
         }

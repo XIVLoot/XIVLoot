@@ -6,14 +6,14 @@
 
         public string Name { get; set; } = string.Empty;
 
-        public int GearItemLevel { get; set; }
+        public int GearLevel { get; set; }
 
-        public GearLevel GearLevel { get; set; }
+        public GearStage GearStage { get; set; }
 
         public GearType GearType { get; set; }
     }
 
-    public enum GearLevel
+    public enum GearStage
     {
         Preparation = 1,
         Tomes = 2,
