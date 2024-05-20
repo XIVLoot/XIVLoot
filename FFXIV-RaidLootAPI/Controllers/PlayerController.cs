@@ -18,8 +18,50 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             _context = context;
         }
+        // GET
 
-        // Create a player function
+        [HttpGet("{Id}/{UseBis}")]
+        public async Task<ActionResult<int>> GetAverageLevel(int Id, bool UseBis)
+        {
+            Players? player = await _context.Players.FindAsync(Id);
+            if (player is null)
+                return NotFound("Player is not found.");
+
+            int AvgLvl = player.get_avg_item_level(null,UseBis,_context);
+            if (AvgLvl == -1){return NotFound("A context was not provided when it was needed");}
+            return AvgLvl;
+        }
+
+        [HttpGet("GetCost/{Id}")]
+        public async Task<ActionResult<CostDTO>> GetTotalCost(int Id)
+        {
+            Players? player = await _context.Players.FindAsync(Id);
+            if (player is null)
+                return NotFound("Player is not found");
+
+            Dictionary<string, Gear?> bisDict = player.get_gearset_as_dict(false,_context);
+            Dictionary<string, Gear?> curDict = player.get_gearset_as_dict(false,_context);
+            List<CostDTO> ListCostDTO = new List<CostDTO>(curDict.Count);
+            int i = 0;
+
+            foreach (KeyValuePair<string, Gear?> pair in curDict)
+            {   
+                if (!(pair.Value is null) && !(bisDict[pair.Key] is null))
+                {
+                ListCostDTO.Insert(i,pair.Value.GetCost(bisDict[pair.Key]));
+                }
+                i+=1;
+            }
+
+            return CostDTO.SumCost(ListCostDTO);
+
+        }
+
+
+
+        // POST
+
+                // Create a player function
 
         [HttpPost]
 
@@ -58,21 +100,6 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok(newPlayer);
         }
 
-        // GET
-
-        [HttpGet("{Id}/{UseBis}")]
-        public async Task<ActionResult<int>> GetAverageLevel(int Id, bool UseBis)
-        {
-            Players? player = await _context.Players.FindAsync(Id);
-            if (player is null)
-                return NotFound("Player is not found.");
-
-            int AvgLvl = player.get_avg_item_level(null,UseBis,_context);
-            if (AvgLvl == -1){return NotFound("A context was not provided when it was needed");}
-            return AvgLvl;
-        }
-
-        // POST
 
         [HttpPut("GearToChange")]
         public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
