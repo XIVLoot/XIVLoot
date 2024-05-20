@@ -24,38 +24,6 @@ namespace FFXIV_RaidLootAPI.Controllers
             
             return Ok(statics);
         }
-// Get Players in a specified static
-        [HttpGet("{uuid}")]
-        public async Task<ActionResult<List<Players>>> GetPlayersFromStatic(string uuid)
-        {
-    // If Static is not found, return BadRequest
-            Static aStatic = _context.Statics.Single(s => s.UUID == uuid);
-            if (aStatic is null)
-                return BadRequest("Static not found.");
-    // If Static is found, proceed to find all players with the same static id
-            List<Players> players = await _context.Players.ToListAsync();
-            List<Players> playerList = new List<Players>();
-
-            foreach (Players aPlayer in players)
-            {
-                if (aPlayer.staticId == aStatic.Id)
-                {
-                    List<Gear> gears = await _context.Gears.ToListAsync();
-                    List<Gear> gearSet = new List<Gear>();
-
-                    foreach (Gear aGear in gears)
-                    {
-                        if (aGear.playerId == aPlayer.Id)
-                            gearSet.Add(aGear);
-                    }
-
-                    Players gearedPlayer = aPlayer;
-                    gearedPlayer.Gears = gearSet;
-                    playerList.Add(gearedPlayer);
-                }
-            }
-            return Ok(playerList);
-        }
 // Add a new static        
         [HttpPost]
         public async Task<ActionResult<List<Static>>> AddStatic(StaticDTO aStatic)

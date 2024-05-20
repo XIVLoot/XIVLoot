@@ -23,21 +23,5 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok(playerList);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Players>> GetPlayById(int id)
-        {
-            var dbPlayer = await _context.Players.FindAsync(id);
-            var dbGears = await _context.Gears.ToListAsync();
-            List<Gear> gearSet = new List<Gear>();
-            if (dbPlayer is null)
-                return NotFound("Player not found");
-            foreach (Gear gear in dbGears)
-            {
-                if (gear.playerId == dbPlayer.Id)
-                    gearSet.Add(gear);
-            }
-            dbPlayer.Gears = gearSet;
-            return Ok(dbPlayer);
-        }
     }
 }

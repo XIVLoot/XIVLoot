@@ -8,7 +8,7 @@
 
         public Role Role { get; set; }
 
-       public required List<Gear> Gears { get; set; }
+        public required List<Gear> Gears { get; set; }
 
         public bool Locked { get; set; }
 
