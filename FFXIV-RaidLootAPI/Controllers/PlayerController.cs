@@ -39,7 +39,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             if (player is null)
                 return NotFound("Player is not found");
 
-            Dictionary<string, Gear?> bisDict = player.get_gearset_as_dict(false,_context);
+            Dictionary<string, Gear?> bisDict = player.get_gearset_as_dict(true,_context);
             Dictionary<string, Gear?> curDict = player.get_gearset_as_dict(false,_context);
             List<CostDTO> ListCostDTO = new List<CostDTO>(curDict.Count);
             int i = 0;
