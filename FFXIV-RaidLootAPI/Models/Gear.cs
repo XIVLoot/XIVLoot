@@ -6,11 +6,11 @@
 
         public string Name { get; set; } = string.Empty;
 
+        public int GearItemLevel { get; set; }
+
         public GearLevel GearLevel { get; set; }
 
         public GearType GearType { get; set; }
-        
-        public int playerId { get; set; }
     }
 
     public enum GearLevel
