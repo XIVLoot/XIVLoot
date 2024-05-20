@@ -15,7 +15,6 @@ namespace FFXIV_RaidLootAPI.Controllers
     public class PlayerController : ControllerBase
     {
         private readonly IDbContextFactory<DataContext> _context;
-        private readonly DataContext _context;
         private static readonly List<string> ETRO_GEAR_NAME = new List<string> 
         {           
             "weapon",
@@ -51,89 +50,51 @@ namespace FFXIV_RaidLootAPI.Controllers
                 if (AvgLvl == -1){return NotFound("A context was not provided when it was needed");}
                 return AvgLvl;
             }
-            
         }
 
         [HttpGet("GetGearList/{UseBis}")]
         public async Task<ActionResult<GetGearListDTO>> GetGearList(int Id, bool UseBis)
         {
-        GetGearListDTO ListGearDTO = new GetGearListDTO();
-        Players? player = _context.Players.Find(Id);
-        if (player is null)
-            return NotFound("Player not found.");
-
-        int i = 0;
-        foreach (KeyValuePair<string,Gear?> pair in player.get_gearset_as_dict(UseBis, _context))
+        using (var context = _context.CreateDbContext())
         {
-            if (pair.Value is null) continue;
-            ListGearDTO.ListGearName.Insert(i,pair.Value.Name);
-            i+=1;
+            GetGearListDTO ListGearDTO = new GetGearListDTO();
+            Players? player = context.Players.Find(Id);
+            if (player is null)
+                return NotFound("Player not found.");
+
+            int i = 0;
+            foreach (KeyValuePair<string,Gear?> pair in player.get_gearset_as_dict(UseBis, context))
+            {
+                if (pair.Value is null) continue;
+                ListGearDTO.ListGearName.Insert(i,pair.Value.Name);
+                i+=1;
+            }
+
+            return Ok(ListGearDTO);
         }
-
-        return Ok(ListGearDTO);
-
         }
 
         // POST
-
-                // Create a player function
-
-        [HttpPost]
-
-        public async Task<ActionResult<Players>> CreateNewPlayer(int staticId){
-            // Creates a player with default gear
-            Players newPlayer = new Players 
-            {
-                Locked=false,
-                staticId=staticId,
-                Job=Job.BlackMage,
-                BisWeaponGearId=1,
-                CurWeaponGearId=1,
-                BisHeadGearId=2,
-                CurHeadGearId=2,
-                BisBodyGearId=3,
-                CurBodyGearId=3,
-                BisHandsGearId=4,
-                CurHandsGearId=4,
-                BisLegsGearId=5,
-                CurLegsGearId=5,
-                BisFeetGearId=6,
-                CurFeetGearId=6,
-                BisEarringsGearId=7,
-                CurEarringsGearId=7,
-                BisNecklaceGearId=8,
-                CurNecklaceGearId=8,
-                BisBraceletsGearId=9,
-                CurBraceletsGearId=9,
-                BisRightRingGearId=10,
-                CurRightRingGearId=10,
-                BisLeftRingGearId=11,
-                CurLeftRingGearId=11,
-            };
-            _context.Players.Add(newPlayer);
-            _context.SaveChanges();
-            return Ok(newPlayer);
-        }
-
-
         [HttpPut("GearToChange")]
         public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
         {
-            using (var context = _context.CreateDbContext())
-            {
-                Players? player = await context.Players.FindAsync(dto.Id);
-                if (player is null)
-                    return NotFound("Player not found");
-                player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId);
-                context.SaveChanges();
-                return Ok();
-            }
+        using (var context = _context.CreateDbContext())
+        {
+            Players? player = await context.Players.FindAsync(dto.Id);
+            if (player is null)
+                return NotFound("Player not found");
+            player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId);
+            context.SaveChanges();
+            return Ok();
+        }
         }
 
         [HttpPut("NewEtro")]
         public async Task<ActionResult> UpdatePlayerEtro(PlayerDTO dto)
         {
-            Players? player = await _context.Players.FindAsync(dto.Id);
+        using (var context = _context.CreateDbContext())
+        {
+            Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
             player.EtroBiS = dto.NewEtro;
@@ -207,16 +168,16 @@ namespace FFXIV_RaidLootAPI.Controllers
                         }
 
                         // Will check if exists in database
-                        Gear? gear =  _context.Gears.FirstOrDefault(g => g.Name == GearName);
+                        Gear? gear =  context.Gears.FirstOrDefault(g => g.Name == GearName);
 
                         if (gear is null)
                         {   // Gear does not exist so we create and add.
                             Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName);
-                            await _context.Gears.AddAsync(newGear);
+                            await context.Gears.AddAsync(newGear);
                         }
-                        _context.SaveChanges();
+                        context.SaveChanges();
                         // Now give gearsId to player.
-                        gear = await _context.Gears.SingleAsync(g => g.Name == GearName);
+                        gear = await context.Gears.SingleAsync(g => g.Name == GearName);
 
                         switch (gear.GearType)
                         {
@@ -247,35 +208,35 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         return Ok();
         }
+        }
 
 
         [HttpPut("NewName")]
         public async Task<ActionResult> UpdateName(PlayerDTO dto)
         {
-            using (var context = _context.CreateDbContext())
-            {
-                Players? player = await context.Players.FindAsync(dto.Id);
-                if (player is null)
-                    return NotFound("Player not found");
-                player.Name = dto.NewName;
-                context.SaveChanges();
-                return Ok();
-            }
+        using (var context = _context.CreateDbContext())
+        {
+            Players? player = await context.Players.FindAsync(dto.Id);
+            if (player is null)
+                return NotFound("Player not found");
+            player.Name = dto.NewName;
+            context.SaveChanges();
+            return Ok();
+        }
         }
 
         [HttpPut("NewJob")]
             public async Task<ActionResult> UpdateJob(PlayerDTO dto)
             {
-                using (var context = _context.CreateDbContext())
-                {
-                    Players? player = await context.Players.FindAsync(dto.Id);
-                    if (player is null)
-                        return NotFound("Player not found");
-                    player.Job = dto.NewJob;
-                    context.SaveChanges();
-                    return Ok();
-                }
-                
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(dto.Id);
+                if (player is null)
+                    return NotFound("Player not found");
+                player.Job = dto.NewJob;
+                context.SaveChanges();
+                return Ok();
+            }
             }
         
         
@@ -283,16 +244,15 @@ namespace FFXIV_RaidLootAPI.Controllers
         [HttpPut("NewLock")]
         public async Task<ActionResult> UpdateLocked(PlayerDTO dto)
         {
-
-            using (var context = _context.CreateDbContext())
-            {
-                Players? player = await context.Players.FindAsync(dto.Id);
-                if (player is null)
-                    return NotFound("Player not found");
-                player.Locked = dto.NewLock;
-                context.SaveChanges();
-                return Ok();
-            }
+        using (var context = _context.CreateDbContext())
+        {
+            Players? player = await context.Players.FindAsync(dto.Id);
+            if (player is null)
+                return NotFound("Player not found");
+            player.Locked = dto.NewLock;
+            context.SaveChanges();
+            return Ok();
+        }
         }
 
     }
