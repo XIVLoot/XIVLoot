@@ -9,9 +9,9 @@ namespace FFXIV_RaidLootAPI.Controllers
     [ApiController]
     public class GearController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IDbContextFactory<DataContext> _context;
 
-        public GearController(DataContext context)
+        public GearController(IDbContextFactory<DataContext> context)
         {
             _context = context;
         }
@@ -19,8 +19,12 @@ namespace FFXIV_RaidLootAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Gear>>> GetAllGear()
         {
-            List<Gear> gearList = await _context.Gears.ToListAsync();
-            return Ok(gearList);
+            using (var context = _context.CreateDbContext())
+            {
+                List<Gear> gearList = await context.Gears.ToListAsync();
+                return Ok(gearList);
+            }
+            
         }
     }
 }
