@@ -11,7 +11,7 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly int GEARSETSIZE = 11;
         public int Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = "Enter the name here";
         public Job Job {get; set; }
 
         public bool Locked { get; set; }

@@ -19,30 +19,62 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
         }
 
-        // GET
+        // Create a player function
 
-        [HttpGet]
-        public async Task<ActionResult<List<Players>>> GetAllPlayers()
-        {
-            List<Players> playerList = await _context.Players.ToListAsync();
-            return Ok(playerList);
+        [HttpPost]
+
+        public async Task<ActionResult<Players>> CreateNewPlayer(int staticId){
+            // Creates a player with default gear
+            Players newPlayer = new Players 
+            {
+                Locked=false,
+                staticId=staticId,
+                Job=Job.BlackMage,
+                BisWeaponGearId=1,
+                CurWeaponGearId=1,
+                BisHeadGearId=2,
+                CurHeadGearId=2,
+                BisBodyGearId=3,
+                CurBodyGearId=3,
+                BisHandsGearId=4,
+                CurHandsGearId=4,
+                BisLegsGearId=5,
+                CurLegsGearId=5,
+                BisFeetGearId=6,
+                CurFeetGearId=6,
+                BisEarringsGearId=7,
+                CurEarringsGearId=7,
+                BisNecklaceGearId=8,
+                CurNecklaceGearId=8,
+                BisBraceletsGearId=9,
+                CurBraceletsGearId=9,
+                BisRightRingGearId=10,
+                CurRightRingGearId=10,
+                BisLeftRingGearId=11,
+                CurLeftRingGearId=11,
+            };
+            _context.Players.Add(newPlayer);
+            _context.SaveChanges();
+            return Ok(newPlayer);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<int>> GetAverageLevel(PlayerDTO dto)
+        // GET
+
+        [HttpGet("{Id}/{UseBis}")]
+        public async Task<ActionResult<int>> GetAverageLevel(int Id, bool UseBis)
         {
-            Players? player = await _context.Players.FindAsync(dto.Id);
+            Players? player = await _context.Players.FindAsync(Id);
             if (player is null)
                 return NotFound("Player is not found.");
 
-            int AvgLvl = player.get_avg_item_level(null,dto.UseBis,_context);
+            int AvgLvl = player.get_avg_item_level(null,UseBis,_context);
             if (AvgLvl == -1){return NotFound("A context was not provided when it was needed");}
             return AvgLvl;
         }
 
         // POST
 
-        [HttpPut]
+        [HttpPut("GearToChange")]
         public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
         {
 
@@ -54,7 +86,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("NewEtro")]
         public async Task<ActionResult> UpdatePlayerEtro(PlayerDTO dto)
         {
 
@@ -66,7 +98,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("NewName")]
         public async Task<ActionResult> UpdateName(PlayerDTO dto)
         {
 
@@ -78,7 +110,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("NewJob")]
         public async Task<ActionResult> UpdateJob(PlayerDTO dto)
         {
 
@@ -90,7 +122,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         return Ok();
         }
 
-        [HttpPut]
+        [HttpPut("NewLock")]
         public async Task<ActionResult> UpdateLocked(PlayerDTO dto)
         {
 
