@@ -33,7 +33,6 @@ namespace FFXIV_RaidLootAPI.Controllers
             Static newStatic = new Static
             {
                 Name = aStatic.Name,
-                Players = null,
                 UUID = uuid
             };
             _context.Statics.Add(newStatic);
@@ -43,8 +42,6 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players newPlayer = new Players
             {
                 Name = "Enter the new name here",
-                Role = Role.Empty,
-                Gears = null,
                 Locked = false,
                 staticId = _context.Statics.Single(s => s.UUID == uuid).Id
             };

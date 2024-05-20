@@ -6,14 +6,14 @@
 
         public string Name { get; set; } = string.Empty;
 
-        public int GearItemLevel { get; set; }
+        public int GearLevel { get; set; }
 
-        public GearLevel GearLevel { get; set; }
+        public GearStage GearStage { get; set; }
 
         public GearType GearType { get; set; }
     }
 
-    public enum GearLevel
+    public enum GearStage
     {
         Preparation = 1,
         Tomes = 2,
@@ -23,14 +23,16 @@
 
     public enum GearType
     {
-        Head = 1,
-        Chest = 2,
-        Gloves = 3,
-        Pants = 4,
-        Boots = 5,
-        Earring = 6,
-        Necklace = 7,
-        Wristband = 8,
-        Ring = 9
+        Weapon = 1,
+        Head = 2,
+        Body = 3,
+        Hands = 4,
+        Legs = 5,
+        Feet = 6,
+        Earrings = 7,
+        Necklace = 8,
+        Bracelets = 9,
+        RightRing = 10,
+        LeftRing = 11
     }
 }

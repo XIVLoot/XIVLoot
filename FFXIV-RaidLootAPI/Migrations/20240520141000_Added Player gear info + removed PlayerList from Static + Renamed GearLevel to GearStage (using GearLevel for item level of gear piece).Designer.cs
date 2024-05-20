@@ -3,6 +3,7 @@ using FFXIV_RaidLootAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FFXIV_RaidLootAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240520141000_Added Player gear info + removed PlayerList from Static + Renamed GearLevel to GearStage (using GearLevel for item level of gear piece)")]
+    partial class AddedPlayergearinforemovedPlayerListfromStaticRenamedGearLeveltoGearStageusingGearLevelforitemlevelofgearpiece
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,19 +58,22 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BisBodyGearId")
+                    b.Property<int>("BiSNecklaceGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BisBraceletsGearId")
+                    b.Property<int>("BisBraceletGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BisEarringsGearId")
+                    b.Property<int>("BisCoatGearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BisEarringGearId")
                         .HasColumnType("int");
 
                     b.Property<int>("BisFeetGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BisHandsGearId")
+                    b.Property<int>("BisHandGearId")
                         .HasColumnType("int");
 
                     b.Property<int>("BisHeadGearId")
@@ -76,10 +82,7 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.Property<int>("BisLeftRingGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BisLegsGearId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BisNecklaceGearId")
+                    b.Property<int>("BisLegGearId")
                         .HasColumnType("int");
 
                     b.Property<int>("BisRightRingGearId")
@@ -88,19 +91,19 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.Property<int>("BisWeaponGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurBodyGearId")
+                    b.Property<int>("CurBraceletGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurBraceletsGearId")
+                    b.Property<int>("CurCoatGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurEarringsGearId")
+                    b.Property<int>("CurEarringGearId")
                         .HasColumnType("int");
 
                     b.Property<int>("CurFeetGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurHandsGearId")
+                    b.Property<int>("CurHandGearId")
                         .HasColumnType("int");
 
                     b.Property<int>("CurHeadGearId")
@@ -109,7 +112,7 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.Property<int>("CurLeftRingGearId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CurLegsGearId")
+                    b.Property<int>("CurLegGearId")
                         .HasColumnType("int");
 
                     b.Property<int>("CurNecklaceGearId")
@@ -125,15 +128,15 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Job")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Locked")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<int>("staticId")
                         .HasColumnType("int");
