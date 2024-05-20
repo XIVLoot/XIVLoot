@@ -11,7 +11,7 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly int GEARSETSIZE = 11;
         public int Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = "Enter the name here";
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
@@ -94,12 +94,13 @@ namespace FFXIV_RaidLootAPI.Models
         public int get_avg_item_level(Dictionary<string,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
             /*Returns the average item level of the player. If GearDict is given a value uses that GearDict to compute it.
             Otherwise calls get_gearset_as_dict to get it. If GearDict is not null a DataContext must be specified.
+            Returns -1 if the an error occured.
             GearDict -> GearDict formatted using get_gearset_as_dict.
             UseBis -> If true computes avg ilevel for Bis. If a non null GearDict is given this value does not matter.
             */
 
             if (GearDict == null){
-                if (context == null){}// TODO : Throw error cuz we need context
+                if (context == null){return -1;}
                 GearDict = get_gearset_as_dict(UseBis, context);
             }
             int TotalItemLevel = 0;

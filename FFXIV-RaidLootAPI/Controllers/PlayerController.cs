@@ -1,4 +1,5 @@
 using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -18,88 +19,117 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
         }
 
-        // GET
+        // Create a player function
 
-        [HttpGet]
-        public async Task<ActionResult<List<Players>>> GetAllPlayers()
-        {
-            List<Players> playerList = await _context.Players.ToListAsync();
-            return Ok(playerList);
+        [HttpPost]
+
+        public async Task<ActionResult<Players>> CreateNewPlayer(int staticId){
+            // Creates a player with default gear
+            Players newPlayer = new Players 
+            {
+                Locked=false,
+                staticId=staticId,
+                Job=Job.BlackMage,
+                BisWeaponGearId=1,
+                CurWeaponGearId=1,
+                BisHeadGearId=2,
+                CurHeadGearId=2,
+                BisBodyGearId=3,
+                CurBodyGearId=3,
+                BisHandsGearId=4,
+                CurHandsGearId=4,
+                BisLegsGearId=5,
+                CurLegsGearId=5,
+                BisFeetGearId=6,
+                CurFeetGearId=6,
+                BisEarringsGearId=7,
+                CurEarringsGearId=7,
+                BisNecklaceGearId=8,
+                CurNecklaceGearId=8,
+                BisBraceletsGearId=9,
+                CurBraceletsGearId=9,
+                BisRightRingGearId=10,
+                CurRightRingGearId=10,
+                BisLeftRingGearId=11,
+                CurLeftRingGearId=11,
+            };
+            _context.Players.Add(newPlayer);
+            _context.SaveChanges();
+            return Ok(newPlayer);
         }
 
-        [HttpGet]
+        // GET
+
+        [HttpGet("{Id}/{UseBis}")]
         public async Task<ActionResult<int>> GetAverageLevel(int Id, bool UseBis)
         {
             Players? player = await _context.Players.FindAsync(Id);
             if (player is null)
                 return NotFound("Player is not found.");
 
-            return player.get_avg_item_level(null,UseBis,_context);
+            int AvgLvl = player.get_avg_item_level(null,UseBis,_context);
+            if (AvgLvl == -1){return NotFound("A context was not provided when it was needed");}
+            return AvgLvl;
         }
 
         // POST
 
-        [HttpPut]
-        public async Task<ActionResult> UpdatePlayerGear(int Id,GearType GearToChange, int NewGearId, bool Usebis)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        [HttpPut("GearToChange")]
+        public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
+        {
 
-        Players? player = await _context.Players.FindAsync(Id);
+        Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
             return NotFound("Player not found");
-        player.change_gear_piece(GearToChange,Usebis,NewGearId);
+        player.change_gear_piece(dto.GearToChange,dto.UseBis,dto.NewGearId);
         _context.SaveChanges();
         return Ok();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdatePlayerEtro(int Id,string NewEtro)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        [HttpPut("NewEtro")]
+        public async Task<ActionResult> UpdatePlayerEtro(PlayerDTO dto)
+        {
 
-        Players? player = await _context.Players.FindAsync(Id);
+        Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
             return NotFound("Player not found");
-        player.EtroBiS = NewEtro;
+        player.EtroBiS = dto.NewEtro;
         _context.SaveChanges();
         return Ok();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateName(int Id,string NewName)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        [HttpPut("NewName")]
+        public async Task<ActionResult> UpdateName(PlayerDTO dto)
+        {
 
-        Players? player = await _context.Players.FindAsync(Id);
+        Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
             return NotFound("Player not found");
-        player.Name = NewName;
+        player.Name = dto.NewName;
         _context.SaveChanges();
         return Ok();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateJob(int Id,Job job)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        [HttpPut("NewJob")]
+        public async Task<ActionResult> UpdateJob(PlayerDTO dto)
+        {
 
-        Players? player = await _context.Players.FindAsync(Id);
+        Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
             return NotFound("Player not found");
-        player.Job = job;
+        player.Job = dto.NewJob;
         _context.SaveChanges();
         return Ok();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateLocked(int Id,bool NewLock)
-        {// Changes only one of the gear type. Changes the given GearToChange to NewGearid. if Usebis set to true
-         // changes the value for the bis gear set of the player.
+        [HttpPut("NewLock")]
+        public async Task<ActionResult> UpdateLocked(PlayerDTO dto)
+        {
 
-        Players? player = await _context.Players.FindAsync(Id);
+        Players? player = await _context.Players.FindAsync(dto.Id);
         if (player is null)
             return NotFound("Player not found");
-        player.Locked = NewLock;
+        player.Locked = dto.NewLock;
         _context.SaveChanges();
         return Ok();
         }
