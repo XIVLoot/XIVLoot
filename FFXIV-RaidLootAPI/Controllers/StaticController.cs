@@ -42,7 +42,6 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players newPlayer = new Players
             {
                 Name = "Enter the new name here",
-                Role = Role.Empty,
                 Locked = false,
                 staticId = _context.Statics.Single(s => s.UUID == uuid).Id
             };

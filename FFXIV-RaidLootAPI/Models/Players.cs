@@ -12,8 +12,6 @@ namespace FFXIV_RaidLootAPI.Models
         public int Id { get; set; }
 
         public string Name { get; set; } = string.Empty;
-
-        public Role Role { get; set; }
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
@@ -47,7 +45,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         // Player object functions
 
-        public Task<Dictionary<string,Gear?>> get_gearset_as_dict(bool useBis, DataContext context){    
+        public Dictionary<string,Gear?> get_gearset_as_dict(bool useBis, DataContext context){    
             /*This function returns the gearset of the player as a dictionnary where keys are name of gear type and
               they map to the Gear object.
               bool useBis -> If set to true uses Bis gear set. If false uses current gearset.
@@ -93,7 +91,7 @@ namespace FFXIV_RaidLootAPI.Models
             return GearDict;
         }
 
-        public async Task<int> get_avg_item_level(Dictionary<string,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
+        public int get_avg_item_level(Dictionary<string,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
             /*Returns the average item level of the player. If GearDict is given a value uses that GearDict to compute it.
             Otherwise calls get_gearset_as_dict to get it. If GearDict is not null a DataContext must be specified.
             GearDict -> GearDict formatted using get_gearset_as_dict.
@@ -102,12 +100,13 @@ namespace FFXIV_RaidLootAPI.Models
 
             if (GearDict == null){
                 if (context == null){}// TODO : Throw error cuz we need context
-                GearDict = await get_gearset_as_dict(UseBis, context);
+                GearDict = get_gearset_as_dict(UseBis, context);
             }
             int TotalItemLevel = 0;
-            foreach (KeyValuePair<string, Gear> pair in GearDict)
+            foreach (KeyValuePair<string, Gear?> pair in GearDict)
             {
-                TotalItemLevel += pair.Value.GearLevel;
+                if (!(pair.Value is null)) 
+                    TotalItemLevel += pair.Value.GearLevel;
             }
 
             return TotalItemLevel/GEARSETSIZE;
@@ -190,14 +189,6 @@ namespace FFXIV_RaidLootAPI.Models
         }
 
         }
-    }
-
-    public enum Role
-    {
-        Empty = 0,
-        Tank = 1,
-        Healer = 2,
-        DPS = 3
     }
 
     public enum Job
