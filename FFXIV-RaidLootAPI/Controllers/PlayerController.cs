@@ -18,46 +18,6 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             _context = context;
         }
-
-        // Create a player function
-
-        [HttpPost]
-
-        public async Task<ActionResult<Players>> CreateNewPlayer(int staticId){
-            // Creates a player with default gear
-            Players newPlayer = new Players 
-            {
-                Locked=false,
-                staticId=staticId,
-                Job=Job.BlackMage,
-                BisWeaponGearId=1,
-                CurWeaponGearId=1,
-                BisHeadGearId=2,
-                CurHeadGearId=2,
-                BisBodyGearId=3,
-                CurBodyGearId=3,
-                BisHandsGearId=4,
-                CurHandsGearId=4,
-                BisLegsGearId=5,
-                CurLegsGearId=5,
-                BisFeetGearId=6,
-                CurFeetGearId=6,
-                BisEarringsGearId=7,
-                CurEarringsGearId=7,
-                BisNecklaceGearId=8,
-                CurNecklaceGearId=8,
-                BisBraceletsGearId=9,
-                CurBraceletsGearId=9,
-                BisRightRingGearId=10,
-                CurRightRingGearId=10,
-                BisLeftRingGearId=11,
-                CurLeftRingGearId=11,
-            };
-            _context.Players.Add(newPlayer);
-            _context.SaveChanges();
-            return Ok(newPlayer);
-        }
-
         // GET
 
         [HttpGet("{Id}/{UseBis}")]
