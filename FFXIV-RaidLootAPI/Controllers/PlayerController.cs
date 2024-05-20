@@ -32,8 +32,6 @@ namespace FFXIV_RaidLootAPI.Controllers
             return AvgLvl;
         }
 
-        // POST
-
         [HttpPut("GearToChange")]
         public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
         {
