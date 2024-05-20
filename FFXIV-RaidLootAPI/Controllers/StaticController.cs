@@ -71,7 +71,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                             // Creates a player with default gear
                             
                             List<Players> players = new List<Players>();
-                            for (int i = 0; i < 7; i++)
+                            for (int i = 0; i < 8; i++)
                             {
                                 Players newPlayer = new Players 
                                 {
