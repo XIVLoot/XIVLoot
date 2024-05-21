@@ -9,6 +9,34 @@ namespace FFXIV_RaidLootAPI.Models
     public class Players
     {   
         private static readonly int GEARSETSIZE = 11;
+        private static readonly Dictionary<Job, List<GearCategory>> GearMap = new Dictionary<Job, List<GearCategory>> // Maps Job to gear Role (first index is left side gear and 2nd index is acc)
+        {
+            {Job.Gunbreaker, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+            {Job.DarkKnight, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+            {Job.Warrior, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+            {Job.Paladin, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+
+            {Job.WhiteMage, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+            {Job.Scholar, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+            {Job.Sage, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+            {Job.Astrologian, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+
+            {Job.Machinist, new List<GearCategory> {GearCategory.Aiming, GearCategory.Aiming}},
+            {Job.Bard, new List<GearCategory> {GearCategory.Aiming, GearCategory.Aiming}},
+            {Job.Dancer, new List<GearCategory> {GearCategory.Aiming, GearCategory.Aiming}},
+
+            {Job.BlackMage, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},
+            {Job.RedMage, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},
+            {Job.Summoner, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},
+            {Job.Pictomancer, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},  // TODO CHECK THIS
+
+            {Job.Samurai, new List<GearCategory> {GearCategory.Striking, GearCategory.Slaying}},
+            {Job.Monk, new List<GearCategory> {GearCategory.Striking, GearCategory.Slaying}},
+            {Job.Ninja, new List<GearCategory> {GearCategory.Scouting, GearCategory.Aiming}},
+            {Job.Dragoon, new List<GearCategory> {GearCategory.Maiming, GearCategory.Slaying}},
+            {Job.Reaper, new List<GearCategory> {GearCategory.Maiming, GearCategory.Slaying}},
+            {Job.Viper, new List<GearCategory> {GearCategory.Scouting, GearCategory.Aiming}} // TODO CHECK THIS
+        };
         public int Id { get; set; }
 
         public string Name { get; set; } = "Enter the name here";
@@ -194,6 +222,7 @@ namespace FFXIV_RaidLootAPI.Models
 
     public enum Job
     {
+    Empty = 0,
     BlackMage = 1,
     Summoner = 2,
     RedMage = 3,
@@ -212,6 +241,8 @@ namespace FFXIV_RaidLootAPI.Models
     Warrior = 16,
     Machinist = 17,
     Bard = 18,
-    Dancer = 19
+    Dancer = 19,
+    Pictomancer = 20,
+    Viper = 21
     }
 }

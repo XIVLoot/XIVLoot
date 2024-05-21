@@ -1,4 +1,4 @@
-﻿using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
 using Microsoft.AspNetCore.Mvc;
