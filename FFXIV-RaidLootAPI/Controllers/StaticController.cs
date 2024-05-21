@@ -20,6 +20,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
             
         }
+// Get All statics        
         [HttpGet(Name = "GetAllStatics")]
         public async Task<ActionResult<List<Static>>> GetAllStatics()
         {
@@ -31,7 +32,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
             
         }
-        
+// Get static by uuid        
         [HttpGet("{uuid}")]
         public async Task<ActionResult<StaticDTO>> GetStaticByUUID(string uuid)
         {
@@ -53,7 +54,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
 // Add a new static        
         [HttpPost]
-        public async Task<ActionResult<List<Static>>> AddStatic(StaticDTO aStatic)
+        public async Task<ActionResult<StaticDTO>> AddStatic(StaticDTO aStatic)
         {
             using (var context = _context.CreateDbContext())
             {
@@ -66,6 +67,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                             };
                             await context.Statics.AddAsync(newStatic);
                             await context.SaveChangesAsync();
+                            var staticId = context.Statics.FirstAsync(s => s.UUID == uuid).Id;
                             
                             //Add 8 empty players
                             // Creates a player with default gear
@@ -76,7 +78,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 Players newPlayer = new Players 
                                 {
                                     Locked=false,
-                                    staticId=context.Statics.FirstAsync(s => s.UUID == uuid).Id,
+                                    staticId=staticId,
                                     Job=Job.BlackMage,
                                     BisWeaponGearId=1,
                                     CurWeaponGearId=1,
@@ -105,8 +107,18 @@ namespace FFXIV_RaidLootAPI.Controllers
                             }
                             await context.AddRangeAsync(players);
                             await context.SaveChangesAsync();
+
+                            var currentStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                            var currentPlayers = await context.Players.Where(p => p.staticId == currentStatic.Id).ToListAsync();
+                            StaticDTO thisStatic = new StaticDTO
+                            {
+                                Id = currentStatic.Id,
+                                Name = currentStatic.Name,
+                                UUID = currentStatic.UUID,
+                                Players = currentPlayers
+                            };
                             
-                            return Ok(await context.Statics.ToListAsync());
+                            return Ok(thisStatic);
             }
             
         }
