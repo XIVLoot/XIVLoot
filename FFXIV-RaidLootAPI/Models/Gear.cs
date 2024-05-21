@@ -61,6 +61,35 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.Viper,"VIP"} // CHECK THAT
         };
 
+        public static readonly Dictionary<Job, List<GearCategory>> JOB_TO_GEAR_CATEGORY_MAP = new Dictionary<Job, List<GearCategory>>()
+        {
+            {Job.Gunbreaker, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+            {Job.DarkKnight, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+            {Job.Warrior, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+            {Job.Paladin, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
+
+            {Job.WhiteMage, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+            {Job.Scholar, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+            {Job.Sage, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+            {Job.Astrologian, new List<GearCategory> {GearCategory.Healing, GearCategory.Healing}},
+
+            {Job.Machinist, new List<GearCategory> {GearCategory.Aiming, GearCategory.Aiming}},
+            {Job.Bard, new List<GearCategory> {GearCategory.Aiming, GearCategory.Aiming}},
+            {Job.Dancer, new List<GearCategory> {GearCategory.Aiming, GearCategory.Aiming}},
+
+            {Job.BlackMage, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},
+            {Job.RedMage, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},
+            {Job.Summoner, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},
+            {Job.Pictomancer, new List<GearCategory> {GearCategory.Casting, GearCategory.Casting}},  // TODO CHECK THIS
+
+            {Job.Samurai, new List<GearCategory> {GearCategory.Striking, GearCategory.Slaying}},
+            {Job.Monk, new List<GearCategory> {GearCategory.Striking, GearCategory.Slaying}},
+            {Job.Ninja, new List<GearCategory> {GearCategory.Scouting, GearCategory.Aiming}},
+            {Job.Dragoon, new List<GearCategory> {GearCategory.Maiming, GearCategory.Slaying}},
+            {Job.Reaper, new List<GearCategory> {GearCategory.Maiming, GearCategory.Slaying}},
+            {Job.Viper, new List<GearCategory> {GearCategory.Scouting, GearCategory.Aiming}} // TODO CHECK THIS
+        };
+
 
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
