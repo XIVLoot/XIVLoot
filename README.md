@@ -1,4 +1,5 @@
 # FFXIV-RaidLootAPI
+![example workflow](https://github.com/RickyChittaphone/FFXIV-RaidLootAPI/actions/workflows/dotnet.yml/badge.svg)<br>
 This is the backend of a loot management project so we can easily keep track of the raid loot in FFXIV. Hopefully I don't get so busy that I just stop working on it.
 ## Prepare your environment
 
