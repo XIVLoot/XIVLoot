@@ -16,14 +16,14 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly string CRAFTED_GEAR = "Crafted";
         private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
-            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban"}},
-            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat"}},
-            {"Hands",new List<string> {"Gauntlets", "Gloves", "Armguards", "Halfgloves"}},
-            {"Legs",new List<string> {"Hose", "Breeches", "Trousers", "Longkilt"}},
-            {"Feet",new List<string> {"Sollerets", "Sabatons", "Longboots", "Sandals"}},
+            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband"}},
+            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket"}},
+            {"Hands",new List<string> {"Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
+            {"Legs",new List<string> {"Hose", "Breeches", "Trousers", "Longkilt", "Poleyns"}},
+            {"Feet",new List<string> {"Sollerets", "Sabatons", "Longboots", "Sandals", "Boots"}},
             {"Earrings",new List<string> {"Earring"}},
-            {"Necklace",new List<string> {"Necklace"}},
-            {"Bracelets",new List<string> {"Bracelet"}},
+            {"Necklace",new List<string> {"Necklace", "Choker"}},
+            {"Bracelets",new List<string> {"Bracelet", "Wristband"}},
             {"Ring",new List<string> {"Ring"}}
         };
 

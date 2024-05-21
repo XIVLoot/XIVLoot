@@ -27,7 +27,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
             
         }
-        [HttpGet("GetGearOption/{Job}/{GearType}/{IsWeapon}")]
+        [HttpGet("GetGearOption/{Job}/{GearType}")]
         public async Task<ActionResult<GearOptionsDTO>> GetGearOption(Job Job, GearType GearType)
         {
             /*Returns a list of GearOptionsDTO which is a list of GearOption. Each gear options
@@ -47,7 +47,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                     {
                         GearName = gear.Name,
                         GearItemLevel = gear.GearLevel,
-                        GearStage = gear.GearStage.ToString()
+                        GearStage = gear.GearStage.ToString(),
+                        GearId = gear.Id
                     });
                 }
             }
@@ -55,14 +56,15 @@ namespace FFXIV_RaidLootAPI.Controllers
             {
                 GearCategory GearToChooseFrom = Gear.JOB_TO_GEAR_CATEGORY_MAP[Job][(int) GearType >=7 ? 1 : 0];
                 // Left side is index 0 right side is index 1
-                IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom);
+                IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom && g.GearType == GearType);
                 foreach (Gear gear in GearIterFromDb)
                 {
                     OptionList.Add(new GearOptionsDTO.GearOption()
                     {
                         GearName = gear.Name,
                         GearItemLevel = gear.GearLevel,
-                        GearStage = gear.GearStage.ToString()
+                        GearStage = gear.GearStage.ToString(),
+                        GearId = gear.Id
                     });
                 }
 

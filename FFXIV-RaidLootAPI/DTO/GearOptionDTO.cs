@@ -8,6 +8,7 @@ public class GearOptionsDTO
         public string GearName {get; set;} = string.Empty;
         public string GearStage {get; set;} = string.Empty;
         public int GearItemLevel {get; set;}
+        public int GearId {get; set;}
     }
 
     public List<GearOption> GearOptionList {get;set;} = new List<GearOption>();
