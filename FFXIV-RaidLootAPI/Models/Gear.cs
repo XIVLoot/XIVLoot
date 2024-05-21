@@ -14,7 +14,7 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly string RAID_GEAR = "Ascension";
         private static readonly string AUGMENT_TOME = "Augment";
         private static readonly string CRAFTED_GEAR = "Crafted";
-        private static readonly Dictionary<string,List<string>> POSSIBLE_NAME = new Dictionary<string,List<string>> 
+        private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
             {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban"}},
             {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat"}},
@@ -27,21 +27,53 @@ namespace FFXIV_RaidLootAPI.Models
             {"Ring",new List<string> {"Ring"}}
         };
 
+        private static readonly Dictionary<GearCategory,List<string>> GEAR_CATEGORY_NAME = new Dictionary<GearCategory,List<string>> 
+        {
+            {GearCategory.Fending,new List<string> {"Fending"}},
+            {GearCategory.Maiming,new List<string> {"Maiming"}},
+            {GearCategory.Striking,new List<string> {"Striking"}},
+            {GearCategory.Scouting,new List<string> {"Scouting"}},
+            {GearCategory.Aiming,new List<string> {"Aiming"}},
+            {GearCategory.Casting,new List<string> {"Casting"}},
+            {GearCategory.Healing,new List<string> {"Healing"}},
+            {GearCategory.Slaying,new List<string> {"Slaying"}}
+        }; // Leaving as list for possible changes in the future where its not only 1 work.
+
+        private static readonly Dictionary<Job, string> JOB_TO_ACCRONYM_MAP = new Dictionary<Job, string>
+        {
+            {Job.Warrior,"WAR"},
+            {Job.Gunbreaker,"GNB"},
+            {Job.DarkKnight,"DRK"},
+            {Job.Paladin,"PLD"},
+            {Job.WhiteMage,"WHM"},
+            {Job.Scholar,"SCH"},
+            {Job.Astrologian,"AST"},
+            {Job.Sage,"SGE"},
+            {Job.BlackMage,"BLM"},
+            {Job.RedMage,"RDM"},
+            {Job.Summoner,"SMN"},
+            {Job.Pictomancer,"PIC"}, // TODO CHECK THAT
+            {Job.Samurai,"SAM"},
+            {Job.Monk,"MNK"},
+            {Job.Reaper,"RPR"},
+            {Job.Dragoon,"DRG"},
+            {Job.Ninja,"NIN"},
+            {Job.Viper,"VIP"} // CHECK THAT
+        };
+
 
         public int Id { get; set; }
-
         public string Name { get; set; } = string.Empty;
-
         public int GearLevel { get; set; }
-
         public GearStage GearStage { get; set; }
-
         public GearType GearType { get; set; }
+        public GearCategory GearCategory { get; set; }
+        public Job GearWeaponCategory {get; set;} = Job.Empty;
 
 
         // Gear object functions
 
-        public static Gear CreateGearFromEtro(string ItemLevel, string name)
+        public static Gear CreateGearFromEtro(string ItemLevel, string name, bool IsWeapon, string JobName)
         {   
             GearStage stage = GearStage.Preparation;
             if (name.IndexOf(TOME_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -54,8 +86,8 @@ namespace FFXIV_RaidLootAPI.Models
 
             GearType type = GearType.Weapon;
             bool FoundMatch = false;
-            bool IsRing = false;
-            foreach (KeyValuePair<string, List<string>> pair in POSSIBLE_NAME)
+            bool IsRing;
+            foreach (KeyValuePair<string, List<string>> pair in GEAR_TYPE_NAME)
             {   
 
                 foreach (string PossibleName in pair.Value)
@@ -67,7 +99,24 @@ namespace FFXIV_RaidLootAPI.Models
                         if (!IsRing)
                             type = (GearType) Enum.Parse(typeof(GearType), pair.Key);
                         else
-                            type=GearType.LeftRing; // TODO MAKE IT NOT ALWAYS LEFT RING
+                            type=GearType.LeftRing; // The function calling this one will check if its a LeftRing. If it is it also creates a RightRing
+                        break;
+                    }
+
+                }
+                if (FoundMatch) break;
+            }
+            GearCategory category = GearCategory.Weapon;
+            FoundMatch = false;
+            foreach (KeyValuePair<GearCategory, List<string>> pair in GEAR_CATEGORY_NAME)
+            {   
+
+                foreach (string PossibleName in pair.Value)
+                {
+                    if (name.IndexOf(PossibleName, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        FoundMatch=true;
+                        category = pair.Key;
                         break;
                     }
 
@@ -75,11 +124,26 @@ namespace FFXIV_RaidLootAPI.Models
                 if (FoundMatch) break;
             }
 
+            Job WeaponCategory = Job.Empty;
+            if (IsWeapon)
+            {
+                foreach (KeyValuePair<Job, string> pair in JOB_TO_ACCRONYM_MAP)
+                {   
+                    if (JobName.IndexOf(pair.Value, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        FoundMatch=true;
+                        WeaponCategory = pair.Key;
+                        break;
+                    }
+                }
+            }
             return new Gear() {
                 Name=name,
                 GearLevel=int.Parse(ItemLevel),
                 GearType=type,
-                GearStage=stage
+                GearStage=stage,
+                GearCategory=category,
+                GearWeaponCategory=WeaponCategory
             };
 
         }   
@@ -156,6 +220,19 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
 
+    }
+
+    public enum GearCategory
+    {
+        Fending = 1,
+        Maiming = 2,
+        Striking = 3,
+        Scouting = 4,
+        Aiming = 5,
+        Casting = 6,
+        Healing = 7,
+        Slaying = 8,
+        Weapon = 9
     }
 
     public enum GearStage

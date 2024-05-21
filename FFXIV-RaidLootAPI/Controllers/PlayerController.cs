@@ -4,6 +4,7 @@ using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             "hands",
             "legs",
             "feet",
-            "offHand",
+            //"offHand", TODO CONSIDER HAVING IT
             "ears",
             "neck",
             "wrists",
@@ -104,7 +105,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 client.BaseAddress = new Uri("https://etro.gg");
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 //client.DefaultRequestHeaders.Add("Authorization", "Bearer YOUR_API_KEY");
-                List<int> ListIdGears = new List<int> {0,0,0,0,0,0,0,0,0,0,0,0};
+                List<int> ListIdGears = new List<int> {0,0,0,0,0,0,0,0,0,0,0};
                     try
                     {
                         // Make the GET request
@@ -132,12 +133,16 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                     foreach (int GearId in ListIdGears)
                     {   
-                        string GearILevel;
-                        string GearName;
+                        string GearILevel = "";
+                        string GearName = "";
+                        string JobName = "";
+                        bool IsWeapon = false;
                         if (GearId == 0) 
                         {
                             GearILevel = "665";
-                            GearName = "Relic Weapon";
+                            GearName = "Relic Weapon " + GearId.ToString();
+                            IsWeapon = true;
+                            JobName = "";
                         }
                         else
                         {
@@ -158,7 +163,8 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                                 GearILevel = responseData["itemLevel"].ToString();
                                 GearName = responseData["name"].ToString();
-                                
+                                JobName = responseData["jobName"].ToString();
+                                IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
                             }
                             catch (HttpRequestException e)
                             {
@@ -167,17 +173,44 @@ namespace FFXIV_RaidLootAPI.Controllers
                             }
                         }
 
+                        Gear? gear;  
                         // Will check if exists in database
-                        Gear? gear =  context.Gears.FirstOrDefault(g => g.Name == GearName);
+                        // Have to check if is a ring since we modify the name with a suffix.
+                        // Right now simply checking if Ring is in the name
+                        bool AlreadyPresentInDatabase = true;
+                        if (GearName.Contains("Ring"))
+                            gear = context.Gears.FirstOrDefault(g => g.Name == GearName + " (L)");
+                        else 
+                            gear = context.Gears.FirstOrDefault(g => g.Name == GearName);
 
                         if (gear is null)
                         {   // Gear does not exist so we create and add.
-                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName);
+                            AlreadyPresentInDatabase = false;
+                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName, IsWeapon, JobName);
+                            if (newGear.GearType == GearType.LeftRing)
+                            {   
+                                Gear RightRingGear = new Gear() 
+                                {
+                                    Name=newGear.Name + " (R)",
+                                    GearLevel=newGear.GearLevel,
+                                    GearStage=newGear.GearStage,
+                                    GearType=GearType.RightRing,
+                                    GearCategory=newGear.GearCategory,
+                                    GearWeaponCategory=Job.Empty
+                                };
+                                newGear.Name += " (L)";
+                                GearName += " (L)";
+                                await context.Gears.AddAsync(RightRingGear);
+                            }
                             await context.Gears.AddAsync(newGear);
+
                         }
+                        
                         context.SaveChanges();
+                        
                         // Now give gearsId to player.
-                        gear = await context.Gears.SingleAsync(g => g.Name == GearName);
+                        if (!AlreadyPresentInDatabase)
+                            gear = await context.Gears.SingleAsync(g => g.Name == GearName);
 
                         switch (gear.GearType)
                         {
