@@ -1,9 +1,6 @@
 ﻿using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
-using FFXIV_RaidLootAPI.Controllers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,7 +51,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
 // Add a new static        
         [HttpPost]
-        public async Task<ActionResult<StaticDTO>> AddStatic(StaticDTO aStatic)
+        public async Task<ActionResult<StaticDTO>> AddStatic(string name)
         {
             using (var context = _context.CreateDbContext())
             {
@@ -62,12 +59,12 @@ namespace FFXIV_RaidLootAPI.Controllers
                             string uuid = Guid.NewGuid().ToString();
                             Static newStatic = new Static
                             {
-                                Name = aStatic.Name,
+                                Name = name,
                                 UUID = uuid
                             };
                             await context.Statics.AddAsync(newStatic);
                             await context.SaveChangesAsync();
-                            var staticId = context.Statics.FirstAsync(s => s.UUID == uuid).Id;
+                            var staticId = context.Statics.First(s => s.UUID == uuid).Id;
                             
                             //Add 8 empty players
                             // Creates a player with default gear
@@ -124,7 +121,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
 // Edit a static
         [HttpPut]
-        public async Task<ActionResult<Static>> UpdateStatic(StaticDTO aStatic)
+        public async Task<ActionResult<Static>> UpdateStatic(AddStaticDTO aStatic)
         {
             using (var context = _context.CreateDbContext())
             {
