@@ -1,14 +1,31 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>{{ staticDetail.name }}</mat-card-title>
-    <mat-card-subtitle>Static ID: {{ staticDetail.id }}</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
+<div>
+  <div>
+    <h1>{{ staticDetail.name }}</h1>
+    <h2>Static UUID: {{ staticDetail.uuid }}</h2>
+  </div>
+  <div>
     <h3>Players:</h3>
-    <mat-list>
-      <mat-list-item *ngFor="let player of staticDetail.players">
-        {{ player.id }}: {{ player.name }}
-      </mat-list-item>
-    </mat-list>
-  </mat-card-content>
-</mat-card>
+    <mat-grid-list cols="4">
+      <mat-grid-tile *ngFor="let player of staticDetail.players">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>{{ player.name }}</mat-card-title>
+            <mat-card-subtitle>ID: {{ player.id }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Role: {{ player.role }}</p>
+            <p>Job: {{ player.job }}</p>
+            <p>Item Level: {{ player.itemLevel }}</p>
+            <p>Etro link: {{ player.etroBiS }}</p>
+            <p>BiS Weapon: {{ player.bisWeaponGearId }}</p>
+            <p>BiS Headgear: {{ player.bisHeadGearId }}</p>
+            <p>BiS Chest: {{ player.bisBodyGearId }}</p>
+            <p>BiS Hands: {{ player.bisHandsGearId }}</p>
+            <p>BiS Pants: {{ player.bisLegsGearId }}</p>
+            <p>BiS Shoes: {{ player.bisFeetGearId }}</p>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>

@@ -21,6 +21,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -48,7 +49,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     MatDatepickerModule,
     HttpClientModule,
     MatCardModule,
-    MatListModule
+    MatListModule,
+    MatGridListModule
   ],
   providers: [
     provideAnimationsAsync()
