@@ -15,8 +15,8 @@ constructor(public http: HttpClient) { }
   addStatic(staticName: string) {
     console.log('https://localhost:7203/api/static?name=' + staticName);
 
-    return this.http.post<any>('https://localhost:7203/api/static?name=test02', {})
-    .pipe(map(response => {
+    return this.http.post<any>('https://localhost:7203/api/static?name=' + staticName, {})
+    .subscribe(map(response => {
       console.log(response);
       //let newStatic = new Static(response.id, response.name, response.uuid, response.players);
     }));
