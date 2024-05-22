@@ -1,12 +1,60 @@
-.example-action-buttons {
-  padding-bottom: 20px;
+/* General padding and alignment for the accordion */
+.mat-accordion {
+  margin: 20px;
 }
 
-.example-headers-align .mat-expansion-panel-header-description {
-  justify-content: space-between;
-  align-items: center;
+/* Styling for the expansion panel header */
+.mat-expansion-panel-header {
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
 }
 
-.example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
-  margin-left: 8px;
+/* Icon styling */
+mat-icon {
+  color: #3f51b5; /* A modern blue shade */
+  margin-right: 5px;
 }
+
+/* Form field styling */
+.mat-form-field {
+  width: 100%;
+  margin: 10px 0;
+}
+
+/* Input field styling */
+input[matInput] {
+  padding: 10px;
+  font-size: 14px;
+}
+
+/* Button styling */
+button[mat-button] {
+  background-color: #3f51b5;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button[mat-button]:hover {
+  background-color: #303f9f;
+}
+
+/* Action row styling */
+.mat-action-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0;
+}
+
+/* Limit the width of the expansion panel and center it */
+.mat-expansion-panel {
+  max-width: 600px; /* Adjust this value as needed */
+  margin: 20px auto; /* Adds top and bottom margin, auto centers horizontally */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Optional: adds shadow for better visibility */
+}
+
