@@ -6,11 +6,11 @@ import { StaticComponent } from './static/static.component';
 import { StaticDetailComponent } from './static-detail/static-detail.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
   { path: 'about', component: AboutComponent },
-  { path: 'static', component: StaticComponent, children: [
-    {path: ':uuid', component: StaticDetailComponent },
-  ]},
+  { path: 'static', component: StaticComponent},
+  { path: ':uuid', component: StaticDetailComponent },
 ];
 
 @NgModule({
