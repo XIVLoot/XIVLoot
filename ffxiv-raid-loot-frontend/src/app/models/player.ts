@@ -1,0 +1,31 @@
+export class Player {
+  constructor(
+    public id: number,
+    public name: string,
+    public job: number,
+    public locked: boolean,
+    public staticId: number,
+    public etroBiS: string,
+    public bisWeaponGearId: number,
+    public bisHeadGearId: number,
+    public bisBodyGearId: number,
+    public bisHandsGearId: number,
+    public bisLegsGearId: number,
+    public bisFeetGearId: number,
+    public bisEarringGearId: number,
+    public bisNecklaceGearId: number,
+    public bisBraceletGearId: number,
+    public bisLeftRingGearId: number,
+    public curWeaponGearId: number,
+    public curHeadGearId: number,
+    public curBodyGearId: number,
+    public curHandsGearId: number,
+    public curLegsGearId: number,
+    public curFeetGearId: number,
+    public curEarringsGearId: number,
+    public curNecklaceGearId: number,
+    public curBraceletsGearId: number,
+    public curLeftRingGearId: number,
+    public curRightRingGearId: number
+  ){}
+}

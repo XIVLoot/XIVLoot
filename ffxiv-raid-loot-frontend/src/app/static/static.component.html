@@ -1,0 +1,20 @@
+<mat-accordion class="example-headers-align" multi>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        New Static
+      </mat-panel-title>
+      <mat-panel-description>
+        Type the name of your static
+        <mat-icon>account_circle</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Static Name</mat-label>
+      <input matInput [(ngModel)]="staticName">
+
+    </mat-form-field>
+    <mat-action-row>
+      <button mat-button (click)="AddStatic(staticName)">Create Static</button>
+    </mat-action-row>

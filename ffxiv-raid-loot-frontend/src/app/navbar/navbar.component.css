@@ -1,0 +1,30 @@
+
+.nav-label {
+  display: table-cell;
+  font-size: 14px;
+  margin-left: 8px;
+  min-width: 120px;
+}
+
+.nav-button-row {
+  display: table-cell;
+  max-width: 600px;
+}
+
+.nav-button-row {
+  margin: 8px 8px 8px 0;
+}
+
+.rounded-button {
+  border-radius: 10px; /* Adjust the radius to your preference */
+}
+.header h1 {
+  font-size: 2.8rem;
+  color: #02457A;
+}
+
+.header p {
+  font-size: 1.4rem;
+  color: #555;
+  margin-top: 5px;
+}
