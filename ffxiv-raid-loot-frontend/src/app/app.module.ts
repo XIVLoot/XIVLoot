@@ -19,6 +19,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
 
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -35,7 +37,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule, // Added FormsModule as per instructions
+    FormsModule,
     MatMenuModule,
     MatButtonModule,
     MatToolbarModule,
@@ -44,7 +46,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    HttpClientModule
+    HttpClientModule,
+    MatCardModule,
+    MatListModule
   ],
   providers: [
     provideAnimationsAsync()
