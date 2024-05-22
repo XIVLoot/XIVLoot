@@ -1,0 +1,71 @@
+/* General styling for the page */
+div {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  margin: 20px;
+}
+
+h1, h2, h3 {
+  color: #2c3e50;
+}
+
+/* Styling for the cards */
+mat-card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: 0.3s;
+  border-radius: 5px;
+}
+
+mat-card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+mat-card-header {
+  background-color: #2980b9;
+  color: #fff;
+  padding: 10px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+mat-card-content {
+  padding: 20px;
+  background: #ecf0f1;
+}
+
+/* Grid list styling */
+mat-grid-list {
+  width: 100%;
+  margin-top: 20px;
+}
+
+mat-grid-tile {
+  padding: 10px;
+}
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  mat-grid-list {
+    --mat-grid-list-cols: 1;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 601px) {
+  mat-grid-list {
+    --mat-grid-list-cols: 2;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  mat-grid-list {
+    --mat-grid-list-cols: 3;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  mat-grid-list {
+    --mat-grid-list-cols: 4;
+  }
+}
