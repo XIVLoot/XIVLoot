@@ -1,13 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { HttpService } from '../service/http.service';
 
 @Component({
   selector: 'app-static',
   templateUrl: './static.component.html',
   styleUrl: './static.component.css'
 })
+
 export class StaticComponent {
-AddStatic() {
-throw new Error('Method not implemented.');
+  constructor(public http: HttpService){}
+  staticName: string = '';
+
+  ngOnInit(): void {
+
+  }
+
+AddStatic(name: string) {
+  this.http.addStatic(name);
 }
 
 }

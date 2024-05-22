@@ -6,17 +6,22 @@ import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { StaticComponent } from './static/static.component';
+import { StaticDetailComponent } from './static-detail/static-detail.component';
+import { HttpClientModule } from '@angular/common/http';
+
+// Angular Material Modules
 import { MatMenuModule } from '@angular/material/menu';
-import {MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { StaticDetailComponent } from './static-detail/static-detail.component';
+import { FormsModule } from '@angular/forms';
 
+// Animation Provider
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [
@@ -30,6 +35,7 @@ import { StaticDetailComponent } from './static-detail/static-detail.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule, // Added FormsModule as per instructions
     MatMenuModule,
     MatButtonModule,
     MatToolbarModule,
@@ -37,7 +43,8 @@ import { StaticDetailComponent } from './static-detail/static-detail.component';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    HttpClientModule
   ],
   providers: [
     provideAnimationsAsync()

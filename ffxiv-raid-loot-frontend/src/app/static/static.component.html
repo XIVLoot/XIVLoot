@@ -12,8 +12,9 @@
 
     <mat-form-field>
       <mat-label>Static Name</mat-label>
-      <input matInput>
+      <input matInput [(ngModel)]="staticName">
+
     </mat-form-field>
     <mat-action-row>
-      <button mat-button (click)="AddStatic()">Create Static</button>
+      <button mat-button (click)="AddStatic(staticName)">Create Static</button>
     </mat-action-row>
