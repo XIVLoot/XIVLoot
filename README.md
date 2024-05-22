@@ -1,6 +1,6 @@
-# FFXIV-RaidLootAPI
+# XIVLoot
 ![example workflow](https://github.com/RickyChittaphone/FFXIV-RaidLootAPI/actions/workflows/dotnet.yml/badge.svg)<br>
-This is the backend of a loot management project so we can easily keep track of the raid loot in FFXIV. Hopefully I don't get so busy that I just stop working on it.
+This is a FFXIV raid loot management project. This includes a front-end and a back-end. Front-end is in Angular and the Backend is in .NET using EntityFramework.
 ## Prepare your environment
 
 You need
@@ -13,3 +13,9 @@ You need
 ## Update your database
 
 Using EF Core Tools, Update your database Use the UI if you are using Riders. If you are using Visual Studio, use the package manager terminal and enter the command `Update-Database`. If you are using anything else, open a terminal and use the command `dotnet ef update-database`
+
+## Deployment
+
+Coming Soon!
+
+A docker compose file is planned for deployment.
