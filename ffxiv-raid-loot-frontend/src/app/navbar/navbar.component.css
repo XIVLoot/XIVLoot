@@ -28,3 +28,15 @@
   color: #555;
   margin-top: 5px;
 }
+
+.mat-toolbar {
+ position: relative;
+ z-index: 5;
+}
+
+.mat-sidenav-container {
+  height: calc(100vh - 64px);
+
+}
+
+
