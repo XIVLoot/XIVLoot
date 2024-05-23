@@ -2,7 +2,9 @@
   <button mat-icon-button (click)="sidenav.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
-  <img src="assets/white_logo_transparent_background.png" alt="XIVLootlogo" style="height: 75%;">
+  <a routerLink="/" class="logo-link">
+    <img src="assets/white_logo_transparent_background.png" alt="XIVLootlogo" class="toolbar-logo">
+  </a>
   <span class="toolbar-spacer" style="flex: 1 1 auto;"></span>
   <img src="assets/white_xivloot_transparent_background.png" alt="XIVLoot" style="height: 90%;">
   <span class="toolbar-spacer" style="flex: 1 1 auto;"></span>
@@ -11,9 +13,6 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="side" opened="true" class="sidenav" [style.width]="'175px'">
     <mat-nav-list style="text-align: center;">
-      <a mat-list-item routerLink="/" class="active rounded-button">
-        Home
-      </a>
       <a mat-list-item routerLink="/static" class="active rounded-button">
         Static
       </a>

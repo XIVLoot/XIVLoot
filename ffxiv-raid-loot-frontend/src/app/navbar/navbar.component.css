@@ -38,5 +38,24 @@
   height: calc(100vh - 64px);
 
 }
+.mat-toolbar {
+  display: flex;
+  align-items: center;
+  height: 64px; /* Adjust based on your design */
+}
 
+.logo-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.toolbar-logo {
+  height: 80%; /* Adjust based on your design */
+  width: auto; /* Maintain aspect ratio */
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
 
