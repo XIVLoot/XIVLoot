@@ -1,14 +1,33 @@
-<header class="header">
-  <h1>FFXIV Raid Loot Manager</h1>
-  <p>Streamline your raid management with precision and efficiency.</p>
-</header>
-
-<mat-toolbar>
-
-  <div class="nav-label"></div>
-  <div class="nav-button-row">
-    <a mat-button routerLink="/" class="active rounded-button">Home</a>
-    <a mat-button routerLink="/static" class="active rounded-button">Static</a>
-    <a mat-button routerLink="/about" class="active rounded-button">About</a>
-  </div>
+<mat-toolbar class="mat-elevation-z3">
+  <button mat-icon-button (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <img src="assets/white_logo_transparent_background.png" alt="XIVLootlogo" style="height: 75%;">
+  <span class="toolbar-spacer" style="flex: 1 1 auto;"></span>
+  <img src="assets/white_xivloot_transparent_background.png" alt="XIVLoot" style="height: 90%;">
+  <span class="toolbar-spacer" style="flex: 1 1 auto;"></span>
 </mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened="true" class="sidenav" [style.width]="'175px'">
+    <mat-nav-list style="text-align: center;">
+      <a mat-list-item routerLink="/" class="active rounded-button">
+        Home
+      </a>
+      <a mat-list-item routerLink="/static" class="active rounded-button">
+        Static
+      </a>
+      <a mat-list-item routerLink="/about" class="active rounded-button">
+        About
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+    <!-- Footer -->
+    <footer class="footer" style="position: fixed; left: 0; bottom: 0; width: 100%; text-align: center;">
+      <p>&copy; 2024 FFXIV Raid Loot Manager. All rights reserved.</p>
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
