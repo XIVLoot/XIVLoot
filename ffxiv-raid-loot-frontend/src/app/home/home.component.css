@@ -1,67 +1,59 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+/* src/app/home/home.component.css */
+.homepage-container {
+  font-family: 'Arial', sans-serif;
+  color: #ccc; /* Lighter text color for better visibility on dark backgrounds */
+  line-height: 1.6;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #494646; /* Dark background color */
+}
 
-  /* Container */
-  .container {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    color: #333;
-    background: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-  .section {
-    margin-top: 50px;
-  }
+.header h1 {
+  font-size: 2.4rem;
+  color: #66ccff; /* Light blue color for better visibility */
+}
 
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 30px;
-  }
+.header p {
+  font-size: 1.2rem;
+  color: #ddd; /* Light grey color for text */
+  margin-top: 5px;
+}
 
-  .feature h3 {
-    color: #02457A;
-    margin-bottom: 10px;
-  }
+.features {
+  background-color: #494646; /* Darker background for feature boxes */
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  color: #eee; /* Light text color for readability */
+}
 
-  .feature p {
-    color: #666;
-    font-size: 1rem;
-  }
+.features h2 {
+  color: #fff; /* White color for headings */
+}
 
-  /* Footer */
-  .footer {
-    text-align: center;
-    margin-top: 50px;
-    padding: 20px;
-    background-color: #f2f2f2;
-    color: #333;
-  }
+.features ul {
+  list-style-type: none;
+  padding: 0;
+}
 
-  /* Responsive Design */
-  @media (max-width: 992px) {
-    .features-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
+.features li {
+  background: #494646; /* Dark grey background for list items */
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  color: #f0f0f0; /* Very light grey text for contrast */
+}
 
-  @media (max-width: 768px) {
-    .features-grid {
-      grid-template-columns: 1fr;
-    }
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: #212121; /* Very dark grey background */
+  color: white;
+}
 
-    .navbar ul li {
-      display: block;
-      margin-top: 10px;
-    }
-
-    .navbar ul li a {
-      display: block;
-    }
-  }
+.footer p {
+  margin: 0;
+}
