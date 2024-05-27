@@ -30,11 +30,8 @@ namespace FFXIV_RaidLootAPI.Controllers
         [HttpGet("GetGearOption/{Job}/{GearType}")]
         public async Task<ActionResult<GearOptionsDTO>> GetGearOption(Job Job, GearType GearType)
         {
-            /*Returns a list of GearOptionsDTO which is a list of GearOption. Each gear options
-              has the gear name, the gear ilevel and the gear stage (raid/augmented/crafted/tome)
-              Job -> Job to request the gear for 
-              GearType -> What gear piece to request (ie. Ring, Weapon, etc.)
-            */
+        // THIS FUNCTION HAS BEEN REWRITTEN AS A GEAR CLASS FUNCTION
+        // GEAR.GetGearOptions()
         using (var context = _context.CreateDbContext())
         {
             List<GearOptionsDTO.GearOption> OptionList = new List<GearOptionsDTO.GearOption>();

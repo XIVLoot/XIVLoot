@@ -1,4 +1,5 @@
 ﻿using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.DTO;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FFXIV_RaidLootAPI.Models
@@ -45,7 +46,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         // Player object functions
 
-        public Dictionary<string,Gear?> get_gearset_as_dict(bool useBis, DataContext context){    
+        public Dictionary<GearType,Gear?> get_gearset_as_dict(bool useBis, DataContext context){    
             /*This function returns the gearset of the player as a dictionnary where keys are name of gear type and
               they map to the Gear object.
               bool useBis -> If set to true uses Bis gear set. If false uses current gearset.
@@ -54,44 +55,44 @@ namespace FFXIV_RaidLootAPI.Models
 
             // TODO : Check if returned gear is null
 
-            Dictionary<string,Gear?> GearDict;
+            Dictionary<GearType,Gear?> GearDict;
 
             if (useBis)
             {
-                GearDict= new Dictionary<string, Gear?>() {
-                {"Weapon" , context.Gears.Find(BisWeaponGearId)},
-                {"Head" , context.Gears.Find(BisHeadGearId)},
-                {"Body" , context.Gears.Find(BisBodyGearId)},
-                {"Hands" , context.Gears.Find(BisHandsGearId)},
-                {"Legs" , context.Gears.Find(BisLegsGearId)},
-                {"Feet" , context.Gears.Find(BisFeetGearId)},
-                {"Earrings" , context.Gears.Find(BisEarringsGearId)},
-                {"Necklace" , context.Gears.Find(BisNecklaceGearId)},
-                {"Bracelets" , context.Gears.Find(BisBraceletsGearId)},
-                {"RightRing" , context.Gears.Find(BisLeftRingGearId)},
-                {"LeftRing" , context.Gears.Find(BisRightRingGearId)}
+                GearDict= new Dictionary<GearType, Gear?>() {
+                {GearType.Weapon , context.Gears.Find(BisWeaponGearId)},
+                {GearType.Head , context.Gears.Find(BisHeadGearId)},
+                {GearType.Body , context.Gears.Find(BisBodyGearId)},
+                {GearType.Hands , context.Gears.Find(BisHandsGearId)},
+                {GearType.Legs , context.Gears.Find(BisLegsGearId)},
+                {GearType.Feet , context.Gears.Find(BisFeetGearId)},
+                {GearType.Earrings , context.Gears.Find(BisEarringsGearId)},
+                {GearType.Necklace , context.Gears.Find(BisNecklaceGearId)},
+                {GearType.Bracelets , context.Gears.Find(BisBraceletsGearId)},
+                {GearType.RightRing , context.Gears.Find(BisLeftRingGearId)},
+                {GearType.LeftRing , context.Gears.Find(BisRightRingGearId)}
             };
             } else 
             {
-                GearDict= new Dictionary<string, Gear?>() {
-                {"Weapon" , context.Gears.Find(CurWeaponGearId)},
-                {"Head" , context.Gears.Find(CurHeadGearId)},
-                {"Body" , context.Gears.Find(CurBodyGearId)},
-                {"Hands" , context.Gears.Find(CurHandsGearId)},
-                {"Legs" , context.Gears.Find(CurLegsGearId)},
-                {"Feet" , context.Gears.Find(CurFeetGearId)},
-                {"Earrings" , context.Gears.Find(CurEarringsGearId)},
-                {"Necklace" , context.Gears.Find(CurNecklaceGearId)},
-                {"Bracelets" , context.Gears.Find(CurBraceletsGearId)},
-                {"RightRing" , context.Gears.Find(CurLeftRingGearId)},
-                {"LeftRing" , context.Gears.Find(CurRightRingGearId)}
+                GearDict= new Dictionary<GearType, Gear?>() {
+                {GearType.Weapon , context.Gears.Find(CurWeaponGearId)},
+                {GearType.Head , context.Gears.Find(CurHeadGearId)},
+                {GearType.Body , context.Gears.Find(CurBodyGearId)},
+                {GearType.Hands , context.Gears.Find(CurHandsGearId)},
+                {GearType.Legs , context.Gears.Find(CurLegsGearId)},
+                {GearType.Feet , context.Gears.Find(CurFeetGearId)},
+                {GearType.Earrings , context.Gears.Find(CurEarringsGearId)},
+                {GearType.Necklace , context.Gears.Find(CurNecklaceGearId)},
+                {GearType.Bracelets , context.Gears.Find(CurBraceletsGearId)},
+                {GearType.RightRing , context.Gears.Find(CurLeftRingGearId)},
+                {GearType.LeftRing , context.Gears.Find(CurRightRingGearId)}
             };
             }
 
             return GearDict;
         }
 
-        public int get_avg_item_level(Dictionary<string,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
+        public int get_avg_item_level(Dictionary<GearType,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
             /*Returns the average item level of the player. If GearDict is given a value uses that GearDict to compute it.
             Otherwise calls get_gearset_as_dict to get it. If GearDict is not null a DataContext must be specified.
             Returns -1 if the an error occured.
@@ -104,7 +105,7 @@ namespace FFXIV_RaidLootAPI.Models
                 GearDict = get_gearset_as_dict(UseBis, context);
             }
             int TotalItemLevel = 0;
-            foreach (KeyValuePair<string, Gear?> pair in GearDict)
+            foreach (KeyValuePair<GearType, Gear?> pair in GearDict)
             {
                 if (!(pair.Value is null)) 
                     TotalItemLevel += pair.Value.GearLevel;
@@ -189,6 +190,51 @@ namespace FFXIV_RaidLootAPI.Models
                 return;
         }
 
+        }
+    
+        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context){
+            Dictionary<GearType, Gear?> CurrentGearSetDict = get_gearset_as_dict(false, context);
+            Dictionary<GearType, Gear?> BisGearSetDict = get_gearset_as_dict(true, context);
+
+            Dictionary<string, GearOptionsDTO.GearOption?> CurrentGearSetInfo = new Dictionary<string, GearOptionsDTO.GearOption?>();
+            Dictionary<string, GearOptionsDTO.GearOption?> BisGearSetInfo = new Dictionary<string, GearOptionsDTO.GearOption?>();
+
+            foreach (KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                CurrentGearSetInfo[pair.Key.ToString()] = !(pair.Value is null) ? new GearOptionsDTO.GearOption{
+                    GearName = pair.Value.Name,
+                    GearStage = pair.Value.GearStage.ToString(),
+                    GearId = pair.Value.Id,
+                    GearItemLevel = pair.Value.GearLevel
+                } : null;
+                Gear? bisPair = BisGearSetDict[pair.Key];
+                BisGearSetInfo[pair.Key.ToString()] = !(bisPair is null) ? new GearOptionsDTO.GearOption{
+                    GearName = bisPair.Name,
+                    GearStage = bisPair.GearStage.ToString(),
+                    GearId = bisPair.Id,
+                    GearItemLevel = bisPair.GearLevel
+                } : null;
+            }
+
+            int AverageItemLevelCurrent = get_avg_item_level(GearDict:CurrentGearSetDict);
+            int AverageItemLevelBis = get_avg_item_level(GearDict:BisGearSetDict);
+
+            Dictionary<string, GearOptionsDTO> GearOptionPerGearType = new Dictionary<string, GearOptionsDTO>();
+
+            foreach (GearType GearType in Enum.GetValues(typeof(GearType))){
+                GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context);
+            }
+
+            return new StaticDTO.PlayerInfoDTO(){
+                Id=Id,
+                Name=Name,
+                Job=Job.ToString(),
+                Locked=Locked,
+                CurrentGearSet=CurrentGearSetInfo,
+                BisGearSet=BisGearSetInfo,
+                GearOptionPerGearType=GearOptionPerGearType,
+                AverageItemLevelBis=AverageItemLevelBis,
+                AverageItemLevelCurrent=AverageItemLevelCurrent
+            };
         }
     }
 

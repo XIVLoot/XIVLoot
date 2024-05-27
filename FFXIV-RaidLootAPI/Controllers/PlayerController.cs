@@ -64,7 +64,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 return NotFound("Player not found.");
 
             int i = 0;
-            foreach (KeyValuePair<string,Gear?> pair in player.get_gearset_as_dict(UseBis, context))
+            foreach (KeyValuePair<GearType,Gear?> pair in player.get_gearset_as_dict(UseBis, context))
             {
                 if (pair.Value is null) continue;
                 ListGearDTO.ListGearName.Insert(i,pair.Value.Name);
@@ -136,6 +136,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         string GearILevel = "";
                         string GearName = "";
                         string JobName = "";
+                        string IconPath = "";
                         bool IsWeapon = false;
                         if (GearId == 0) 
                         {
@@ -164,6 +165,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 GearILevel = responseData["itemLevel"].ToString();
                                 GearName = responseData["name"].ToString();
                                 JobName = responseData["jobName"].ToString();
+                                IconPath = responseData["iconPath"].ToString();
                                 IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
                             }
                             catch (HttpRequestException e)
@@ -186,7 +188,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         if (gear is null)
                         {   // Gear does not exist so we create and add.
                             AlreadyPresentInDatabase = false;
-                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName, IsWeapon, JobName);
+                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName, IsWeapon, JobName, IconPath);
                             if (newGear.GearType == GearType.LeftRing)
                             {   
                                 Gear RightRingGear = new Gear() 
@@ -196,7 +198,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     GearStage=newGear.GearStage,
                                     GearType=GearType.RightRing,
                                     GearCategory=newGear.GearCategory,
-                                    GearWeaponCategory=Job.Empty
+                                    GearWeaponCategory=Job.Empty,
+                                    IconPath=newGear.IconPath
                                 };
                                 newGear.Name += " (L)";
                                 GearName += " (L)";

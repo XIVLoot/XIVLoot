@@ -37,21 +37,27 @@ namespace FFXIV_RaidLootAPI.Controllers
             {
                 var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
                 var playerList = context.Players.Where(p => p.staticId == dbStatic.Id).ToList();
+                List<StaticDTO.PlayerInfoDTO> PlayersInfoList = new List<StaticDTO.PlayerInfoDTO>();
+
+                foreach (Players player in playerList){
+                    PlayersInfoList.Add(player.get_player_info(context));
+                }
 
                 StaticDTO aStatic = new StaticDTO
                 {
                     Id = dbStatic.Id,
                     Name = dbStatic.Name,
                     UUID = dbStatic.UUID,
-                    Players = playerList
+                    PlayersInfoList = PlayersInfoList
                 };
+
                 return Ok(aStatic);
             }
             
         }
 // Add a new static        
         [HttpPost]
-        public async Task<ActionResult<StaticDTO>> AddStatic(string name)
+        public async Task<ActionResult<string>> AddStatic(string name)
         {
             using (var context = _context.CreateDbContext())
             {
@@ -104,18 +110,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                             }
                             await context.AddRangeAsync(players);
                             await context.SaveChangesAsync();
-
-                            var currentStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
-                            var currentPlayers = await context.Players.Where(p => p.staticId == currentStatic.Id).ToListAsync();
-                            StaticDTO thisStatic = new StaticDTO
-                            {
-                                Id = currentStatic.Id,
-                                Name = currentStatic.Name,
-                                UUID = currentStatic.UUID,
-                                Players = currentPlayers
-                            };
                             
-                            return Ok(thisStatic);
+                            return Ok(uuid);
             }
             
         }
