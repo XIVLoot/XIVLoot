@@ -1,0 +1,23 @@
+﻿services:
+  web_api:
+    image: ffxiv-raidlootapi
+    container_name: ffxiv-raidlootapi
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=XIVLoot
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+  sql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: sqlexpress
+    ports: # not actually needed, because the two services are on the same network
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=y
+      - MSSQL_PID=Express
+      - SA_PASSWORD=Ice@dmin1320!
