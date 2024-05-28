@@ -11,6 +11,45 @@ namespace FFXIV_RaidLootAPI.Models
     {   
         private static readonly int GEARSETSIZE = 11;
         public int Id { get; set; }
+        public int GearScore {get;set;}
+        /*
+        Gearscore is a score associted with the progression to the bis gear set of the player.
+        The player starts with 0 point and gains point as they get gear piece.
+
+        Point system :
+        -Accessory : 1 Point if they get an accessory that matches their bis and item level. 0.5 points
+           if the item is an upgrade but does not match ilevel and 0.75 points if it matches ilevel
+           but isn't the bis.
+        - Mid tier gear : (head/hands/feet):
+           2 Point if they get an accessory that matches their bis and item level. 1 points
+           if the item is an upgrade but does not match ilevel and 1.5 points if it matches ilevel
+           but isn't the bis.
+        - High tier gear : (coat/legs)
+           3 Point if they get an accessory that matches their bis and item level. 1.5 points
+           if the item is an upgrade but does not match ilevel and 2 points if it matches ilevel
+           but isn't the bis.
+        - Weapon : 
+            High tier but + 0.5
+
+        Given this set of point assignment the total a player can get is 
+        5 * 1 + 3 * 2 + 2 * 3 + 3.5 = 20.5
+
+        The score is computed and a ratio is returned. This ratio can then be multiplied by a factor
+        that is dependant on the role and compared to the average. 
+        
+        For now the ratio will be the following and is simply the ratio of expected over the expected damage of a DPS.
+
+        Ex:
+
+        https://docs.google.com/spreadsheets/d/1g91GQ68w2kF9U2qO0Wdsmbw2pDYNqIy3JHEy7VFnuTc/edit?usp=sharing
+
+
+
+
+        This can be use to indicate who should receive gear
+        based on : Who hasn't received a lot of gear and who would have a bigger impact.
+
+        */
 
         public string Name { get; set; } = "Enter the name here";
         public Job Job {get; set; }
@@ -43,6 +82,30 @@ namespace FFXIV_RaidLootAPI.Models
         public int CurLeftRingGearId { get; set; }
         public int CurRightRingGearId { get; set; }
 
+
+        public static Dictionary<Job, decimal> JobScoreMultiplier = new Dictionary<Job, decimal>()
+        {
+            {Job.BlackMage, 1.0m},
+            {Job.Samurai, 1.0m/0.952m},
+            {Job.Ninja, 1.0m/0.89m},
+            {Job.Monk, 1.0m/0.888m},
+            {Job.Reaper, 1.0m/0.877m},
+            {Job.Dragoon, 1.0m/0.875m},
+            {Job.Machinist, 1.0m/0.885m},
+            {Job.Bard, 1.0m/0.746m},
+            {Job.Dancer,1.0m/0.731m},
+            {Job.RedMage, 1.0m/0.818m},
+            {Job.Summoner, 1.0m/0.836m},
+            {Job.DarkKnight, 1.0m/0.626m},
+            {Job.Gunbreaker, 1.0m/0.626m},
+            {Job.Warrior, 1.0m/0.614m},
+            {Job.Paladin, 1.0m/0.6041m},
+            {Job.Sage, 1.0m/0.524m},
+            {Job.WhiteMage, 1.0m/0.524m},
+            {Job.Scholar, 1.0m/0.510m},
+            {Job.Astrologian, 1.0m/0.445m},
+
+        };
 
         // Player object functions
 
