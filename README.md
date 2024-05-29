@@ -9,6 +9,7 @@ You need
 * [SQL Express](https://www.microsoft.com/en-us/download/details.aspx?id=101064)
 * [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)
 * [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
 
 ## Docker
 
