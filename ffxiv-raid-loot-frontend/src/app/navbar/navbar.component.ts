@@ -8,4 +8,5 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class NavbarComponent {
   title = 'Loot Management';
+  isLoggedIn = false;  // Add this line
 }

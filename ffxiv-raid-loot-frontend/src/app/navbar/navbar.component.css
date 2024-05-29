@@ -28,3 +28,65 @@
   color: #555;
   margin-top: 5px;
 }
+
+.mat-toolbar {
+ position: relative;
+ z-index: 5;
+}
+
+.mat-sidenav-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+}
+
+.mat-sidenav {
+  width: 250px;
+  background-color: #333;
+  color: white;
+}
+
+.mat-nav-list {
+  padding: 0;
+}
+
+.mat-list-item {
+  color: white;
+  font-size: 16px;
+  line-height: 48px;
+  padding-left: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.mat-list-item:hover {
+  background-color: #555;
+}
+
+.mat-sidenav-content {
+  padding: 20px;
+  background-color: #494646;
+  width: calc(100%);
+}
+.mat-toolbar {
+  display: flex;
+  align-items: center;
+  height: 64px; /* Adjust based on your design */
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.toolbar-logo {
+  height: 80%; /* Adjust based on your design */
+  width: auto; /* Maintain aspect ratio */
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+

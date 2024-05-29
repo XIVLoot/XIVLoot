@@ -9,9 +9,11 @@ import { Gear } from '../models/gear';
 export class DataService {
 
 constructor() { }
-  static: Static[];
+  static: Static;
 
   players: Player[];
 
   gearSet: Gear[];
+
+  uuid: String;
 }

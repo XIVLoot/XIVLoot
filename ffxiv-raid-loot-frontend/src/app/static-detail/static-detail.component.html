@@ -1,1 +1,33 @@
-<p>static-detail works!</p>
+<div>
+  <!-- Container for static detail header -->
+  <div>
+    <h1>{{ staticDetail.name }}</h1> <!-- Displaying the name of the static -->
+    <h2>Static UUID: {{ staticDetail.uuid }}</h2> <!-- Displaying the UUID of the static -->
+  </div>
+  <!-- Container for player details -->
+  <div>
+    <h3>Players:</h3> <!-- Title for the players section -->
+    <mat-grid-list [cols]="gridColumns"> <!-- Grid list to display players dynamically based on screen size -->
+      <mat-grid-tile *ngFor="let player of staticDetail.players"> <!-- Loop through each player in staticDetail.players -->
+        <mat-card> <!-- Card container for each player -->
+          <mat-card-header>
+            <mat-card-title>{{ player.name }}</mat-card-title> <!-- Display player's name -->
+            <mat-card-subtitle>ID: {{ player.id }}</mat-card-subtitle> <!-- Display player's ID -->
+          </mat-card-header>
+          <mat-card-content>
+            <p>Role: {{ player.role }}</p> <!-- Display player's role -->
+            <p>Job: {{ player.job }}</p> <!-- Display player's job -->
+            <p>Item Level: {{ player.itemLevel }}</p> <!-- Display player's item level -->
+            <p>Etro link: {{ player.etroBiS }}</p> <!-- Display player's Etro link -->
+            <p>BiS Weapon: {{ player.bisWeaponGearId }}</p> <!-- Display player's BiS Weapon Gear ID -->
+            <p>BiS Headgear: {{ player.bisHeadGearId }}</p> <!-- Display player's BiS Headgear ID -->
+            <p>BiS Chest: {{ player.bisBodyGearId }}</p> <!-- Display player's BiS Chest Gear ID -->
+            <p>BiS Hands: {{ player.bisHandsGearId }}</p> <!-- Display player's BiS Hands Gear ID -->
+            <p>BiS Pants: {{ player.bisLegsGearId }}</p> <!-- Display player's BiS Pants Gear ID -->
+            <p>BiS Shoes: {{ player.bisFeetGearId }}</p> <!-- Display player's BiS Shoes Gear ID -->
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+</div>

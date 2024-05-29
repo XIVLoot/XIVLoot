@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContextFactory<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DockerConnection"));
 });
 
 builder.Services.AddCors();
@@ -33,6 +33,11 @@ app.UseCors(x =>x
     .AllowAnyHeader()
     .SetIsOriginAllowed(origin => true) //allow any origin
     );
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dataContext.Database.Migrate();
+}
 
 app.UseAuthorization();
 
