@@ -10,12 +10,34 @@ You need
 * [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)
 * [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-## Update your database
+## Docker
 
-Using EF Core Tools, Update your database Use the UI if you are using Riders. If you are using Visual Studio, use the package manager terminal and enter the command `Update-Database`. If you are using anything else, open a terminal and use the command `dotnet ef update-database`
 
-## Deployment
+### Create your SSL certificate
 
-Coming Soon!
+```shell
+dotnet dev-certs --clean
+dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p XIVLoot
+dotnet dev-certs https --trust
+```
 
-A docker compose file is planned for deployment.
+### Build the image
+
+From the root of the project (where the .sln is)
+```shell
+docker build -f FFXIV-RaidLootAPI/Dockerfile -t ffxiv-raidlootapi .
+```
+
+### Put the images up
+
+Go into the docker-db folder in the project
+```shell
+docker compose up -d
+```
+
+and if you want to put the containers down
+
+```shell
+docker compose down
+```
+
