@@ -17,7 +17,7 @@ You need
 ### Create your SSL certificate
 
 ```shell
-dotnet dev-certs --clean
+dotnet dev-certs https --clean
 dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p XIVLoot
 dotnet dev-certs https --trust
 ```
