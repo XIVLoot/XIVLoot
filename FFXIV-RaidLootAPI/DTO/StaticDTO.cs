@@ -17,6 +17,7 @@ public class StaticDTO
         public Dictionary<string, GearOptionsDTO> GearOptionPerGearType {get;set;} = new Dictionary<string, GearOptionsDTO>();
         public int AverageItemLevelCurrent {get;set;}
         public int AverageItemLevelBis {get;set;}
+        public decimal PlayerGearScore {get;set;}
     }
 
     public int Id { get; set; }

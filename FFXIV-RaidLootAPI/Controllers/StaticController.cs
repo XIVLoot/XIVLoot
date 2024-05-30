@@ -38,10 +38,51 @@ namespace FFXIV_RaidLootAPI.Controllers
                 var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
                 var playerList = context.Players.Where(p => p.staticId == dbStatic.Id).ToList();
                 List<StaticDTO.PlayerInfoDTO> PlayersInfoList = new List<StaticDTO.PlayerInfoDTO>();
+                decimal IlevelSum = 0.0m;
+                decimal NumberRaidBuffs = 0.0m;
+                foreach (Players player in playerList){
+                    IlevelSum += player.get_avg_item_level();
+                    switch (player.Job){
+                        case Job.Astrologian:
+                            NumberRaidBuffs+=1.0m;
+                                break;
+                        case Job.Scholar:
+                            NumberRaidBuffs+=1.0m;
+                                break;
+                        case Job.Dancer:
+                            NumberRaidBuffs+=1.5m;
+                                break;
+                        case Job.RedMage:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Bard:
+                            NumberRaidBuffs+=1.5m;
+                                break;
+                        case Job.Ninja:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Reaper:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Dragoon:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Summoner:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Monk:
+                            NumberRaidBuffs+=1m;
+                            break;
+                    }
+                }
+                decimal TeamAverageItemLevel = IlevelSum/8.0m;
 
                 foreach (Players player in playerList){
-                    PlayersInfoList.Add(player.get_player_info(context));
+                    StaticDTO.PlayerInfoDTO info = player.get_player_info(context,dbStatic, TeamAverageItemLevel, NumberRaidBuffs);
+                    PlayersInfoList.Add(info);
                 }
+
+                
 
                 StaticDTO aStatic = new StaticDTO
                 {

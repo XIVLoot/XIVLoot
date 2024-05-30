@@ -13,41 +13,23 @@ namespace FFXIV_RaidLootAPI.Models
         public int Id { get; set; }
         public int GearScore {get;set;}
         /*
-        Gearscore is a score associted with the progression to the bis gear set of the player.
-        The player starts with 0 point and gains point as they get gear piece.
-
-        Point system :
-        -Accessory : 1 Point if they get an accessory that matches their bis and item level. 0.5 points
-           if the item is an upgrade but does not match ilevel and 0.75 points if it matches ilevel
-           but isn't the bis.
-        - Mid tier gear : (head/hands/feet):
-           2 Point if they get an accessory that matches their bis and item level. 1 points
-           if the item is an upgrade but does not match ilevel and 1.5 points if it matches ilevel
-           but isn't the bis.
-        - High tier gear : (coat/legs)
-           3 Point if they get an accessory that matches their bis and item level. 1.5 points
-           if the item is an upgrade but does not match ilevel and 2 points if it matches ilevel
-           but isn't the bis.
-        - Weapon : 
-            High tier but + 0.5
-
-        Given this set of point assignment the total a player can get is 
-        5 * 1 + 3 * 2 + 2 * 3 + 3.5 = 20.5
-
-        The score is computed and a ratio is returned. This ratio can then be multiplied by a factor
-        that is dependant on the role and compared to the average. 
+        GearScore is a value computed that represents a score dependant on the individual, the player's amount of fed damage in buffs
+        and a score relative to the willingness to share gear unoptimally.
         
-        For now the ratio will be the following and is simply the ratio of expected over the expected damage of a DPS.
+        The score is computed with this function (It contains one constant which is the max item level obtainable):
 
-        Ex:
+        decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
+                        c * NRaidBuff * JobGroupMultiplier[Job];
 
-        https://docs.google.com/spreadsheets/d/1g91GQ68w2kF9U2qO0Wdsmbw2pDYNqIy3JHEy7VFnuTc/edit?usp=sharing
+        The first part of the function is a value associted with the solo impact of a job on the group's DPS. nDPSRatio is the ratio of max expected nDPS to the job's expected nDPS (taken on fflogs).
+        Its impact can be changed by changing the value of a.
 
+        The second part is a measure of how behind in terms of main stat a player is. This value can be changed with b.
 
+        The 3rd part is a measure of how much a player would affect the group's DPS with the number of buffs in the comp. Similar to first measure but benefits
+        more jobs that have good burst in buffs. Can be changed with c.                   
 
-
-        This can be use to indicate who should receive gear
-        based on : Who hasn't received a lot of gear and who would have a bigger impact.
+        https://docs.google.com/spreadsheets/d/1g91GQ68w2kF9U2qO0Wdsmbw2pDYNqIy3JHEy7VFnuTc/edit#gid=0
 
         */
 
@@ -107,7 +89,40 @@ namespace FFXIV_RaidLootAPI.Models
 
         };
 
+        public static Dictionary<Job, decimal> JobGroupMultiplier = new Dictionary<Job, decimal>()
+        {
+            {Job.BlackMage, 1.486988848m},
+            {Job.Samurai, 1.0m},
+            {Job.Ninja, 1.19760479m},
+            {Job.Monk, 1.338912134m},
+            {Job.Reaper, 1.428571429m},
+            {Job.Dragoon, 1.146953405m},
+            {Job.Machinist, 2.069857697m},
+            {Job.Bard, 1.619433198m},
+            {Job.Dancer,1.982651797m},
+            {Job.RedMage, 1.54589372m},
+            {Job.Summoner, 1.211203634m},
+            {Job.DarkKnight, 1.297648013m},
+            {Job.Gunbreaker, 2.046035806m},
+            {Job.Warrior, 1.767955801m},
+            {Job.Paladin, 1.634320735m},
+            {Job.Sage, 1.793721973m},
+            {Job.WhiteMage, 1.744820065m},
+            {Job.Scholar, 4.060913706m},
+            {Job.Astrologian, 3.827751196m},
+
+        };
+
         // Player object functions
+
+        public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff){
+            int PlayerILevel = get_avg_item_level();
+
+            decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
+                            c * NRaidBuff * JobGroupMultiplier[Job];
+
+            return score;
+        }
 
         public Dictionary<GearType,Gear?> get_gearset_as_dict(bool useBis, DataContext context){    
             /*This function returns the gearset of the player as a dictionnary where keys are name of gear type and
@@ -255,7 +270,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
     
-        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context){
+        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static, decimal GroupAvgLevel, decimal NumberRaidBuffs){
             Dictionary<GearType, Gear?> CurrentGearSetDict = get_gearset_as_dict(false, context);
             Dictionary<GearType, Gear?> BisGearSetDict = get_gearset_as_dict(true, context);
 
@@ -287,6 +302,9 @@ namespace FFXIV_RaidLootAPI.Models
                 GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context);
             }
 
+            List<decimal> ScoreParam = Static.GetGearScoreParameter();
+            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs);
+
             return new StaticDTO.PlayerInfoDTO(){
                 Id=Id,
                 Name=Name,
@@ -296,7 +314,8 @@ namespace FFXIV_RaidLootAPI.Models
                 BisGearSet=BisGearSetInfo,
                 GearOptionPerGearType=GearOptionPerGearType,
                 AverageItemLevelBis=AverageItemLevelBis,
-                AverageItemLevelCurrent=AverageItemLevelCurrent
+                AverageItemLevelCurrent=AverageItemLevelCurrent,
+                PlayerGearScore=PlayerGearScore
             };
         }
     }
