@@ -16,11 +16,11 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly string CRAFTED_GEAR = "Crafted";
         private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
-            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband"}},
-            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket"}},
-            {"Hands",new List<string> {"Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
-            {"Legs",new List<string> {"Hose", "Breeches", "Trousers", "Longkilt", "Poleyns"}},
-            {"Feet",new List<string> {"Sollerets", "Sabatons", "Longboots", "Sandals", "Boots"}},
+            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret"}},
+            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket", "Coat"}},
+            {"Hands",new List<string> {"Armlet","Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
+            {"Legs",new List<string> {"Bottom","Hose", "Breeches", "Trousers", "Longkilt", "Poleyns"}},
+            {"Feet",new List<string> {"Shoe","Sollerets", "Sabatons", "Longboots", "Sandals", "Boots"}},
             {"Earrings",new List<string> {"Earring"}},
             {"Necklace",new List<string> {"Necklace", "Choker"}},
             {"Bracelets",new List<string> {"Bracelet", "Wristband"}},
@@ -58,7 +58,10 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.Reaper,"RPR"},
             {Job.Dragoon,"DRG"},
             {Job.Ninja,"NIN"},
-            {Job.Viper,"VIP"} // CHECK THAT
+            {Job.Viper,"VIP"}, // CHECK THAT
+            {Job.Bard, "BRD"},
+            {Job.Dancer, "DNC"},
+            {Job.Machinist, "MCH"}
         };
 
         public static readonly Dictionary<Job, List<GearCategory>> JOB_TO_GEAR_CATEGORY_MAP = new Dictionary<Job, List<GearCategory>>()

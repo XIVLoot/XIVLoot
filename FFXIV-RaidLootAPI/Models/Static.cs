@@ -10,9 +10,9 @@ namespace FFXIV_RaidLootAPI.Models
 
         public string Name { get; set; } = string.Empty;
 
-        public decimal GearScoreA {get;set;}
-        public decimal GearScoreB {get;set;}
-        public decimal GearScoreC {get;set;}
+        public decimal GearScoreA {get;set;} = 0.0m;
+        public decimal GearScoreB {get;set;} = 0.0m;
+        public decimal GearScoreC {get;set;} = 0.0m;
 
         public List<Decimal> GetGearScoreParameter(){return new List<decimal>{GearScoreA, GearScoreB, GearScoreC};}
 
