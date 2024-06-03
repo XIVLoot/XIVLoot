@@ -58,7 +58,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 continue;
                             bool IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
 
-                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName,IsWeapon,JobName,IconPath);
+                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
 
                             if (newGear.GearType == GearType.LeftRing)
                             {   
@@ -70,7 +70,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     GearType=GearType.RightRing,
                                     GearCategory=newGear.GearCategory,
                                     GearWeaponCategory=Job.Empty,
-                                    IconPath=newGear.IconPath
+                                    IconPath=newGear.IconPath,
+                                    EtroGearId=newGear.EtroGearId
                                 };
                                 newGear.Name += " (L)";
                                 GearName += " (L)";

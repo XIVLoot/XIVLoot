@@ -102,10 +102,11 @@ namespace FFXIV_RaidLootAPI.Models
         public GearCategory GearCategory { get; set; }
         public Job GearWeaponCategory {get; set;} = Job.Empty;
         public string IconPath {get; set;} = string.Empty;
+        public int EtroGearId {get;set;}
 
         // Gear object functions
 
-        public static Gear CreateGearFromEtro(string ItemLevel, string name, bool IsWeapon, string JobName, string IconPath)
+        public static Gear CreateGearFromEtro(string ItemLevel, string name, bool IsWeapon, string JobName, string IconPath, int EtroId)
         {   
             GearStage stage = GearStage.Preparation;
             if (name.IndexOf(TOME_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -176,7 +177,8 @@ namespace FFXIV_RaidLootAPI.Models
                 GearStage=stage,
                 GearCategory=category,
                 GearWeaponCategory=WeaponCategory,
-                IconPath=IconPath
+                IconPath=IconPath,
+                EtroGearId=EtroId
             };
 
         }   

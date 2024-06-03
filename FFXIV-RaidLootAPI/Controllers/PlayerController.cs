@@ -98,7 +98,8 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
-            player.EtroBiS = dto.NewEtro;
+            if (dto.UseBis)
+                player.EtroBiS = dto.NewEtro;
 
             using (HttpClient client = new HttpClient())
             {
@@ -131,118 +132,80 @@ namespace FFXIV_RaidLootAPI.Controllers
                         return NotFound("Could not find etro gearset.");
                     }
 
-                    foreach (int GearId in ListIdGears)
-                    {   
-                        string GearILevel = "";
-                        string GearName = "";
-                        string JobName = "";
-                        string IconPath = "";
-                        bool IsWeapon = false;
-                        if (GearId == 0) 
-                        {
-                            GearILevel = "665";
-                            GearName = "Relic Weapon " + GearId.ToString();
-                            IsWeapon = true;
-                            JobName = "";
-                        }
-                        else
-                        {
-                            try
-                            {
-                                // Make the GET request
-                                HttpResponseMessage response = await client.GetAsync("/api/equipment/"+GearId.ToString()+"/");
-                                Console.WriteLine("/api/equipment/"+GearId.ToString()+"/");
-                                // Ensure the request was successful
-                                response.EnsureSuccessStatusCode();
+                    bool AllGearPieceFound = true;
 
-                                // Read and process the response content
-                                string responseBody = await response.Content.ReadAsStringAsync();
-                                Dictionary<string, object>? responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseBody);
+                    // Assume the the order as ETRO_GEAR_NAME
 
-                                if (responseData is null)
-                                    return NotFound("Could not find gear.");
-
-                                GearILevel = responseData["itemLevel"].ToString();
-                                GearName = responseData["name"].ToString();
-                                JobName = responseData["jobName"].ToString();
-                                IconPath = responseData["iconPath"].ToString();
-                                IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
-                            }
-                            catch (HttpRequestException e)
-                            {
-                                Console.WriteLine("Request error: " + e.Message);
-                                return NotFound("Could not find gear.");
-                            }
-                        }
-
-                        Gear? gear;  
-                        // Will check if exists in database
-                        // Have to check if is a ring since we modify the name with a suffix.
-                        // Right now simply checking if Ring is in the name
-                        bool AlreadyPresentInDatabase = true;
-                        if (GearName.Contains("Ring"))
-                            gear = context.Gears.FirstOrDefault(g => g.Name == GearName + " (L)");
-                        else 
-                            gear = context.Gears.FirstOrDefault(g => g.Name == GearName);
-
+                    for (int i = 0;i<ListIdGears.Count;i++)
+                    {
+                        Gear? gear = context.Gears.FirstOrDefault(g => g.EtroGearId == ListIdGears[i]);
+                        int id = 1;
                         if (gear is null)
-                        {   // Gear does not exist so we create and add.
-                            AlreadyPresentInDatabase = false;
-                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName, IsWeapon, JobName, IconPath);
-                            if (newGear.GearType == GearType.LeftRing)
-                            {   
-                                Gear RightRingGear = new Gear() 
-                                {
-                                    Name=newGear.Name + " (R)",
-                                    GearLevel=newGear.GearLevel,
-                                    GearStage=newGear.GearStage,
-                                    GearType=GearType.RightRing,
-                                    GearCategory=newGear.GearCategory,
-                                    GearWeaponCategory=Job.Empty,
-                                    IconPath=newGear.IconPath
-                                };
-                                newGear.Name += " (L)";
-                                GearName += " (L)";
-                                await context.Gears.AddAsync(RightRingGear);
+                            {
+                            AllGearPieceFound=false;
                             }
-                            await context.Gears.AddAsync(newGear);
-
-                        }
-                        
-                        context.SaveChanges();
-                        
-                        // Now give gearsId to player.
-                        if (!AlreadyPresentInDatabase)
-                            gear = await context.Gears.SingleAsync(g => g.Name == GearName);
-
-                        switch (gear.GearType)
+                        else 
+                            id = gear.Id;
+                        if (dto.UseBis)
                         {
-                            case GearType.Weapon:
-                                player.BisWeaponGearId = gear.Id;break;
-                            case GearType.Head:
-                                player.BisHeadGearId = gear.Id;break;
-                            case GearType.Body:
-                                player.BisBodyGearId = gear.Id;break;
-                            case GearType.Hands:
-                                player.BisHandsGearId = gear.Id;break;
-                            case GearType.Legs:
-                                player.BisLegsGearId = gear.Id;break;
-                            case GearType.Feet:
-                                player.BisFeetGearId = gear.Id;break;
-                            case GearType.Earrings:
-                                player.BisEarringsGearId = gear.Id;break;
-                            case GearType.Necklace:
-                                player.BisNecklaceGearId = gear.Id;break;
-                            case GearType.Bracelets:
-                                player.BisBraceletsGearId = gear.Id;break;
-                            case GearType.RightRing:
-                                player.BisRightRingGearId = gear.Id;break;
-                            case GearType.LeftRing:
-                                player.BisLeftRingGearId = gear.Id;break;
+                            switch (gear.GearType)
+                            {
+                                case GearType.Weapon:
+                                    player.BisWeaponGearId = id;break;
+                                case GearType.Head:
+                                    player.BisHeadGearId = id;break;
+                                case GearType.Body:
+                                    player.BisBodyGearId = id;break;
+                                case GearType.Hands:
+                                    player.BisHandsGearId = id;break;
+                                case GearType.Legs:
+                                    player.BisLegsGearId = id;break;
+                                case GearType.Feet:
+                                    player.BisFeetGearId = id;break;
+                                case GearType.Earrings:
+                                    player.BisEarringsGearId = id;break;
+                                case GearType.Necklace:
+                                    player.BisNecklaceGearId = id;break;
+                                case GearType.Bracelets:
+                                    player.BisBraceletsGearId = id;break;
+                                case GearType.RightRing:
+                                    player.BisRightRingGearId = id;break;
+                                case GearType.LeftRing:
+                                    player.BisLeftRingGearId = id;break;
+                            }
+                        } else
+                        {
+                            switch (gear.GearType)
+                            {
+                                case GearType.Weapon:
+                                    player.CurWeaponGearId = id;break;
+                                case GearType.Head:
+                                    player.CurHeadGearId = id;break;
+                                case GearType.Body:
+                                    player.CurBodyGearId = id;break;
+                                case GearType.Hands:
+                                    player.CurHandsGearId = id;break;
+                                case GearType.Legs:
+                                    player.CurLegsGearId = id;break;
+                                case GearType.Feet:
+                                    player.CurFeetGearId = id;break;
+                                case GearType.Earrings:
+                                    player.CurEarringsGearId = id;break;
+                                case GearType.Necklace:
+                                    player.CurNecklaceGearId = id;break;
+                                case GearType.Bracelets:
+                                    player.CurBraceletsGearId = id;break;
+                                case GearType.RightRing:
+                                    player.CurRightRingGearId = id;break;
+                                case GearType.LeftRing:
+                                    player.CurLeftRingGearId = id;break;
+                            }
                         }
                     }
+                await context.SaveChangesAsync();
+                return AllGearPieceFound ? Ok() : Ok("Could not find at least one gear piece.");
             }
-        return Ok();
+        
         }
         }
 
