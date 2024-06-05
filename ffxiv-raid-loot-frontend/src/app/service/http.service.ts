@@ -28,3 +28,5 @@ constructor(public http: HttpClient, public data: DataService) { }
 
 }
 
+
+export { HttpClient };

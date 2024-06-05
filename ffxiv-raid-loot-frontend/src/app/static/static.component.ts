@@ -1,5 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { HttpService } from '../service/http.service';
+import { HttpClient } from '../service/http.service';
+import { DataService } from '../service/data.service';
+import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { Static } from '../models/static';
 
 // Component decorator with metadata for StaticComponent
 @Component({
