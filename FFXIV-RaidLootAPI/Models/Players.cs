@@ -1,4 +1,5 @@
 ﻿using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.DTO;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FFXIV_RaidLootAPI.Models
@@ -10,6 +11,27 @@ namespace FFXIV_RaidLootAPI.Models
     {   
         private static readonly int GEARSETSIZE = 11;
         public int Id { get; set; }
+        public int GearScore {get;set;}
+        /*
+        GearScore is a value computed that represents a score dependant on the individual, the player's amount of fed damage in buffs
+        and a score relative to the willingness to share gear unoptimally.
+        
+        The score is computed with this function (It contains one constant which is the max item level obtainable):
+
+        decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
+                        c * NRaidBuff * JobGroupMultiplier[Job];
+
+        The first part of the function is a value associted with the solo impact of a job on the group's DPS. nDPSRatio is the ratio of max expected nDPS to the job's expected nDPS (taken on fflogs).
+        Its impact can be changed by changing the value of a.
+
+        The second part is a measure of how behind in terms of main stat a player is. This value can be changed with b.
+
+        The 3rd part is a measure of how much a player would affect the group's DPS with the number of buffs in the comp. Similar to first measure but benefits
+        more jobs that have good burst in buffs. Can be changed with c.                   
+
+        https://docs.google.com/spreadsheets/d/1g91GQ68w2kF9U2qO0Wdsmbw2pDYNqIy3JHEy7VFnuTc/edit#gid=0
+
+        */
 
         public string Name { get; set; } = "Enter the name here";
         public Job Job {get; set; }
@@ -43,9 +65,66 @@ namespace FFXIV_RaidLootAPI.Models
         public int CurRightRingGearId { get; set; }
 
 
+        public static Dictionary<Job, decimal> JobScoreMultiplier = new Dictionary<Job, decimal>()
+        {
+            {Job.BlackMage, 1.0m},
+            {Job.Samurai, 1.0m/0.952m},
+            {Job.Ninja, 1.0m/0.89m},
+            {Job.Monk, 1.0m/0.888m},
+            {Job.Reaper, 1.0m/0.877m},
+            {Job.Dragoon, 1.0m/0.875m},
+            {Job.Machinist, 1.0m/0.885m},
+            {Job.Bard, 1.0m/0.746m},
+            {Job.Dancer,1.0m/0.731m},
+            {Job.RedMage, 1.0m/0.818m},
+            {Job.Summoner, 1.0m/0.836m},
+            {Job.DarkKnight, 1.0m/0.626m},
+            {Job.Gunbreaker, 1.0m/0.626m},
+            {Job.Warrior, 1.0m/0.614m},
+            {Job.Paladin, 1.0m/0.6041m},
+            {Job.Sage, 1.0m/0.524m},
+            {Job.WhiteMage, 1.0m/0.524m},
+            {Job.Scholar, 1.0m/0.510m},
+            {Job.Astrologian, 1.0m/0.445m},
+
+        };
+
+        public static Dictionary<Job, decimal> JobGroupMultiplier = new Dictionary<Job, decimal>()
+        {
+            {Job.BlackMage, 1.486988848m},
+            {Job.Samurai, 1.0m},
+            {Job.Ninja, 1.19760479m},
+            {Job.Monk, 1.338912134m},
+            {Job.Reaper, 1.428571429m},
+            {Job.Dragoon, 1.146953405m},
+            {Job.Machinist, 2.069857697m},
+            {Job.Bard, 1.619433198m},
+            {Job.Dancer,1.982651797m},
+            {Job.RedMage, 1.54589372m},
+            {Job.Summoner, 1.211203634m},
+            {Job.DarkKnight, 1.297648013m},
+            {Job.Gunbreaker, 2.046035806m},
+            {Job.Warrior, 1.767955801m},
+            {Job.Paladin, 1.634320735m},
+            {Job.Sage, 1.793721973m},
+            {Job.WhiteMage, 1.744820065m},
+            {Job.Scholar, 4.060913706m},
+            {Job.Astrologian, 3.827751196m},
+
+        };
+
         // Player object functions
 
-        public Dictionary<string,Gear?> get_gearset_as_dict(bool useBis, DataContext context){    
+        public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff){
+            int PlayerILevel = get_avg_item_level();
+
+            decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
+                            c * NRaidBuff * JobGroupMultiplier[Job];
+
+            return score;
+        }
+
+        public Dictionary<GearType,Gear?> get_gearset_as_dict(bool useBis, DataContext context){    
             /*This function returns the gearset of the player as a dictionnary where keys are name of gear type and
               they map to the Gear object.
               bool useBis -> If set to true uses Bis gear set. If false uses current gearset.
@@ -54,44 +133,44 @@ namespace FFXIV_RaidLootAPI.Models
 
             // TODO : Check if returned gear is null
 
-            Dictionary<string,Gear?> GearDict;
+            Dictionary<GearType,Gear?> GearDict;
 
             if (useBis)
             {
-                GearDict= new Dictionary<string, Gear?>() {
-                {"Weapon" , context.Gears.Find(BisWeaponGearId)},
-                {"Head" , context.Gears.Find(BisHeadGearId)},
-                {"Body" , context.Gears.Find(BisBodyGearId)},
-                {"Hands" , context.Gears.Find(BisHandsGearId)},
-                {"Legs" , context.Gears.Find(BisLegsGearId)},
-                {"Feet" , context.Gears.Find(BisFeetGearId)},
-                {"Earrings" , context.Gears.Find(BisEarringsGearId)},
-                {"Necklace" , context.Gears.Find(BisNecklaceGearId)},
-                {"Bracelets" , context.Gears.Find(BisBraceletsGearId)},
-                {"RightRing" , context.Gears.Find(BisLeftRingGearId)},
-                {"LeftRing" , context.Gears.Find(BisRightRingGearId)}
+                GearDict= new Dictionary<GearType, Gear?>() {
+                {GearType.Weapon , context.Gears.Find(BisWeaponGearId)},
+                {GearType.Head , context.Gears.Find(BisHeadGearId)},
+                {GearType.Body , context.Gears.Find(BisBodyGearId)},
+                {GearType.Hands , context.Gears.Find(BisHandsGearId)},
+                {GearType.Legs , context.Gears.Find(BisLegsGearId)},
+                {GearType.Feet , context.Gears.Find(BisFeetGearId)},
+                {GearType.Earrings , context.Gears.Find(BisEarringsGearId)},
+                {GearType.Necklace , context.Gears.Find(BisNecklaceGearId)},
+                {GearType.Bracelets , context.Gears.Find(BisBraceletsGearId)},
+                {GearType.RightRing , context.Gears.Find(BisLeftRingGearId)},
+                {GearType.LeftRing , context.Gears.Find(BisRightRingGearId)}
             };
             } else 
             {
-                GearDict= new Dictionary<string, Gear?>() {
-                {"Weapon" , context.Gears.Find(CurWeaponGearId)},
-                {"Head" , context.Gears.Find(CurHeadGearId)},
-                {"Body" , context.Gears.Find(CurBodyGearId)},
-                {"Hands" , context.Gears.Find(CurHandsGearId)},
-                {"Legs" , context.Gears.Find(CurLegsGearId)},
-                {"Feet" , context.Gears.Find(CurFeetGearId)},
-                {"Earrings" , context.Gears.Find(CurEarringsGearId)},
-                {"Necklace" , context.Gears.Find(CurNecklaceGearId)},
-                {"Bracelets" , context.Gears.Find(CurBraceletsGearId)},
-                {"RightRing" , context.Gears.Find(CurLeftRingGearId)},
-                {"LeftRing" , context.Gears.Find(CurRightRingGearId)}
+                GearDict= new Dictionary<GearType, Gear?>() {
+                {GearType.Weapon , context.Gears.Find(CurWeaponGearId)},
+                {GearType.Head , context.Gears.Find(CurHeadGearId)},
+                {GearType.Body , context.Gears.Find(CurBodyGearId)},
+                {GearType.Hands , context.Gears.Find(CurHandsGearId)},
+                {GearType.Legs , context.Gears.Find(CurLegsGearId)},
+                {GearType.Feet , context.Gears.Find(CurFeetGearId)},
+                {GearType.Earrings , context.Gears.Find(CurEarringsGearId)},
+                {GearType.Necklace , context.Gears.Find(CurNecklaceGearId)},
+                {GearType.Bracelets , context.Gears.Find(CurBraceletsGearId)},
+                {GearType.RightRing , context.Gears.Find(CurLeftRingGearId)},
+                {GearType.LeftRing , context.Gears.Find(CurRightRingGearId)}
             };
             }
 
             return GearDict;
         }
 
-        public int get_avg_item_level(Dictionary<string,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
+        public int get_avg_item_level(Dictionary<GearType,Gear?>? GearDict=null, bool UseBis=false, DataContext context=null){
             /*Returns the average item level of the player. If GearDict is given a value uses that GearDict to compute it.
             Otherwise calls get_gearset_as_dict to get it. If GearDict is not null a DataContext must be specified.
             Returns -1 if the an error occured.
@@ -104,7 +183,7 @@ namespace FFXIV_RaidLootAPI.Models
                 GearDict = get_gearset_as_dict(UseBis, context);
             }
             int TotalItemLevel = 0;
-            foreach (KeyValuePair<string, Gear?> pair in GearDict)
+            foreach (KeyValuePair<GearType, Gear?> pair in GearDict)
             {
                 if (!(pair.Value is null)) 
                     TotalItemLevel += pair.Value.GearLevel;
@@ -189,6 +268,55 @@ namespace FFXIV_RaidLootAPI.Models
                 return;
         }
 
+        }
+    
+        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static, decimal GroupAvgLevel, decimal NumberRaidBuffs){
+            Dictionary<GearType, Gear?> CurrentGearSetDict = get_gearset_as_dict(false, context);
+            Dictionary<GearType, Gear?> BisGearSetDict = get_gearset_as_dict(true, context);
+
+            Dictionary<string, GearOptionsDTO.GearOption?> CurrentGearSetInfo = new Dictionary<string, GearOptionsDTO.GearOption?>();
+            Dictionary<string, GearOptionsDTO.GearOption?> BisGearSetInfo = new Dictionary<string, GearOptionsDTO.GearOption?>();
+
+            foreach (KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                CurrentGearSetInfo[pair.Key.ToString()] = !(pair.Value is null) ? new GearOptionsDTO.GearOption{
+                    GearName = pair.Value.Name,
+                    GearStage = pair.Value.GearStage.ToString(),
+                    GearId = pair.Value.Id,
+                    GearItemLevel = pair.Value.GearLevel
+                } : null;
+                Gear? bisPair = BisGearSetDict[pair.Key];
+                BisGearSetInfo[pair.Key.ToString()] = !(bisPair is null) ? new GearOptionsDTO.GearOption{
+                    GearName = bisPair.Name,
+                    GearStage = bisPair.GearStage.ToString(),
+                    GearId = bisPair.Id,
+                    GearItemLevel = bisPair.GearLevel
+                } : null;
+            }
+
+            int AverageItemLevelCurrent = get_avg_item_level(GearDict:CurrentGearSetDict);
+            int AverageItemLevelBis = get_avg_item_level(GearDict:BisGearSetDict);
+
+            Dictionary<string, GearOptionsDTO> GearOptionPerGearType = new Dictionary<string, GearOptionsDTO>();
+
+            foreach (GearType GearType in Enum.GetValues(typeof(GearType))){
+                GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context);
+            }
+
+            List<decimal> ScoreParam = Static.GetGearScoreParameter();
+            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs);
+
+            return new StaticDTO.PlayerInfoDTO(){
+                Id=Id,
+                Name=Name,
+                Job=Job.ToString(),
+                Locked=Locked,
+                CurrentGearSet=CurrentGearSetInfo,
+                BisGearSet=BisGearSetInfo,
+                GearOptionPerGearType=GearOptionPerGearType,
+                AverageItemLevelBis=AverageItemLevelBis,
+                AverageItemLevelCurrent=AverageItemLevelCurrent,
+                PlayerGearScore=PlayerGearScore
+            };
         }
     }
 

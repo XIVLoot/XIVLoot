@@ -3,6 +3,7 @@ using FFXIV_RaidLootAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FFXIV_RaidLootAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240527193110_Added some model and DTO")]
+    partial class AddedsomemodelandDTO
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +31,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EtroGearId")
-                        .HasColumnType("int");
 
                     b.Property<int>("GearCategory")
                         .HasColumnType("int");
@@ -138,9 +138,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GearScore")
-                        .HasColumnType("int");
-
                     b.Property<int>("Job")
                         .HasColumnType("int");
 
@@ -183,15 +180,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("GearScoreA")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("GearScoreB")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("GearScoreC")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Name")
                         .IsRequired()

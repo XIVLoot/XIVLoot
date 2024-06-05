@@ -3,6 +3,7 @@ using FFXIV_RaidLootAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FFXIV_RaidLootAPI.DTO;
+using System.Text.Json;
 
 namespace FFXIV_RaidLootAPI.Controllers
 {
@@ -15,6 +16,81 @@ namespace FFXIV_RaidLootAPI.Controllers
         public GearController(IDbContextFactory<DataContext> context)
         {
             _context = context;
+        }
+
+
+        [HttpPost("PopulateDatabase")]
+        public async Task<ActionResult> PopulateDatabase(int StartingIndex, int EndIndex){
+            using (var context = _context.CreateDbContext())
+            {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://etro.gg");
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                for (int i = StartingIndex;i<=EndIndex;i++)
+                {
+
+                        try
+                        {
+                            // Make the GET request
+                            HttpResponseMessage response = await client.GetAsync("/api/equipment/"+i.ToString()+"/");
+                            // Ensure the request was successful
+                            //response.EnsureSuccessStatusCode();
+                            
+                            // Read and process the response content
+                            string responseBody = await response.Content.ReadAsStringAsync();
+                            Dictionary<string, object>? responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseBody);
+
+                            if (responseData is null || responseData.ContainsKey("detail"))
+                            {
+                                Console.WriteLine(i.ToString() + " : " + responseData["detail"].ToString());
+                                continue;
+                            }
+                            Console.WriteLine("Valid id : " + i.ToString());
+
+                            
+
+                            string GearILevel = responseData["itemLevel"].ToString();
+                            string GearName = responseData["name"].ToString();
+                            string JobName = responseData["jobName"].ToString();
+                            string IconPath = responseData["iconPath"].ToString();
+                            if (int.Parse(GearILevel) < 640 || GearName.Contains("Shield"))
+                                continue;
+                            bool IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
+
+                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
+
+                            if (newGear.GearType == GearType.LeftRing)
+                            {   
+                                Gear RightRingGear = new Gear() 
+                                {
+                                    Name=newGear.Name + " (R)",
+                                    GearLevel=newGear.GearLevel,
+                                    GearStage=newGear.GearStage,
+                                    GearType=GearType.RightRing,
+                                    GearCategory=newGear.GearCategory,
+                                    GearWeaponCategory=Job.Empty,
+                                    IconPath=newGear.IconPath,
+                                    EtroGearId=newGear.EtroGearId
+                                };
+                                newGear.Name += " (L)";
+                                GearName += " (L)";
+                                await context.Gears.AddAsync(RightRingGear);
+                            }
+                            context.Gears.Add(newGear);
+                            await context.SaveChangesAsync();
+
+                        }
+                        catch (HttpRequestException e)
+                        {
+                            Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
+                            return NotFound("Could not find etro gearset.");
+                        }
+                }
+            
+            return Ok();
+            }
+            }
         }
 
         [HttpGet]
@@ -30,11 +106,8 @@ namespace FFXIV_RaidLootAPI.Controllers
         [HttpGet("GetGearOption/{Job}/{GearType}")]
         public async Task<ActionResult<GearOptionsDTO>> GetGearOption(Job Job, GearType GearType)
         {
-            /*Returns a list of GearOptionsDTO which is a list of GearOption. Each gear options
-              has the gear name, the gear ilevel and the gear stage (raid/augmented/crafted/tome)
-              Job -> Job to request the gear for 
-              GearType -> What gear piece to request (ie. Ring, Weapon, etc.)
-            */
+        // THIS FUNCTION HAS BEEN REWRITTEN AS A GEAR CLASS FUNCTION
+        // GEAR.GetGearOptions()
         using (var context = _context.CreateDbContext())
         {
             List<GearOptionsDTO.GearOption> OptionList = new List<GearOptionsDTO.GearOption>();

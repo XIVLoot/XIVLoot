@@ -16,11 +16,11 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly string CRAFTED_GEAR = "Crafted";
         private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
-            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband"}},
-            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket"}},
-            {"Hands",new List<string> {"Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
-            {"Legs",new List<string> {"Hose", "Breeches", "Trousers", "Longkilt", "Poleyns"}},
-            {"Feet",new List<string> {"Sollerets", "Sabatons", "Longboots", "Sandals", "Boots"}},
+            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret"}},
+            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket", "Coat"}},
+            {"Hands",new List<string> {"Armlet","Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
+            {"Legs",new List<string> {"Bottom","Hose", "Breeches", "Trousers", "Longkilt", "Poleyns"}},
+            {"Feet",new List<string> {"Shoe","Sollerets", "Sabatons", "Longboots", "Sandals", "Boots"}},
             {"Earrings",new List<string> {"Earring"}},
             {"Necklace",new List<string> {"Necklace", "Choker"}},
             {"Bracelets",new List<string> {"Bracelet", "Wristband"}},
@@ -58,7 +58,10 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.Reaper,"RPR"},
             {Job.Dragoon,"DRG"},
             {Job.Ninja,"NIN"},
-            {Job.Viper,"VIP"} // CHECK THAT
+            {Job.Viper,"VIP"}, // CHECK THAT
+            {Job.Bard, "BRD"},
+            {Job.Dancer, "DNC"},
+            {Job.Machinist, "MCH"}
         };
 
         public static readonly Dictionary<Job, List<GearCategory>> JOB_TO_GEAR_CATEGORY_MAP = new Dictionary<Job, List<GearCategory>>()
@@ -98,11 +101,12 @@ namespace FFXIV_RaidLootAPI.Models
         public GearType GearType { get; set; }
         public GearCategory GearCategory { get; set; }
         public Job GearWeaponCategory {get; set;} = Job.Empty;
-
+        public string IconPath {get; set;} = string.Empty;
+        public int EtroGearId {get;set;}
 
         // Gear object functions
 
-        public static Gear CreateGearFromEtro(string ItemLevel, string name, bool IsWeapon, string JobName)
+        public static Gear CreateGearFromEtro(string ItemLevel, string name, bool IsWeapon, string JobName, string IconPath, int EtroId)
         {   
             GearStage stage = GearStage.Preparation;
             if (name.IndexOf(TOME_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -172,7 +176,9 @@ namespace FFXIV_RaidLootAPI.Models
                 GearType=type,
                 GearStage=stage,
                 GearCategory=category,
-                GearWeaponCategory=WeaponCategory
+                GearWeaponCategory=WeaponCategory,
+                IconPath=IconPath,
+                EtroGearId=EtroId
             };
 
         }   
@@ -249,6 +255,49 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
 
+        public static GearOptionsDTO GetGearOptions(GearType GearType, Job Job, DataContext context)
+        {   /*Returns a GearOptionsDTO which is a list of GearOption. Each gear options
+              has the gear name, the gear ilevel and the gear stage (raid/augmented/crafted/tome)
+              Job -> Job to request the gear for 
+              GearType -> What gear piece to request (ie. Ring, Weapon, etc.)
+            */
+            List<GearOptionsDTO.GearOption> OptionList = new List<GearOptionsDTO.GearOption>();
+            if (GearType == GearType.Weapon)
+            {
+                IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearWeaponCategory == Job && g.GearCategory == GearCategory.Weapon);
+                foreach (Gear gear in GearIterFromDb)
+                {
+                    OptionList.Add(new GearOptionsDTO.GearOption()
+                    {
+                        GearName = gear.Name,
+                        GearItemLevel = gear.GearLevel,
+                        GearStage = gear.GearStage.ToString(),
+                        GearId = gear.Id
+                    });
+                }
+            }
+            else
+            {
+                GearCategory GearToChooseFrom = Gear.JOB_TO_GEAR_CATEGORY_MAP[Job][(int) GearType >=7 ? 1 : 0];
+                // Left side is index 0 right side is index 1
+                IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom && g.GearType == GearType);
+                foreach (Gear gear in GearIterFromDb)
+                {
+                    OptionList.Add(new GearOptionsDTO.GearOption()
+                    {
+                        GearName = gear.Name,
+                        GearItemLevel = gear.GearLevel,
+                        GearStage = gear.GearStage.ToString(),
+                        GearId = gear.Id
+                    });
+                }
+
+            }
+            return new GearOptionsDTO() 
+            {
+                GearOptionList=OptionList
+            };
+        }
     }
 
     public enum GearCategory

@@ -37,21 +37,68 @@ namespace FFXIV_RaidLootAPI.Controllers
             {
                 var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
                 var playerList = context.Players.Where(p => p.staticId == dbStatic.Id).ToList();
+                List<StaticDTO.PlayerInfoDTO> PlayersInfoList = new List<StaticDTO.PlayerInfoDTO>();
+                decimal IlevelSum = 0.0m;
+                decimal NumberRaidBuffs = 0.0m;
+                foreach (Players player in playerList){
+                    IlevelSum += player.get_avg_item_level();
+                    switch (player.Job){
+                        case Job.Astrologian:
+                            NumberRaidBuffs+=1.0m;
+                                break;
+                        case Job.Scholar:
+                            NumberRaidBuffs+=1.0m;
+                                break;
+                        case Job.Dancer:
+                            NumberRaidBuffs+=1.5m;
+                                break;
+                        case Job.RedMage:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Bard:
+                            NumberRaidBuffs+=1.5m;
+                                break;
+                        case Job.Ninja:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Reaper:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Dragoon:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Summoner:
+                            NumberRaidBuffs+=1m;
+                                break;
+                        case Job.Monk:
+                            NumberRaidBuffs+=1m;
+                            break;
+                    }
+                }
+                decimal TeamAverageItemLevel = IlevelSum/8.0m;
+
+                foreach (Players player in playerList){
+                    StaticDTO.PlayerInfoDTO info = player.get_player_info(context,dbStatic, TeamAverageItemLevel, NumberRaidBuffs);
+                    PlayersInfoList.Add(info);
+                }
+
+                
 
                 StaticDTO aStatic = new StaticDTO
                 {
                     Id = dbStatic.Id,
                     Name = dbStatic.Name,
                     UUID = dbStatic.UUID,
-                    Players = playerList
+                    PlayersInfoList = PlayersInfoList
                 };
+
                 return Ok(aStatic);
             }
             
         }
 // Add a new static        
         [HttpPost]
-        public async Task<ActionResult<StaticDTO>> AddStatic(string name)
+        public async Task<ActionResult<string>> AddStatic(string name)
         {
             using (var context = _context.CreateDbContext())
             {
@@ -79,43 +126,33 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     Job=Job.BlackMage,
                                     BisWeaponGearId=1,
                                     CurWeaponGearId=1,
-                                    BisHeadGearId=2,
-                                    CurHeadGearId=2,
-                                    BisBodyGearId=3,
-                                    CurBodyGearId=3,
-                                    BisHandsGearId=4,
-                                    CurHandsGearId=4,
-                                    BisLegsGearId=5,
-                                    CurLegsGearId=5,
-                                    BisFeetGearId=6,
-                                    CurFeetGearId=6,
-                                    BisEarringsGearId=7,
-                                    CurEarringsGearId=7,
-                                    BisNecklaceGearId=8,
-                                    CurNecklaceGearId=8,
-                                    BisBraceletsGearId=9,
-                                    CurBraceletsGearId=9,
-                                    BisRightRingGearId=10,
-                                    CurRightRingGearId=10,
-                                    BisLeftRingGearId=11,
-                                    CurLeftRingGearId=11,
+                                    BisHeadGearId=1,
+                                    CurHeadGearId=1,
+                                    BisBodyGearId=1,
+                                    CurBodyGearId=1,
+                                    BisHandsGearId=1,
+                                    CurHandsGearId=1,
+                                    BisLegsGearId=1,
+                                    CurLegsGearId=1,
+                                    BisFeetGearId=1,
+                                    CurFeetGearId=1,
+                                    BisEarringsGearId=1,
+                                    CurEarringsGearId=1,
+                                    BisNecklaceGearId=1,
+                                    CurNecklaceGearId=1,
+                                    BisBraceletsGearId=1,
+                                    CurBraceletsGearId=1,
+                                    BisRightRingGearId=1,
+                                    CurRightRingGearId=1,
+                                    BisLeftRingGearId=1,
+                                    CurLeftRingGearId=1,
                                 };
                                 players.Add(newPlayer);
                             }
                             await context.AddRangeAsync(players);
                             await context.SaveChangesAsync();
-
-                            var currentStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
-                            var currentPlayers = await context.Players.Where(p => p.staticId == currentStatic.Id).ToListAsync();
-                            StaticDTO thisStatic = new StaticDTO
-                            {
-                                Id = currentStatic.Id,
-                                Name = currentStatic.Name,
-                                UUID = currentStatic.UUID,
-                                Players = currentPlayers
-                            };
                             
-                            return Ok(thisStatic);
+                            return Ok(uuid);
             }
             
         }
