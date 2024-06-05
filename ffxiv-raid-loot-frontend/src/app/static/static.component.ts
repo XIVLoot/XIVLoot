@@ -1,8 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { DataService } from '../service/data.service';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
-import { Static } from '../models/static';
+import { HttpService } from '../service/http.service';
 
 // Component decorator with metadata for StaticComponent
 @Component({
@@ -13,7 +10,7 @@ import { Static } from '../models/static';
 
 export class StaticComponent {
   // Constructor with HttpClient and DataService injected
-  constructor(public http: HttpClient, public data: DataService){}
+  constructor(public http: HttpClient, public data: DataService, public router: Router){}
   staticName: string = ''; // Property to store the name of a static
 
   // Lifecycle hook that is called after Angular has initialized all data-bound properties
@@ -35,6 +32,7 @@ export class StaticComponent {
         // Subscribing to the observable to handle the response
         this.data.static = response; // Storing the response in DataService
         console.log(response); // Logging the response to the console
+        this.router.navigate(['/' + response.uuid]);
       });
   }
 
