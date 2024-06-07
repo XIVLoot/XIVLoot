@@ -20,8 +20,10 @@ export class StaticDetailComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.uuid = params['uuid'];
     });
+    console.log("Trying details");
     // Fetch static details from the server using the uuid
     this.http.getStatic(this.uuid).subscribe(details => {
+      console.log("Received details");
       this.staticDetail = details; // Assign the fetched details to staticDetail
       console.log(this.staticDetail); // Log the static details to the console
     });

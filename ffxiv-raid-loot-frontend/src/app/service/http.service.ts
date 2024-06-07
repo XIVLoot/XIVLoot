@@ -18,7 +18,9 @@ constructor(public http: HttpClient, public data: DataService) { }
     return this.http.get(this.api + 'Static/' + uuid)
       .pipe(
         map(response => {
-          let currentStatic = new Static(response['id'], response['name'], response['uuid'], response['players']);
+          console.log("Get Static Answer");
+          console.log(response);
+          let currentStatic = new Static(response['id'], response['name'], response['uuid'], response['playersInfoList']);
           return currentStatic;
         }),
         catchError(error => throwError(error))

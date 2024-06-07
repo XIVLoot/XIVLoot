@@ -15,11 +15,12 @@
             <mat-card-subtitle>ID: {{ player.id }}</mat-card-subtitle> <!-- Display player's ID -->
           </mat-card-header>
           <mat-card-content>
-            <p>Role: {{ player.role }}</p> <!-- Display player's role -->
+            <!--<p>Role: {{ player.role }}</p>  Display player's role -->
+            <p>Name : {{ player.name }}</p>
             <p>Job: {{ player.job }}</p> <!-- Display player's job -->
             <p>Item Level: {{ player.itemLevel }}</p> <!-- Display player's item level -->
             <p>Etro link: {{ player.etroBiS }}</p> <!-- Display player's Etro link -->
-            <p>BiS Weapon: {{ player.bisWeaponGearId }}</p> <!-- Display player's BiS Weapon Gear ID -->
+            <p>BiS Weapon: {{ player.bisWeaponGear.gearName }}</p> <!-- Display player's BiS Weapon Gear ID -->
             <p>BiS Headgear: {{ player.bisHeadGearId }}</p> <!-- Display player's BiS Headgear ID -->
             <p>BiS Chest: {{ player.bisBodyGearId }}</p> <!-- Display player's BiS Chest Gear ID -->
             <p>BiS Hands: {{ player.bisHandsGearId }}</p> <!-- Display player's BiS Hands Gear ID -->
