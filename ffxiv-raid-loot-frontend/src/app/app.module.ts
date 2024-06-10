@@ -23,10 +23,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSidenavModule } from '@angular/material/sidenav';
-
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { PlayerDetailComponent } from './player-detail/player-detail.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     AboutComponent,
     NavbarComponent,
     StaticComponent,
-    StaticDetailComponent
+    StaticDetailComponent,
+    PlayerDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +57,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     MatCardModule,
     MatListModule,
     MatGridListModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatCheckboxModule,
+    ReactiveFormsModule,
+    MatSelectModule
   ],
   providers: [
     provideAnimationsAsync()

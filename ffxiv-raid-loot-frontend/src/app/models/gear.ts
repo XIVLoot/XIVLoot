@@ -10,6 +10,6 @@ export class Gear {
   ){}
 
   public static GearFromDict(Dict){
-    return new Gear(Dict["id"], Dict["gearName"], Dict["gearItemLevel"], Dict["gearStage"], 0,0,0);
+    return new Gear(Dict["gearId"], Dict["gearName"], Dict["gearItemLevel"], Dict["gearStage"], 0,0,0);
   }
 }

@@ -3,11 +3,16 @@
   margin: 20px;
 }
 
+.mat-form-field {
+  width: 150px; /* Adjust the width as needed */
+}
+
 /* Styling for the expansion panel header */
 .mat-expansion-panel-header {
   color: #333;
   font-size: 16px;
   font-weight: bold;
+  
 }
 
 /* Icon styling */
@@ -19,11 +24,17 @@ mat-icon {
 /* Form field styling */
 .mat-form-field {
   width: 100%;
-  margin: 10px 0;
+  margin: 0px 0;
 }
 
 /* Input field styling */
 input[matInput] {
+  padding: 8px;
+  font-size: 7px;
+}
+
+/* Input field styling */
+input[nameInput] {
   padding: 10px;
   font-size: 14px;
 }

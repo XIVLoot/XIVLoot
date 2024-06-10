@@ -7,27 +7,9 @@
   <!-- Container for player details -->
   <div>
     <h3>Players:</h3> <!-- Title for the players section -->
-    <mat-grid-list [cols]="gridColumns"> <!-- Grid list to display players dynamically based on screen size -->
+    <mat-grid-list [cols]="gridColumns"rowHeight="1:3"> <!-- Grid list to display players dynamically based on screen size -->
       <mat-grid-tile *ngFor="let player of staticDetail.players"> <!-- Loop through each player in staticDetail.players -->
-        <mat-card> <!-- Card container for each player -->
-          <mat-card-header>
-            <mat-card-title>{{ player.name }}</mat-card-title> <!-- Display player's name -->
-            <mat-card-subtitle>ID: {{ player.id }}</mat-card-subtitle> <!-- Display player's ID -->
-          </mat-card-header>
-          <mat-card-content>
-            <!--<p>Role: {{ player.role }}</p>  Display player's role -->
-            <p>Name : {{ player.name }}</p>
-            <p>Job: {{ player.job }}</p> <!-- Display player's job -->
-            <p>Item Level: {{ player.itemLevel }}</p> <!-- Display player's item level -->
-            <p>Etro link: {{ player.etroBiS }}</p> <!-- Display player's Etro link -->
-            <p>BiS Weapon: {{ player.bisWeaponGear.gearName }}</p> <!-- Display player's BiS Weapon Gear ID -->
-            <p>BiS Headgear: {{ player.bisHeadGearId }}</p> <!-- Display player's BiS Headgear ID -->
-            <p>BiS Chest: {{ player.bisBodyGearId }}</p> <!-- Display player's BiS Chest Gear ID -->
-            <p>BiS Hands: {{ player.bisHandsGearId }}</p> <!-- Display player's BiS Hands Gear ID -->
-            <p>BiS Pants: {{ player.bisLegsGearId }}</p> <!-- Display player's BiS Pants Gear ID -->
-            <p>BiS Shoes: {{ player.bisFeetGearId }}</p> <!-- Display player's BiS Shoes Gear ID -->
-          </mat-card-content>
-        </mat-card>
+          <app-player-detail [player]="player" style="border: 2px solid white;padding-bottom: 20px;"/>
       </mat-grid-tile>
     </mat-grid-list>
   </div>

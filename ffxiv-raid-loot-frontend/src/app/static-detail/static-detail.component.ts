@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Static } from '../models/static'; // Importing the Static model
 import { HttpService } from '../service/http.service'; // Importing the HttpService
 import { ActivatedRoute } from '@angular/router'; // Importing ActivatedRoute to access route parameters
+import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 
 @Component({
   selector: 'app-static-detail', // Component selector used in HTML
@@ -11,7 +12,7 @@ import { ActivatedRoute } from '@angular/router'; // Importing ActivatedRoute to
 export class StaticDetailComponent implements OnInit {
   public staticDetail: Static; // Holds the details of a static
   uuid: string; // UUID of the static
-  gridColumns = 4; // Default number of grid columns
+  gridColumns = 3; // Default number of grid columns
 
   constructor(public http: HttpService, private route: ActivatedRoute) { } // Constructor with dependency injection
 
@@ -40,7 +41,7 @@ export class StaticDetailComponent implements OnInit {
     } else if (window.innerWidth >= 768 && window.innerWidth < 992) {
       this.gridColumns = 3;
     } else {
-      this.gridColumns = 4;
+      this.gridColumns = 3;
     }
   }
 }

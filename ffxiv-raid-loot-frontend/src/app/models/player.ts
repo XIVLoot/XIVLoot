@@ -7,6 +7,8 @@ export class Player {
   public job: number;
   public locked: boolean;
   public staticId: number;
+  public CurrentAverageItemLevel : number;
+  public BisAverageItemLevel : number;
   public etroBiS: string;
   public bisWeaponGear: Gear;
   public bisHeadGear: Gear;
@@ -52,6 +54,9 @@ export class Player {
     p.locked = Dict["locked"];
     p.name = Dict["name"];
     p.playerGearScore = Dict["playeGearScore"];
+    p.etroBiS=Dict["etroBiS"]; // TODO HAVE TO MAKE THIS WORK
+    p.BisAverageItemLevel = Dict["averageItemLevelBis"];
+    p.CurrentAverageItemLevel = Dict["averageItemLevelCurrent"];
 
     for (let key in Dict["bisGearSet"]){
       let d = Dict["bisGearSet"][key];
@@ -132,7 +137,8 @@ export class Player {
     }
 
     for (let key in Dict["gearOptionPerGearType"]){
-      for (let d in Dict["gearOptionPerGearType"][key]){
+      for (let id in Dict["gearOptionPerGearType"][key]["gearOptionList"]){
+        let d = Dict["gearOptionPerGearType"][key]["gearOptionList"][id];
         switch (key){
           case "Weapon":
             p.WeaponChoice.push(Gear.GearFromDict(d));
@@ -169,7 +175,6 @@ export class Player {
             break;
         }
       }
-      break;
     }
 
     return p;
