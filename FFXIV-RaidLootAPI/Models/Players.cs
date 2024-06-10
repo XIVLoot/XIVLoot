@@ -305,9 +305,18 @@ namespace FFXIV_RaidLootAPI.Models
             List<decimal> ScoreParam = Static.GetGearScoreParameter();
             decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs);
 
+            List<CostDTO> Costs = new List<CostDTO>();
+
+            foreach(KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                if((pair.Value is null) || BisGearSetDict[pair.Key] is null)
+                    continue;
+                Costs.Add(pair.Value.GetCost(BisGearSetDict[pair.Key]));
+            }
+
             return new StaticDTO.PlayerInfoDTO(){
                 Id=Id,
                 Name=Name,
+                EtroBiS=EtroBiS,
                 Job=Job.ToString(),
                 Locked=Locked,
                 CurrentGearSet=CurrentGearSetInfo,
@@ -315,7 +324,8 @@ namespace FFXIV_RaidLootAPI.Models
                 GearOptionPerGearType=GearOptionPerGearType,
                 AverageItemLevelBis=AverageItemLevelBis,
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
-                PlayerGearScore=PlayerGearScore
+                PlayerGearScore=PlayerGearScore,
+                Cost=CostDTO.SumCost(Costs)
             };
         }
     }
