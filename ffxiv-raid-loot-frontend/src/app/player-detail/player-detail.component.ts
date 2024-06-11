@@ -70,7 +70,13 @@ export class PlayerDetailComponent {
     });
     
   }
-  onChangeEtro(){}
+  onChangeEtro(event : Event){
+    const selectElement = event.target as HTMLSelectElement;
+    const newEtro = selectElement.value;
+    this.http.changePlayerEtro(this.player.id, newEtro).subscribe((data) => {
+      console.log(data);
+    });
+  }
   onChangeName(event : Event){
     const selectElement = event.target as HTMLSelectElement;
     const value = selectElement.value;
@@ -84,5 +90,13 @@ export class PlayerDetailComponent {
     this.http.changePlayerJob(this.player.id, selectedIndex).subscribe((data) => {
       console.log(data);
     });
+
+    // Reset Job dependant values for the player.
+    this.http.resetPlayerJobDependantValues(this.player.id).subscribe((data) => {
+      console.log(data);
+    });
+
+    this.player.staticRef.ConstructStaticPlayerInfo(this.player); // Reloads and recomputes all value
+
   }
 }

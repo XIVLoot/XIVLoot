@@ -38,6 +38,19 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         // GET
 
+        [HttpGet("ResetJobDependantValues/{Id}")]
+        public async Task<ActionResult> ResetJobDependantValues(int Id){
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(Id);
+                if (player is null)
+                    return NotFound("Player is not found.");
+                player.ResetJobDependantValues();
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
         [HttpGet("{Id}/{UseBis}")]
         public async Task<ActionResult<int>> GetAverageLevel(int Id, bool UseBis)
         {
@@ -143,6 +156,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         if (gear is null)
                             {
                             AllGearPieceFound=false;
+                            continue;
                             }
                         else 
                             id = gear.Id;

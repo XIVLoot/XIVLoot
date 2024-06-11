@@ -31,6 +31,14 @@ export class StaticDetailComponent implements OnInit {
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
   }
 
+  onChangeStaticName(event : Event){
+    const selectElement = event.target as HTMLSelectElement;
+    const newValue = selectElement.value;
+    this.http.ChangeStaticName(this.staticDetail.uuid, newValue).subscribe(res => {
+      console.log(res);
+    });
+  }
+
   @HostListener('window:resize', ['$event']) // Listen to window resize events
   onResize(event) {
     // Adjust gridColumns based on window width

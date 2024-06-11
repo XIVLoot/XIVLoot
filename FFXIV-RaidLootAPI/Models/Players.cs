@@ -115,6 +115,34 @@ namespace FFXIV_RaidLootAPI.Models
 
         // Player object functions
 
+        public void ResetJobDependantValues(){
+            EtroBiS="";
+            
+            BisWeaponGearId=1;
+            BisHeadGearId=1;
+            BisBodyGearId=1 ;
+            BisHandsGearId=1;
+            BisLegsGearId=1;
+            BisFeetGearId=1;
+            BisEarringsGearId=1;
+            BisNecklaceGearId=1;
+            BisBraceletsGearId=1;
+            BisLeftRingGearId=1;
+            BisRightRingGearId=1;
+
+            CurWeaponGearId=1;
+            CurBodyGearId=1;
+            CurHeadGearId=1;
+            CurHandsGearId=1;
+            CurLegsGearId=1;
+            CurFeetGearId=1;
+            CurEarringsGearId=1;
+            CurNecklaceGearId=1;
+            CurBraceletsGearId=1;
+            CurLeftRingGearId=1;
+            CurRightRingGearId=1;
+        }
+
         public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff){
             int PlayerILevel = get_avg_item_level();
 
@@ -313,6 +341,8 @@ namespace FFXIV_RaidLootAPI.Models
                 Costs.Add(pair.Value.GetCost(BisGearSetDict[pair.Key]));
             }
 
+            CostDTO Cost = CostDTO.SumCost(Costs);
+
             return new StaticDTO.PlayerInfoDTO(){
                 Id=Id,
                 Name=Name,
@@ -325,7 +355,7 @@ namespace FFXIV_RaidLootAPI.Models
                 AverageItemLevelBis=AverageItemLevelBis,
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
                 PlayerGearScore=PlayerGearScore,
-                Cost=CostDTO.SumCost(Costs)
+                Cost=Cost
             };
         }
     }

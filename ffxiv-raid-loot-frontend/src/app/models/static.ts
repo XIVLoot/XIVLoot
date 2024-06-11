@@ -10,12 +10,15 @@ export class Static {
     this.uuid = uuid;
     this.name = name;
     this.id = id;
-    console.log("Hey");
-    console.log(playersInfoList);
+
+    this.ConstructStaticPlayerInfo(playersInfoList);
+  }
+
+  ConstructStaticPlayerInfo(playersInfoList){
     for (let key in playersInfoList){
       let player = playersInfoList[key];
       let p = Player.CreatePlayerFromDict(player);
-      console.log(p.name);
+      p.staticRef = this;
       this.players.push(p);
     }
   }

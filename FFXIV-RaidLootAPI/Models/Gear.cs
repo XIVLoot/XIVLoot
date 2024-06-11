@@ -197,7 +197,7 @@ namespace FFXIV_RaidLootAPI.Models
             if (GearStage == BisGear.GearStage) // Equal so no cost
                 return new CostDTO {TomeCost=TotalTomeCost, TwineCost=TotalTwineCost, ShineCost=TotalShineCost,SolventCost=TotalSolventCost,WeaponTomestoneCost=TotalHermeticCost};
 
-            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation) && // Need to buy tome
+            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == 0) && // Need to buy tome
                 (BisGear.GearStage == GearStage.Upgraded_Tomes || BisGear.GearStage == GearStage.Tomes))
                 {
                     switch (GearType)
@@ -227,7 +227,7 @@ namespace FFXIV_RaidLootAPI.Models
 
             
             // Need to augment (and maybe buy)
-            if ((GearStage == GearStage.Raid | GearStage == GearStage.Preparation | BisGear.GearStage == GearStage.Tomes) &&
+            if ((GearStage == GearStage.Raid | GearStage == GearStage.Preparation | BisGear.GearStage == GearStage.Tomes  || GearStage == 0) &&
                 (BisGear.GearStage == GearStage.Upgraded_Tomes))
                 {
                     switch (GearType)

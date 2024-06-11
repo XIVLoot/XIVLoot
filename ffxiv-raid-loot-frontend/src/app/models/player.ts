@@ -1,12 +1,17 @@
 import { Gear } from "./gear";
+import { Static } from "./static";
 let GEAR_LIST = ["Weapon", "Head", "Body","Hands",  "Legs", "Feet", "Earrings", "Necklace", "RightRing", "LeftRing", "Bracelet"];
 export class Player {
+  public staticRef : Static;
   public id: number;
   public playerGearScore: number;
   public name: string;
   public job: number;
   public locked: boolean;
   public staticId: number;
+  public TomestoneCost : number;
+  public TwineCost : number;
+  public ShineCost : number;
   public CurrentAverageItemLevel : number;
   public BisAverageItemLevel : number;
   public etroBiS: string;
@@ -53,10 +58,13 @@ export class Player {
     p.job = Dict["job"];
     p.locked = Dict["locked"];
     p.name = Dict["name"];
-    p.playerGearScore = Dict["playeGearScore"];
+    p.playerGearScore = Dict["playerGearScore"];
     p.etroBiS=Dict["etroBiS"]; // TODO HAVE TO MAKE THIS WORK
     p.BisAverageItemLevel = Dict["averageItemLevelBis"];
     p.CurrentAverageItemLevel = Dict["averageItemLevelCurrent"];
+    p.TomestoneCost = Dict["cost"]["tomeCost"];
+    p.TwineCost = Dict["cost"]["twineCost"];
+    p.ShineCost = Dict["cost"]["shineCost"];
 
     for (let key in Dict["bisGearSet"]){
       let d = Dict["bisGearSet"][key];

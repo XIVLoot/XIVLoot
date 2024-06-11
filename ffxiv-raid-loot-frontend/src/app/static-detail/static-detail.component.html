@@ -1,7 +1,10 @@
 <div>
   <!-- Container for static detail header -->
   <div>
-    <h1>{{ staticDetail.name }}</h1> <!-- Displaying the name of the static -->
+    <mat-form-field style="width:20ch;height: 8ch;margin-bottom: 0px;">
+      <mat-label>Static name :</mat-label>
+        <input matInput value="{{staticDetail.name}}" (change)="onChangeStaticName($event)">
+    </mat-form-field>
     <h2>Static UUID: {{ staticDetail.uuid }}</h2> <!-- Displaying the UUID of the static -->
   </div>
   <!-- Container for player details -->

@@ -16,7 +16,7 @@
 
     <mat-form-field style="width:100%;height: 8ch;margin-top: 0px!important;">
         <mat-label>Etro BiS :</mat-label>
-        <input matInput value="{{player.etroBiS}}">
+        <input matInput value="{{player.etroBiS}}" (change)="onChangeEtro($event)">
     </mat-form-field>
 </div>
 <div>
@@ -26,9 +26,9 @@
       <p style="padding-right: 22%;">Bis : {{player.BisAverageItemLevel}}</p>
     </div>
     <div style="display: flex;align-items: center;height:6ch;">
-          <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 11%;">
-            <select matNativeControl [(ngModel)]="player.curWeaponGear.gearName" (change)="onChangeGear('Weapon',false,$event)">
-              <option *ngFor="let item of player.WeaponChoice">{{item.gearName}}</option>
+          <mat-form-field style="width: 15ch !important;height: 7ch;padding-left: 5%;">
+            <select matNativeControl [(ngModel)]="player.curWeaponGear.gearStage" (change)="onChangeGear('Weapon',false,$event)">
+              <option *ngFor="let item of player.WeaponChoice">{{item.gearStage}}</option>
             </select>
           </mat-form-field>
           <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Weapon</p>
@@ -182,5 +182,11 @@
 </div>
 <div>
     <!--Display cost-->
+    <mat-grid-list cols="2" rowHeight="4:1">
+      <mat-grid-tile><p>Tomestone cost : {{player.TomestoneCost}}</p></mat-grid-tile>
+      <mat-grid-tile><p>Twine cost : {{player.TwineCost}}</p></mat-grid-tile>
+      <mat-grid-tile><p>Shine cost : {{player.ShineCost}}</p></mat-grid-tile>
+      <mat-grid-tile><p>Player gear score : {{player.playerGearScore}}</p></mat-grid-tile>
+    </mat-grid-list>
     
 </div>

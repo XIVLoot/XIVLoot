@@ -67,7 +67,41 @@ constructor(public http: HttpClient, public data: DataService) { }
       catchError(error => throwError(() => new Error('Failed to change player job: ' + error.message)))
     );
   }
+  ChangeStaticName(uuid : string, newName : string) : Observable<any>{
+    const url = `${this.api}Static`; // Adjust the endpoint as necessary
+    const body = {
+      "name": newName,
+      "uuid": uuid
+    }
+    return this.http.put(url, body).pipe(
+      catchError(error => throwError(() => new Error('Failed to change static name: ' + error.message)))
+    );
+  }
 
+  changePlayerEtro(playerId : number, newEtro : string) : Observable<any>{
+    const url = `${this.api}Player/NewEtro`; // Adjust the endpoint as necessary
+    const body = {
+      "id": playerId,
+      "UseBis": true,
+      "gearToChange": 1,
+      "newGearId": 0,
+      "newEtro": newEtro,
+      "newName": "string",
+      "newJob": 0,
+      "newLock": true
+    }
+    return this.http.put(url, body).pipe(
+      catchError(error => throwError(() => new Error('Failed to change player etro: ' + error.message)))
+    );
+  }
+
+  resetPlayerJobDependantValues(playerId : number) : Observable<any>{
+    const url = `${this.api}Player/ResetJobDependantValues/${playerId}`; // Adjust the endpoint as necessary
+
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to reset player job dependant values: ' + error.message)))
+    );
+  }
 
 }
 
