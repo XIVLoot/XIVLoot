@@ -11,7 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContextFactory<DataContext>(options =>
-{
+{//DockerConnection
     options.UseSqlServer(builder.Configuration.GetConnectionString("DockerConnection"));
 });
 

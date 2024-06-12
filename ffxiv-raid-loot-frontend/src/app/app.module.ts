@@ -26,7 +26,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {MatSelectModule} from '@angular/material/select';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-
+import {Component} from '@angular/core';
+import {MatDividerModule} from '@angular/material/divider';
+import {
+  MatDialog,
+  MatDialogRef,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogTitle,
+  MatDialogContent,
+} from '@angular/material/dialog';
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
@@ -60,7 +69,12 @@ import { PlayerDetailComponent } from './player-detail/player-detail.component';
     MatSidenavModule,
     MatCheckboxModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDividerModule,
+    MatDialogActions, 
+    MatDialogClose, 
+    MatDialogTitle, 
+    MatDialogContent
   ],
   providers: [
     provideAnimationsAsync()

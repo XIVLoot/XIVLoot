@@ -175,8 +175,8 @@ namespace FFXIV_RaidLootAPI.Models
                 {GearType.Earrings , context.Gears.Find(BisEarringsGearId)},
                 {GearType.Necklace , context.Gears.Find(BisNecklaceGearId)},
                 {GearType.Bracelets , context.Gears.Find(BisBraceletsGearId)},
-                {GearType.RightRing , context.Gears.Find(BisLeftRingGearId)},
-                {GearType.LeftRing , context.Gears.Find(BisRightRingGearId)}
+                {GearType.LeftRing , context.Gears.Find(BisLeftRingGearId)},
+                {GearType.RightRing , context.Gears.Find(BisRightRingGearId)}
             };
             } else 
             {
@@ -190,8 +190,8 @@ namespace FFXIV_RaidLootAPI.Models
                 {GearType.Earrings , context.Gears.Find(CurEarringsGearId)},
                 {GearType.Necklace , context.Gears.Find(CurNecklaceGearId)},
                 {GearType.Bracelets , context.Gears.Find(CurBraceletsGearId)},
-                {GearType.RightRing , context.Gears.Find(CurLeftRingGearId)},
-                {GearType.LeftRing , context.Gears.Find(CurRightRingGearId)}
+                {GearType.LeftRing , context.Gears.Find(CurLeftRingGearId)},
+                {GearType.RightRing , context.Gears.Find(CurRightRingGearId)}
             };
             }
 
@@ -298,7 +298,8 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
     
-        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static, decimal GroupAvgLevel, decimal NumberRaidBuffs){
+        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static){
+
             Dictionary<GearType, Gear?> CurrentGearSetDict = get_gearset_as_dict(false, context);
             Dictionary<GearType, Gear?> BisGearSetDict = get_gearset_as_dict(true, context);
 
@@ -329,9 +330,12 @@ namespace FFXIV_RaidLootAPI.Models
             foreach (GearType GearType in Enum.GetValues(typeof(GearType))){
                 GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context);
             }
+            List<decimal> GearInfo = Static.ComputeNumberRaidBuffsAndGroupAvgLevel(context);
+            decimal NumberRaidBuffs = GearInfo[0];
+            decimal TeamAverageItemLevel = GearInfo[1];
 
             List<decimal> ScoreParam = Static.GetGearScoreParameter();
-            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs);
+            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], TeamAverageItemLevel, NumberRaidBuffs);
 
             List<CostDTO> Costs = new List<CostDTO>();
 

@@ -88,7 +88,35 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         }
 
+        [HttpGet("GetSingletonPlayerInfo/{uuid}/{id}")]
+        public async Task<ActionResult<PlayerDTO>> GetSingletonPlayerInfo(string uuid, int id){
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found.");
+                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+
+                return Ok(player.get_player_info(context,dbStatic));
+
+            }
+        }
+
         // POST
+
+        [HttpPost("ResetJobDependantInfo")]
+        public async Task<ActionResult> ResetJobDependantInfo(PlayerDTO dto){
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(dto.Id);
+                if (player is null)
+                    return NotFound("Player not found.");
+                player.ResetJobDependantValues();
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
         [HttpPut("GearToChange")]
         public async Task<ActionResult> UpdatePlayerGear(PlayerDTO dto)
         {
@@ -120,6 +148,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                 //client.DefaultRequestHeaders.Add("Authorization", "Bearer YOUR_API_KEY");
                 List<int> ListIdGears = new List<int> {0,0,0,0,0,0,0,0,0,0,0};
+                int IdLeftRing = 0;
+                int IdRightRing = 0;
                     try
                     {
                         // Make the GET request
@@ -135,9 +165,14 @@ namespace FFXIV_RaidLootAPI.Controllers
                         if (responseData is null)
                             return NotFound("Could not find etro gearset.");
 
-                        for (int i=0;i<ETRO_GEAR_NAME.Count;i++)
+                        for (int i=0;i<ETRO_GEAR_NAME.Count;i++){
                             if (!(responseData[ETRO_GEAR_NAME[i]] is null))
                                 ListIdGears[i] = Convert.ToInt32(responseData[ETRO_GEAR_NAME[i]].ToString());
+                            if (ETRO_GEAR_NAME[i] == "fingerL")
+                                IdLeftRing = Convert.ToInt32(responseData[ETRO_GEAR_NAME[i]].ToString());
+                            else if (ETRO_GEAR_NAME[i] == "fingerR")
+                                IdRightRing = Convert.ToInt32(responseData[ETRO_GEAR_NAME[i]].ToString());
+                        }
                     }
                     catch (HttpRequestException e)
                     {
@@ -151,7 +186,14 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                     for (int i = 0;i<ListIdGears.Count;i++)
                     {
-                        Gear? gear = context.Gears.FirstOrDefault(g => g.EtroGearId == ListIdGears[i]);
+                        Gear? gear;
+                        if (ListIdGears[i] == IdRightRing)
+                            gear = context.Gears.FirstOrDefault(g => g.EtroGearId == ListIdGears[i] && g.GearType == GearType.RightRing);
+                        else if (ListIdGears[i] == IdLeftRing)
+                            gear = context.Gears.FirstOrDefault(g => g.EtroGearId == ListIdGears[i] && g.GearType == GearType.LeftRing);
+                        else
+                            gear = context.Gears.FirstOrDefault(g => g.EtroGearId == ListIdGears[i]);
+
                         int id = 1;
                         if (gear is null)
                             {
