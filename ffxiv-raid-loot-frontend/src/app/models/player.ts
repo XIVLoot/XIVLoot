@@ -6,7 +6,7 @@ export class Player {
   public id: number;
   public playerGearScore: number;
   public name: string;
-  public job: number;
+  public job: string;
   public locked: boolean;
   public staticId: number;
   public TomestoneCost : number;

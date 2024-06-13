@@ -142,7 +142,37 @@ export class PlayerDetailComponent {
     }
   }
 
+  getBackgroundColor(){
+    switch(this.player.job){
+      case "BlackMage":
+      case "RedMage":
+      case "Summoner":
+      case "Ninja":
+      case "Samurai":
+      case "Monk":
+      case "Reaper":
+      case "Dragoon":
+      case "Bard":
+      case "Machinist":
+      case "Dancer":
+      case "Viper":
+      case "Pictomancer":        
+        return "rgba(255, 0, 0, 0.25)";
+      case "Astrologian":
+      case "Sage":
+      case "Scholar":
+      case "WhiteMage":
+        return "rgba(0,255,0,0.25)";
+      case "DarkKnight":
+      case "Paladin":
+      case "Warrior":
+      case "Gunbreaker":
+        return "rgba(0, 0, 255, 0.25)";
+    }
+  }
+
   EtroDialogOpen(playerId : number){
+    const x = 1;
     const newEtro = this.etroInputRef.nativeElement.value;
     this.dialog.open(EtroDialog, {
       width: '500px',

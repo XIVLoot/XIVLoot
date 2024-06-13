@@ -1,4 +1,4 @@
-
+<div style="border-radius: 10px;" [style.backgroundColor]="getBackgroundColor()">
 <div style="height: 13ch;background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;padding-bottom: 10px;margin-bottom: 5px;">
     <!--Display names/job/etro-->
     <div style="display: flex; justify-content: space-between;margin-bottom: 0px;height:7ch;">
@@ -260,10 +260,11 @@
 <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;">
     <!--Display cost-->
     <mat-grid-list cols="2" rowHeight="4:1">
-      <mat-grid-tile><p>Tomestone cost : {{player.TomestoneCost}}</p></mat-grid-tile>
-      <mat-grid-tile><p>Twine cost : {{player.TwineCost}}</p></mat-grid-tile>
-      <mat-grid-tile><p>Shine cost : {{player.ShineCost}}</p></mat-grid-tile>
-      <mat-grid-tile><p>PGS : {{player.playerGearScore}}</p></mat-grid-tile>
+      <mat-grid-tile><p><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></mat-grid-tile>
+      <mat-grid-tile><p><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></mat-grid-tile>
+      <mat-grid-tile><p><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></mat-grid-tile>
+      <mat-grid-tile><p>PGS : {{player.playerGearScore | number : '1.0-3'}}</p></mat-grid-tile>
     </mat-grid-list>
     
+</div>
 </div>

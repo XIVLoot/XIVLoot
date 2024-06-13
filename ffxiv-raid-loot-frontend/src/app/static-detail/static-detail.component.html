@@ -1,11 +1,24 @@
 <div>
   <!-- Container for static detail header -->
   <div>
-    <mat-form-field style="width:20ch;height: 8ch;margin-bottom: 0px;">
+    <div>
+    <mat-form-field style="width:40ch;height: 10ch;margin-bottom: 0px;">
       <mat-label>Static name :</mat-label>
-        <input matInput value="{{staticDetail.name}}" (change)="onChangeStaticName($event)">
+        <input matInput value="{{staticDetail.name}}" (change)="onChangeStaticName($event)" style="font-size: 30px;">
     </mat-form-field>
-    <h2>Static UUID: {{ staticDetail.uuid }}</h2> <!-- Displaying the UUID of the static -->
+    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;" (click)="copyToClipboard()">Share static</button>
+    </div>
+
+      <h2 style="color:white">PGS Analysis : </h2>
+      <div>
+        <h3 style="color:white">Gear order priority (according to your settings) : </h3>
+        <div  style="background-color: rgba(0, 0, 0, 0.2);width:240px;border-radius: 10px;padding: 5px;">
+          <p *ngFor="let player of PGSList" style="color: white;">{{player.name}}</p>
+        </div>
+        <button mat-raised-button color="accent" style="height: 2.5ch;">Settings</button>
+    </div>
+
+      <h2>Static UUID: {{ staticDetail.uuid }}</h2> <!-- Displaying the UUID of the static -->
   </div>
   <!-- Container for player details -->
   <div style="width: 100%;">
@@ -16,4 +29,5 @@
       </mat-grid-tile>
     </mat-grid-list>
   </div>
+
 </div>
