@@ -3,6 +3,7 @@ import { Player } from '../models/player';
 import { Gear } from '../models/gear';
 import { HttpService } from '../service/http.service'; // Importing the HttpService
 import { ActivatedRoute } from '@angular/router';
+
 @Component({
   selector: 'app-player-detail',
   templateUrl: './player-detail.component.html',
@@ -16,14 +17,9 @@ export class PlayerDetailComponent {
   @ViewChild('etroField') etroInputRef: ElementRef;
 
   constructor(public http: HttpService, private route: ActivatedRoute, public dialog: MatDialog,
-              private cdr : ChangeDetectorRef
+              private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService
   ) { } // Constructor with dependency injection
 
-  ChangeTmpEtro(event : Event){
-    const selectElement = event.target as HTMLSelectElement;
-    const value = selectElement.value;
-    this.player.etroBiS = value;
-  }
   async onChangeGear(GearType : string, bis : boolean, event: Event){
     const selectElement = event.target as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex;
@@ -172,7 +168,6 @@ export class PlayerDetailComponent {
   }
 
   EtroDialogOpen(playerId : number){
-    const x = 1;
     const newEtro = this.etroInputRef.nativeElement.value;
     this.dialog.open(EtroDialog, {
       width: '500px',
@@ -205,7 +200,7 @@ export class PlayerDetailComponent {
       this.RegetPlayerInfo();
     });
 
-    this.player.staticRef.ConstructStaticPlayerInfo(this.player); // Reloads and recomputes all value
+    this.RegetPlayerInfo(); // Reloads and recomputes all value
 
   }
 
@@ -213,9 +208,12 @@ export class PlayerDetailComponent {
       // Recomputing PGS
       this.http.RecomputePGS(this.player.staticRef.uuid).subscribe((data) => {
         console.log(data);
+        var data = data["playerGearScoreList"];
         for(var i = 0; i < data.length; i++){
-          this.player.staticRef.players[this.player.staticRef.players.findIndex(player => player.id == this.player.id)].playerGearScore = data[i]["playerGearScoreList"][0]["score"];
+          var index = this.player.staticRef.players.findIndex((player, b, c) => player.id === data[i].id);
+          this.player.staticRef.players[index].playerGearScore = data[i].score;
         }
+        this.staticEventsService.triggerRecomputePGS(); // Triggers event to recompute recommended order.
       });
   }
 
@@ -245,6 +243,10 @@ import {
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
+import { catchError, of } from 'rxjs';
+import { StaticEventsService } from '../service/static-events.service';
 
 @Component({
   selector: 'import-etro',
@@ -255,7 +257,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class EtroDialog {
   constructor(public dialogRef: MatDialogRef<EtroDialog>,public http: HttpService,
     @Inject(MAT_DIALOG_DATA) public data: { playerId: number; newEtro: string, oldEtro : string },
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer, private _snackBar: MatSnackBar
   ) {}
   public isLoading = false;
   getSafeUrl(){
@@ -265,8 +267,27 @@ export class EtroDialog {
 
   ImportEtro(playerId : number, newEtro : string){
     this.isLoading = true;
-    this.http.changePlayerEtro(playerId, newEtro).subscribe((data) => {
-      console.log(data);
+    this.http.changePlayerEtro(playerId, newEtro).pipe(
+      catchError(err => {
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 8000,
+          data: {
+            message: "Error while trying to import from etro.",
+            subMessage: "(Please reach out if this continues)",
+            color : "red"
+          }
+        });
+        return of(null); // Handle the error locally and return a null observable
+      })
+    ).subscribe((data) => {
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly imported gearset from etro.gg",
+            subMessage: "",
+            color : ""
+          }
+        });
       this.dialogRef.close("Yes");
     });
   }

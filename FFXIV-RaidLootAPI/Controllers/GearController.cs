@@ -84,7 +84,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         catch (HttpRequestException e)
                         {
                             Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
-                            return NotFound("Could not find etro gearset.");
+                            return Ok("Could not find etro gearset.");
                         }
                 }
             

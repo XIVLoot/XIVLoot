@@ -91,7 +91,9 @@ constructor(public http: HttpClient, public data: DataService) { }
       "newLock": true
     }
     return this.http.put(url, body).pipe(
-      catchError(error => throwError(() => new Error('Failed to change player etro: ' + error.message)))
+      map(response => 
+        response as any),
+        catchError(error => throwError(() => new Error('Failed to change player etro: ' + error.message)))
     );
   }
 

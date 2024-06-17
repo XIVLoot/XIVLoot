@@ -1,19 +1,21 @@
 <div>
   <!-- Container for static detail header -->
   <div>
-    <div>
+    <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding-top: 10px;padding-left: 10px;border: 5px solid rgba(0, 0, 0, 0.4)">
     <mat-form-field style="width:40ch;height: 10ch;margin-bottom: 0px;">
       <mat-label>Static name :</mat-label>
         <input matInput value="{{staticDetail.name}}" (change)="onChangeStaticName($event)" style="font-size: 30px;">
     </mat-form-field>
     <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;" (click)="copyToClipboard()">Share static</button>
     </div>
+    <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.4)">
 
       <h2 style="color:white">PGS Analysis : </h2>
-      <div>
         <h3 style="color:white">Gear order priority (according to your settings) : </h3>
-        <div  style="background-color: rgba(0, 0, 0, 0.2);width:240px;border-radius: 10px;padding: 5px;">
-          <p *ngFor="let player of PGSList" style="color: white;">{{player.name}}</p>
+        <div style="display: flex; justify-content: space-between;">
+        <div  *ngFor="let group of groupList" [style.border]="GetGroupBorderColor(group.nGroup)" [style.backgroundColor]="GetGroupColor(group.nGroup)" style="width:240px;border-radius: 10px;padding: 5px;">
+          <p *ngFor="let player of group.group" style="color: white;">{{player.name}}</p>
+        </div>
         </div>
         <button mat-raised-button color="accent" style="height: 2.5ch;">Settings</button>
     </div>

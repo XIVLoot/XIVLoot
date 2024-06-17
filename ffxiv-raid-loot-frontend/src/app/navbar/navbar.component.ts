@@ -9,4 +9,8 @@ import { MatMenuModule } from '@angular/material/menu';
 export class NavbarComponent {
   title = 'Loot Management';
   isLoggedIn = false;  // Add this line
+
+  openLoginDialog(){
+    window.open("http://localhost:4200/auth/discord/callback", "_blank");
+  }
 }

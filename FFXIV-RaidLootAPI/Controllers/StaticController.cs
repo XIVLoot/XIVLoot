@@ -33,7 +33,8 @@ namespace FFXIV_RaidLootAPI.Controllers
 
         [HttpGet("PlayerGearScore/{uuid}")]
         public async Task<ActionResult<List<PlayerGearScoreDTO>>> GetPlayerGearScore(string uuid)
-        {
+        {   
+            try{
             using (var context = _context.CreateDbContext())
             {
                 var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
@@ -51,6 +52,10 @@ namespace FFXIV_RaidLootAPI.Controllers
                 return Ok(r);
 
 
+            }
+            }
+            catch (Exception e){
+                return NotFound(e.Message);
             }
         }
 // Get static by uuid        

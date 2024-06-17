@@ -1,4 +1,4 @@
-<div style="border-radius: 10px;" [style.backgroundColor]="getBackgroundColor()">
+<div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16)" [style.backgroundColor]="getBackgroundColor()">
 <div style="height: 13ch;background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;padding-bottom: 10px;margin-bottom: 5px;">
     <!--Display names/job/etro-->
     <div style="display: flex; justify-content: space-between;margin-bottom: 0px;height:7ch;">
@@ -44,7 +44,7 @@
               <option *ngFor="let item of player.WeaponChoice">{{item.gearName}}</option>
             </select>
           </mat-form-field>
-          <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Weapon</p>
+          <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Weapon</p>
           <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
           <select matNativeControl [(ngModel)]="player.bisWeaponGear.gearName" (change)="onChangeGear('Weapon',true,$event)">
               <option *ngFor="let item of player.WeaponChoice">{{item.gearName}}</option>
@@ -64,7 +64,7 @@
           <option *ngFor="let item of player.HeadChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Head</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Head</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisHeadGear.gearName" (change)="onChangeGear('Head',true,$event)">
           <option *ngFor="let item of player.HeadChoice">{{item.gearName}}</option>
@@ -84,7 +84,7 @@
           <option *ngFor="let item of player.BodyChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Body</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Body</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisBodyGear.gearName" (change)="onChangeGear('Body',true,$event)">
           <option *ngFor="let item of player.BodyChoice">{{item.gearName}}</option>
@@ -104,7 +104,7 @@
           <option *ngFor="let item of player.HandsChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Hands</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Hands</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisHandsGear.gearName" (change)="onChangeGear('Hands',true,$event)">
           <option *ngFor="let item of player.HandsChoice">{{item.gearName}}</option>
@@ -124,7 +124,7 @@
           <option *ngFor="let item of player.LegsChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Legs</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Legs</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisLegsGear.gearName" (change)="onChangeGear('Legs',true,$event)">
           <option *ngFor="let item of player.LegsChoice">{{item.gearName}}</option>
@@ -144,7 +144,7 @@
           <option *ngFor="let item of player.FeetChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Feet</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Feet</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisFeetGear.gearName" (change)="onChangeGear('Feet',true,$event)">
           <option *ngFor="let item of player.FeetChoice">{{item.gearName}}</option>
@@ -164,7 +164,7 @@
           <option *ngFor="let item of player.EarringsChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Earrings</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Earrings</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisEarringsGear.gearName" (change)="onChangeGear('Earrings',true,$event)">
           <option *ngFor="let item of player.EarringsChoice">{{item.gearName}}</option>
@@ -184,7 +184,7 @@
           <option *ngFor="let item of player.NecklaceChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Necklace</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Necklace</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisNecklaceGear.gearName" (change)="onChangeGear('Necklace',true,$event)">
           <option *ngFor="let item of player.NecklaceChoice">{{item.gearName}}</option>
@@ -204,7 +204,7 @@
           <option *ngFor="let item of player.BraceletsChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Bracelets</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Bracelets</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;" (change)="onChangeGear('Bracelets',true,$event)">
       <select matNativeControl [(ngModel)]="player.bisBraceletsGear.gearName">
           <option *ngFor="let item of player.BraceletsChoice">{{item.gearName}}</option>
@@ -224,7 +224,7 @@
           <option *ngFor="let item of player.RightRingChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Right Ring</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Right Ring</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisRightRingGear.gearName" (change)="onChangeGear('RightRing',true,$event)">
           <option *ngFor="let item of player.RightRingChoice">{{item.gearName}}</option>
@@ -244,7 +244,7 @@
           <option *ngFor="let item of player.LeftRingChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
-      <p style="padding-right: 5%;padding-left: 5%;width:9ch;">Left Ring</p>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Left Ring</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
       <select matNativeControl [(ngModel)]="player.bisLeftRingGear.gearName" (change)="onChangeGear('LeftRing',true,$event)">
           <option *ngFor="let item of player.LeftRingChoice">{{item.gearName}}</option>

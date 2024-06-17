@@ -86,6 +86,8 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.WhiteMage, 1.0m/0.524m},
             {Job.Scholar, 1.0m/0.510m},
             {Job.Astrologian, 1.0m/0.445m},
+            {Job.Viper, 1.0m/0.877m}, // Assuming similar to Reaper
+            {Job.Pictomancer, 1.0m/0.836m}, // Assuming similar to Summoner
 
         };
 
@@ -110,6 +112,8 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.WhiteMage, 1.744820065m},
             {Job.Scholar, 4.060913706m},
             {Job.Astrologian, 3.827751196m},
+            {Job.Viper, 1.42m}, // Assuming similar to Reaper
+            {Job.Pictomancer, 1.21m}, // Assuming similar to Summoner
 
         };
 
@@ -143,12 +147,13 @@ namespace FFXIV_RaidLootAPI.Models
             CurRightRingGearId=1;
         }
 
-        public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff){
-            int PlayerILevel = get_avg_item_level();
+        public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff, DataContext context){
+            int PlayerILevel = get_avg_item_level(context:context);
+            
 
             decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
                             c * NRaidBuff * JobGroupMultiplier[Job];
-
+            Console.WriteLine($"PlayerILevel: {PlayerILevel} PlayerId : {Id}");
             return score;
         }
 
@@ -335,7 +340,7 @@ namespace FFXIV_RaidLootAPI.Models
             decimal TeamAverageItemLevel = GearInfo[1];
 
             List<decimal> ScoreParam = Static.GetGearScoreParameter();
-            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], TeamAverageItemLevel, NumberRaidBuffs);
+            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], TeamAverageItemLevel, NumberRaidBuffs, context);
 
             List<CostDTO> Costs = new List<CostDTO>();
 

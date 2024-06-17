@@ -39,6 +39,7 @@ import {
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
+import { OutComponent } from './out/out.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { PlayerDetailComponent } from './player-detail/player-detail.component';
     NavbarComponent,
     StaticComponent,
     StaticDetailComponent,
-    PlayerDetailComponent
+    PlayerDetailComponent,
+    OutComponent
   ],
   imports: [
     BrowserModule,

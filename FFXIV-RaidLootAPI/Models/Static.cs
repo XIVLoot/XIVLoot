@@ -22,7 +22,7 @@ namespace FFXIV_RaidLootAPI.Models
             decimal IlevelSum = 0.0m;
             decimal NumberRaidBuffs = 0.0m;
             foreach (Players player in playerList){
-                IlevelSum += player.get_avg_item_level();
+                IlevelSum += player.get_avg_item_level(context:context);
                 switch (player.Job){
                     case Job.Astrologian:
                         NumberRaidBuffs+=1.0m;
@@ -69,10 +69,12 @@ namespace FFXIV_RaidLootAPI.Models
             var playerList = context.Players.Where(p => p.staticId == Id).ToList();
 
             foreach (Players player in playerList){
-                decimal PlayerGearScore = player.ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs);
+                decimal PlayerGearScore = player.ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs, context);
                 PlayerGearScoreList.Add(new Tuple<int, decimal>(player.Id, PlayerGearScore));
             }
+            Console.WriteLine(string.Join(", ", PlayerGearScoreList.Select(x => $"Player ID: {x.Item1}, Gear Score: {x.Item2}")));
             return PlayerGearScoreList;
+            
         }
 
         //[HttpPost("SetScoreParam")]
