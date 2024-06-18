@@ -3,6 +3,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { HttpService } from '../service/http.service';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from '../../environments/environments';
 
 @Component({
   selector: 'app-navbar',
@@ -47,7 +48,7 @@ export class NavbarComponent {
 
   openLoginDialog(){
     localStorage.setItem('return_url', window.location.href);
-    window.open("http://localhost:4200/auth/discord/callback", "_blank");
+    window.open(environment.site_url + "auth/discord/callback", "_blank");
   }
 
   get discordAvatarUrl(): string {
@@ -71,6 +72,10 @@ export class NavbarComponent {
         }
       });
     });
+  }
+
+  GetStaticLink(){
+    return environment.site_url;
   }
 
   getUserSavedStatic(){

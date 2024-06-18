@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { Static } from '../models/static';
 import { DataService } from './data.service';
-
+import { environment } from '../../environments/environments';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +11,7 @@ export class HttpService {
 
 constructor(public http: HttpClient, public data: DataService) { }
 
-  private api = 'https://localhost:7203/api/';
+  private api = environment.api_url;
 
 
   getStatic(uuid: String): Observable<Static>{

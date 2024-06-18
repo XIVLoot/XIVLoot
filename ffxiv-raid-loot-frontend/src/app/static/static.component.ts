@@ -4,6 +4,7 @@ import { DataService } from '../service/data.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { Static } from '../models/static';
+import { environment } from '../../environments/environments';
 
 // Component decorator with metadata for StaticComponent
 @Component({
@@ -21,8 +22,8 @@ export class StaticComponent {
   ngOnInit(): void {
 
   }
-  private api = 'https://localhost:7203/api/'; // Base URL for the API
-  private url = "https://localhost:4200/";
+  private api = environment.api_url; // Base URL for the API
+  private url = environment.site_url;
 
   // Asynchronous method to add a new static entity
   async AddStatic(name: string) {

@@ -31,6 +31,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { StaticEventsService } from '../service/static-events.service';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../environments/environments';
 
 interface PlayerPGS {
   name: string;
@@ -195,7 +196,7 @@ export class StaticDetailComponent implements OnInit {
   }
 
   copyToClipboard(): void {
-    const valueToCopy = "http://localhost:4200/"+this.staticDetail.uuid;
+    const valueToCopy = environment.site_url+this.staticDetail.uuid;
     navigator.clipboard.writeText(valueToCopy)
       .then(() => {
         // Handle successful copying here, e.g., show a message

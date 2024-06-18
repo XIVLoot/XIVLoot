@@ -43,7 +43,7 @@
           <mat-list>
             <mat-nav-list *ngFor="let static of userSavedStatic">
               <div style="display: flex; align-items: center; justify-content: space-between;">
-                <a mat-list-item [href]="'http://localhost:4200/' + static.url" [title]="static.name">{{ static.name }}</a>
+                <a mat-list-item [href]="GetStaticLink() + static.url" [title]="static.name">{{ static.name }}</a>
                 <button mat-icon-button (click)="removeStatic(static.url)">
                   <mat-icon>close</mat-icon>
                 </button>
