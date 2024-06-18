@@ -9,11 +9,11 @@
   <img src="assets/white_xivloot_transparent_background.png" alt="XIVLoot" style="height: 90%;">
   <span class="toolbar-spacer"></span>
   <ng-container *ngIf="isLoggedIn; else showLogin">
+    <span>{{discordInfo.global_name}}</span>
     <button mat-icon-button [matMenuTriggerFor]="userMenu">
-      <mat-icon>account_circle</mat-icon>
+      <img *ngIf="isLoggedIn; else defaultIcon" [src]="discordAvatarUrl" alt="User Avatar" style="border-radius: 50%; width: 30px; height: 30px;">
     </button>
     <mat-menu #userMenu="matMenu">
-      <button mat-menu-item>Profile</button>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </ng-container>
@@ -31,7 +31,29 @@
       <a mat-list-item routerLink="/about" class="active rounded-button">
         About
       </a>
+
+
+      <ng-container *ngIf="isLoggedIn">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Saved statics
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-list>
+            <mat-nav-list *ngFor="let static of userSavedStatic">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <a mat-list-item [href]="'http://localhost:4200/' + static.url" [title]="static.name">{{ static.name }}</a>
+                <button mat-icon-button (click)="removeStatic(static.url)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </mat-nav-list>
+          </mat-list>
+        </mat-expansion-panel>
+      </ng-container>
     </mat-nav-list>
+
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

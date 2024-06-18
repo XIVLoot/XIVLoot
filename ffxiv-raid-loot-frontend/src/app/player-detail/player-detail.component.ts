@@ -177,7 +177,6 @@ export class PlayerDetailComponent {
       console.log("after closed")
       console.log(result)
       if (result === "Yes"){this.RegetPlayerInfo();}
-      
     });
   }
 

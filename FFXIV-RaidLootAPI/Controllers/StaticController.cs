@@ -31,6 +31,47 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
 
 
+// Get only static name
+        [HttpGet("GetOnlyStaticName/{uuid}")]
+        public async Task<ActionResult<List<Static>>> GetOnlyStaticName(string uuid)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                return Ok(context.Statics.First(s => s.UUID == uuid).Name);
+            }
+        }
+
+
+        [HttpGet("GetPGSParam/{uuid}")]
+        public async Task<ActionResult<List<decimal>>> GetPGSParam(string uuid)
+        {
+            using (var context = _context.CreateDbContext())
+            {   
+                Static? s = await context.Statics.FirstOrDefaultAsync(u => u.UUID == uuid);
+                if (s is null)
+                    return NotFound("Static not found");
+                
+                return Ok(new List<decimal>() {s.GearScoreA, s.GearScoreB, s.GearScoreC});
+            }
+        }
+
+        [HttpPut("SetPGSParam/{uuid}/{a}/{b}/{c}")]
+        public async Task<ActionResult<List<decimal>>> GetPGSParam(string uuid, decimal a, decimal b, decimal c)
+        {
+            using (var context = _context.CreateDbContext())
+            {   
+                Static? s = await context.Statics.FirstOrDefaultAsync(u => u.UUID == uuid);
+                if (s is null)
+                    return NotFound("Static not found");
+                
+                s.GearScoreA = a;
+                s.GearScoreB = b;
+                s.GearScoreC = c;
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
         [HttpGet("PlayerGearScore/{uuid}")]
         public async Task<ActionResult<List<PlayerGearScoreDTO>>> GetPlayerGearScore(string uuid)
         {   
@@ -64,7 +105,10 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
-                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                var dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null){
+                    return NotFound("Static not found");
+                }
                 var playerList = context.Players.Where(p => p.staticId == dbStatic.Id).ToList();
                 List<StaticDTO.PlayerInfoDTO> PlayersInfoList = new List<StaticDTO.PlayerInfoDTO>();
 
@@ -86,62 +130,61 @@ namespace FFXIV_RaidLootAPI.Controllers
             
         }
 // Add a new static        
-        [HttpPost]
+        [HttpPut("CreateNewStatic/{name}")]
         public async Task<ActionResult<string>> AddStatic(string name)
         {
             using (var context = _context.CreateDbContext())
             {
                 List<Static> staticList = await context.Statics.ToListAsync();
-                            string uuid = Guid.NewGuid().ToString();
-                            Static newStatic = new Static
-                            {
-                                Name = name,
-                                UUID = uuid
-                            };
-                            await context.Statics.AddAsync(newStatic);
-                            await context.SaveChangesAsync();
-                            var staticId = context.Statics.First(s => s.UUID == uuid).Id;
-                            
-                            //Add 8 empty players
-                            // Creates a player with default gear
-                            
-                            List<Players> players = new List<Players>();
-                            for (int i = 0; i < 8; i++)
-                            {
-                                Players newPlayer = new Players 
-                                {
-                                    Locked=false,
-                                    staticId=staticId,
-                                    Job=Job.BlackMage,
-                                    BisWeaponGearId=1,
-                                    CurWeaponGearId=1,
-                                    BisHeadGearId=1,
-                                    CurHeadGearId=1,
-                                    BisBodyGearId=1,
-                                    CurBodyGearId=1,
-                                    BisHandsGearId=1,
-                                    CurHandsGearId=1,
-                                    BisLegsGearId=1,
-                                    CurLegsGearId=1,
-                                    BisFeetGearId=1,
-                                    CurFeetGearId=1,
-                                    BisEarringsGearId=1,
-                                    CurEarringsGearId=1,
-                                    BisNecklaceGearId=1,
-                                    CurNecklaceGearId=1,
-                                    BisBraceletsGearId=1,
-                                    CurBraceletsGearId=1,
-                                    BisRightRingGearId=1,
-                                    CurRightRingGearId=1,
-                                    BisLeftRingGearId=1,
-                                    CurLeftRingGearId=1,
-                                };
-                                players.Add(newPlayer);
-                            }
-                            await context.AddRangeAsync(players);
-                            await context.SaveChangesAsync();
-                            
-                            return Ok(uuid);
+                string uuid = Guid.NewGuid().ToString();
+                Static newStatic = new Static
+                {
+                    Name = name,
+                    UUID = uuid
+                };
+                await context.Statics.AddAsync(newStatic);
+                await context.SaveChangesAsync();
+                var staticId = context.Statics.First(s => s.UUID == uuid).Id;
+                
+                //Add 8 empty players
+                // Creates a player with default gear
+                
+                List<Players> players = new List<Players>();
+                for (int i = 0; i < 8; i++)
+                {
+                    Players newPlayer = new Players 
+                    {
+                        Locked=false,
+                        staticId=staticId,
+                        Job=Job.BlackMage,
+                        BisWeaponGearId=1,
+                        CurWeaponGearId=1,
+                        BisHeadGearId=1,
+                        CurHeadGearId=1,
+                        BisBodyGearId=1,
+                        CurBodyGearId=1,
+                        BisHandsGearId=1,
+                        CurHandsGearId=1,
+                        BisLegsGearId=1,
+                        CurLegsGearId=1,
+                        BisFeetGearId=1,
+                        CurFeetGearId=1,
+                        BisEarringsGearId=1,
+                        CurEarringsGearId=1,
+                        BisNecklaceGearId=1,
+                        CurNecklaceGearId=1,
+                        BisBraceletsGearId=1,
+                        CurBraceletsGearId=1,
+                        BisRightRingGearId=1,
+                        CurRightRingGearId=1,
+                        BisLeftRingGearId=1,
+                        CurLeftRingGearId=1,
+                    };
+                    players.Add(newPlayer);
+                }
+                await context.AddRangeAsync(players);
+                await context.SaveChangesAsync();
+                return Ok(uuid);
             }
             
         }

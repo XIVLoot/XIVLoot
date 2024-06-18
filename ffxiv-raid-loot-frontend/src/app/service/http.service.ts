@@ -27,6 +27,13 @@ constructor(public http: HttpClient, public data: DataService) { }
       );
   }
 
+  getStaticName(uuid : string) : Observable<any>{
+    const url = `${this.api}Static/GetOnlyStaticName/${uuid}`;
+    return this.http.get(url, { responseType: 'text' }).pipe(
+      catchError(error => throwError(() => new Error('Failed to get static name: ' + error.message)))
+    );
+  }
+
   changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean) : Observable<any>{
     const url = `${this.api}Player/GearToChange`; // Adjust the endpoint as necessary
     const body = {
@@ -116,6 +123,64 @@ constructor(public http: HttpClient, public data: DataService) { }
     const url = `${this.api}Static/PlayerGearScore/${uuid}`;
     return this.http.get(url).pipe(
       catchError(error => throwError(() => new Error('Failed to recompute PGS: ' + error.message)))
+    );
+  }
+
+  AddStatic(name : string) : Observable<any>{
+    const url = `${this.api}Static/CreateNewStatic/${name}`;
+
+    return this.http.put(url, {}, { responseType: 'text' }).pipe(
+      catchError(error => throwError(() => new Error('Failed to add static: ' + error.message)))
+    );
+  }
+
+  getDiscorduserInfo(accessToken: string) : Observable<any>{
+    const userUrl = 'https://discord.com/api/users/@me';
+    return this.http.get(userUrl, {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    }).pipe(
+      catchError(error => throwError(() => new Error('Failed to get discord info : ' + error.message)))
+    );
+  }
+  SaveStaticToUser(user_discord_id : string, static_uuid : string){
+    const url = `${this.api}User/AddStaticToUserSaved/${user_discord_id}/${static_uuid}`;
+    return this.http.put(url, {}).pipe(
+      catchError(error => throwError(() => new Error('Failed to save static to user: ' + error.message)))
+    );
+  }
+
+  AddDicordUserToDB(user_discord_id : string){
+    const url = `${this.api}User/AddUserDiscordId/${user_discord_id}`;
+    return this.http.put(url, {}).pipe(
+      catchError(error => throwError(() => new Error('Failed to add discord user to db: ' + error.message)))
+    );
+  }
+
+  GetUserSavedStatic(user_discord_id : string){
+    const url = `${this.api}User/GetUserSavedStatic/${user_discord_id}`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
+    );
+  }
+
+  RemoveUserSavedStatic(user_discord_id : string, uuid : string){
+    const url = `${this.api}User/RemoveStaticToUserSaved/${user_discord_id}/${uuid}`;
+    return this.http.put(url, {}, { responseType: 'text' }).pipe(
+      catchError(error => throwError(() => new Error('Failed to remove user saved static: ' + error.message)))
+    );
+  }
+
+  GetPGSParam(uuid : string){
+    const url = `${this.api}Static/GetPGSParam/${uuid}`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to get PGS param: ' + error.message)))
+    );
+  }
+
+  SetPGSParam(uuid : string, a : number, b : number, c : number){
+    const url = `${this.api}Static/SetPGSParam/${uuid}/${a}/${b}/${c}`;
+    return this.http.put(url, {}).pipe(
+      catchError(error => throwError(() => new Error('Failed to set PGS param: ' + error.message)))
     );
   }
 

@@ -21,6 +21,18 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+
+
+            Users? checkUser = await context.Users.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
+
+            if (!(checkUser is null)){
+                Console.WriteLine("User already exists");
+                return Ok(new Users(){
+                user_discord_id=user_discord_id,
+                user_saved_static=checkUser.user_saved_static
+            });
+            }
+
             Users newuser = new Users(){
                 user_discord_id=user_discord_id,
                 user_saved_static=""
@@ -55,6 +67,14 @@ namespace FFXIV_RaidLootAPI.Controllers
             if (user is null){
                 return NotFound("User not found");
             }
+
+            string static_list_as_string = user.user_saved_static;
+            List<string> uuidList = static_list_as_string.Split(';').ToList();
+
+            if (uuidList.Contains(static_uuid)){
+                return Ok("Static already saved");
+            }
+
             user.user_saved_static += static_uuid + ";";
             await context.SaveChangesAsync();
             return Ok(user);

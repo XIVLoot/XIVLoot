@@ -10,7 +10,6 @@ export class Static {
     this.uuid = uuid;
     this.name = name;
     this.id = id;
-
     this.ConstructStaticPlayerInfo(playersInfoList);
   }
 

@@ -1,0 +1,61 @@
+<div style="border-radius: 10px;padding: 10px;">
+<h2 mat-dialog-title>Modify your PGS settings.</h2>
+<mat-card-content>
+    <div>
+        <div>
+        <label id="example-name-label">Value of parameter a (Only looks at rDPS): </label>
+        <label>{{slider_a.value}}</label>
+        </div>
+        <mat-slider
+            style="width:300px;background-color:rgba(0, 0, 0, 0.3);border-radius: 10px;margin:8px"
+            [disabled]="disabled"
+            [max]="max"
+            [min]="min"
+            [step]="step"
+            [discrete]="thumbLabel"
+            [showTickMarks]="showTicks">
+        <input matSliderThumb [(ngModel)]="value_a" [value]="value_a" #slider_a>
+        </mat-slider>
+    </div>
+
+    <div>
+        <div>
+        <label id="example-name-label">Value of parameter b (Only looks at item level): </label>
+        <label>{{value_b}}</label>
+        </div>
+        <mat-slider
+            style="width:300px;background-color:rgba(0, 0, 0, 0.3);border-radius: 10px;margin:8px"
+            [disabled]="disabled"
+            [max]="max"
+            [min]="min"
+            [step]="step"
+            [discrete]="thumbLabel"
+            [showTickMarks]="showTicks">
+            <input matSliderThumb [(ngModel)]="value_b" [value]="value_b">
+        </mat-slider>
+    </div>
+
+
+    <div>
+        <div>
+        <label id="example-name-label">Value of parameter c (Favors aDPS player in comp): </label>
+        <label>{{value_c}}</label>
+        </div>
+        <mat-slider
+            style="width:300px;background-color:rgba(0, 0, 0, 0.3);border-radius: 10px;margin:8px"
+            [disabled]="disabled"
+            [max]="max"
+            [min]="min"
+            [step]="step"
+            [discrete]="thumbLabel"
+            [showTickMarks]="showTicks">
+            <input matSliderThumb [(ngModel)]="value_c" [value]="value_c">
+        </mat-slider>
+        
+    </div>
+
+  </mat-card-content>
+<mat-dialog-actions style="display: flex; justify-content: space-between;">
+    <button mat-button mat-dialog-close style="background-color: rgba(0, 0, 0, 0.156);" (click)="SaveChange()">Save and Exit</button>
+</mat-dialog-actions>
+</div>

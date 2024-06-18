@@ -149,7 +149,10 @@ namespace FFXIV_RaidLootAPI.Models
 
         public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff, DataContext context){
             int PlayerILevel = get_avg_item_level(context:context);
-            
+
+            if (GroupAvgLevel == 0){
+                return 0;
+            }
 
             decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
                             c * NRaidBuff * JobGroupMultiplier[Job];

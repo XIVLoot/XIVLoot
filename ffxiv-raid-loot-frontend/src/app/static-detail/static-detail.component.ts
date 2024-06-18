@@ -12,6 +12,8 @@ import {
   MatSnackBarLabel,
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
+import {MatSliderModule} from '@angular/material/slider';
+import {MatCardModule} from '@angular/material/card';
 
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 
@@ -27,6 +29,8 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer } from '@angular/platform-browser';
 import { StaticEventsService } from '../service/static-events.service';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
 
 interface PlayerPGS {
   name: string;
@@ -46,7 +50,7 @@ export class StaticDetailComponent implements OnInit {
   public groupList = [];
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
-    private staticEventsService: StaticEventsService
+    private staticEventsService: StaticEventsService, private dialog : MatDialog
   ) {
     this.staticEventsService.recomputePGS$.subscribe(() => {
       this.groupList = this.ComputeNumberPGSGroup();
@@ -67,6 +71,33 @@ export class StaticDetailComponent implements OnInit {
       this.groupList = this.ComputeNumberPGSGroup();
     });
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
+  }
+
+  SaveStaticToUser(){
+    if (localStorage.getItem('discord_access_token_xiv_loot') === null){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Login to save a static.",
+          subMessage: "",
+          color : ""
+        }
+      });
+      return false;
+    }
+    this.http.getDiscorduserInfo(localStorage.getItem('discord_access_token_xiv_loot')!).subscribe(data => {
+      this.http.SaveStaticToUser(data['id'], this.staticDetail.uuid).subscribe(res => {
+        console.log(res);
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly saved static!",
+            subMessage: "",
+            color : ""
+          }
+        });
+      });
+    });
   }
 
   onChangeStaticName(event : Event){
@@ -183,6 +214,19 @@ export class StaticDetailComponent implements OnInit {
         console.error('Failed to copy UUID: ', err);
       });
   }
+
+
+  openSettingPGS(){
+    this.dialog.open(SettingPGS, {
+      width: '500px',
+      height: '500px',
+      data: {uuid : this.staticDetail.uuid}
+    }).afterClosed().subscribe(result => {
+      console.log("after closed")
+      console.log(result)
+    });
+  }
+
 }
 
 @Component({
@@ -191,10 +235,14 @@ export class StaticDetailComponent implements OnInit {
    <div [style.background-color]="data.color" style="width: 100%; height: 100%; border-radius:10px;padding:10px; position: relative;">
       <h2>{{ data.message }}</h2>
       <p>{{ data.subMessage }}</p>
-      <button mat-button matSnackBarAction (click)="snackBarRef.dismissWithAction()" style="position: absolute; top: 10px; right: 10px;">❌</button>
+      <button mat-button matSnackBarAction (click)="snackBarRef.dismissWithAction()" style="position: absolute; top: 10px; right: 10px;">
+      <mat-icon>close</mat-icon>
+    </button>
     </div>
 
   `,
+  imports: [MatIconModule],
+  standalone:true,
   styles: [`
   :host {
     display: flex;
@@ -225,12 +273,47 @@ export class PizzaPartyAnnotatedComponent {
   selector: 'setting-PGS',
   templateUrl: './setting-PGS.component.html',
   standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent],
+  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, MatSliderModule,
+    MatCardModule, FormsModule
+  ]
 })
 export class SettingPGS {
   constructor(public dialogRef: MatDialogRef<SettingPGS>,public http: HttpService,
-    @Inject(MAT_DIALOG_DATA) public data: { staticDetails : Static },
+    @Inject(MAT_DIALOG_DATA) public data: { uuid : string },
+    private sanitizer: DomSanitizer, private _snackBar: MatSnackBar
   ) {}
+  disabled = false;
+  max = 100;
+  min = 0;
+  showTicks = false;
+  step = 1;
+  thumbLabel = false;
+  value_a : number = 0;
+  value_b : number = 0;
+  value_c : number = 0;
+
+
+  ngOnInit(){
+    this.http.GetPGSParam(this.data.uuid).subscribe(data => {
+      this.value_a = Math.floor(data[0] * 10);
+      this.value_b = Math.floor(data[1] * 10);
+      this.value_c = Math.floor(data[2] * 10);
+    });
+  }
+
+  SaveChange(){
+    this.http.SetPGSParam(this.data.uuid, this.value_a/10, this.value_b/10, this.value_c/10).subscribe(data => {
+      console.log(data);
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data : {
+          message : "Updated PGS settings", 
+          subMessage : "(Reload the page to see the changes)",
+          color : ""
+        }
+      });
+      this.dialogRef.close()});
+  }
 
 }
 

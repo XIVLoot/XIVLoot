@@ -6,7 +6,7 @@ import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { StaticComponent } from './static/static.component';
-import { StaticDetailComponent } from './static-detail/static-detail.component';
+import { SettingPGS, StaticDetailComponent } from './static-detail/static-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 
 // Angular Material Modules
