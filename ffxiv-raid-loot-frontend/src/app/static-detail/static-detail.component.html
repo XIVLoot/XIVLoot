@@ -1,33 +1,43 @@
 <div>
   <!-- Container for static detail header -->
   <div>
-    <h1>{{ staticDetail.name }}</h1> <!-- Displaying the name of the static -->
-    <h2>Static UUID: {{ staticDetail.uuid }}</h2> <!-- Displaying the UUID of the static -->
+    <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding-top: 10px;padding-left: 10px;border: 5px solid rgba(0, 0, 0, 0.4);">
+    <mat-form-field style="width:40ch;height: 10ch;margin-bottom: 0px;">
+      <mat-label>Static name :</mat-label>
+        <input matInput value="{{staticDetail.name}}" (change)="onChangeStaticName($event)" style="font-size: 30px;">
+    </mat-form-field>
+    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;" (click)="copyToClipboard()">Share static</button>
+    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;" (click)="SaveStaticToUser()">Save static</button>
+    </div>
+    <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          PGS Analysis
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+  
+      <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.4)">
+        <h3 style="color:white">Gear order priority (according to your settings) : </h3>
+        <div style="display: flex; justify-content: space-between;">
+          <div *ngFor="let group of groupList" [style.border]="GetGroupBorderColor(group.nGroup)" [style.backgroundColor]="GetGroupColor(group.nGroup)" style="width:240px;border-radius: 10px;padding: 5px;">
+            <p *ngFor="let player of group.group" style="color: white;">{{player.name}}</p>
+          </div>
+        </div>
+        <button mat-raised-button color="accent" style="height: 2.5ch;" (click)="openSettingPGS()">Settings</button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
   </div>
   <!-- Container for player details -->
-  <div>
-    <h3>Players:</h3> <!-- Title for the players section -->
-    <mat-grid-list [cols]="gridColumns"> <!-- Grid list to display players dynamically based on screen size -->
-      <mat-grid-tile *ngFor="let player of staticDetail.players"> <!-- Loop through each player in staticDetail.players -->
-        <mat-card> <!-- Card container for each player -->
-          <mat-card-header>
-            <mat-card-title>{{ player.name }}</mat-card-title> <!-- Display player's name -->
-            <mat-card-subtitle>ID: {{ player.id }}</mat-card-subtitle> <!-- Display player's ID -->
-          </mat-card-header>
-          <mat-card-content>
-            <p>Role: {{ player.role }}</p> <!-- Display player's role -->
-            <p>Job: {{ player.job }}</p> <!-- Display player's job -->
-            <p>Item Level: {{ player.itemLevel }}</p> <!-- Display player's item level -->
-            <p>Etro link: {{ player.etroBiS }}</p> <!-- Display player's Etro link -->
-            <p>BiS Weapon: {{ player.bisWeaponGearId }}</p> <!-- Display player's BiS Weapon Gear ID -->
-            <p>BiS Headgear: {{ player.bisHeadGearId }}</p> <!-- Display player's BiS Headgear ID -->
-            <p>BiS Chest: {{ player.bisBodyGearId }}</p> <!-- Display player's BiS Chest Gear ID -->
-            <p>BiS Hands: {{ player.bisHandsGearId }}</p> <!-- Display player's BiS Hands Gear ID -->
-            <p>BiS Pants: {{ player.bisLegsGearId }}</p> <!-- Display player's BiS Pants Gear ID -->
-            <p>BiS Shoes: {{ player.bisFeetGearId }}</p> <!-- Display player's BiS Shoes Gear ID -->
-          </mat-card-content>
-        </mat-card>
+  <div style="width: 100%;">
+    <h2 style="color:white;">Players:</h2> <!-- Title for the players section -->
+    <mat-grid-list [cols]="3"rowHeight="1:2"> <!-- Grid list to display players dynamically based on screen size -->
+      <mat-grid-tile *ngFor="let player of staticDetail.players" > <!-- Loop through each player in staticDetail.players -->
+          <app-player-detail [player]="player" style=""/>
       </mat-grid-tile>
     </mat-grid-list>
   </div>
+
 </div>

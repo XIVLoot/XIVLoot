@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { HttpClient } from '../service/http.service';
+import { HttpClient, HttpService } from '../service/http.service';
 import { DataService } from '../service/data.service';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { Static } from '../models/static';
 
 export class StaticComponent {
   // Constructor with HttpClient and DataService injected
-  constructor(public http: HttpClient, public data: DataService, public router: Router){}
+  constructor(public http: HttpService, public data: DataService, public router: Router){}
   staticName: string = ''; // Property to store the name of a static
 
   // Lifecycle hook that is called after Angular has initialized all data-bound properties
@@ -22,21 +22,22 @@ export class StaticComponent {
 
   }
   private api = 'https://localhost:7203/api/'; // Base URL for the API
+  private url = "https://localhost:4200/";
 
   // Asynchronous method to add a new static entity
   async AddStatic(name: string) {
     // Making a POST request to the API to add a new static
-    this.http.post(this.api + 'Static?name=' + name, {})
+    this.http.AddStatic(name)
       .pipe(map(response => {
         // Mapping the response to a Static model
-        let newStatic = new Static(response['id'], response['name'], response['uuid'], response['players']);
-        return newStatic;
+        //let newStatic = new Static(response['id'], response['name'], response['uuid'], response['players']);
+        return response;
       }))
       .subscribe(response => {
         // Subscribing to the observable to handle the response
         this.data.static = response; // Storing the response in DataService
         console.log(response); // Logging the response to the console
-        this.router.navigate(['/' + response.uuid]);
+        this.router.navigate(['/' + response]);
       });
   }
 

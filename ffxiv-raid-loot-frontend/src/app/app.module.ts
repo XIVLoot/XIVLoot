@@ -6,7 +6,7 @@ import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { StaticComponent } from './static/static.component';
-import { StaticDetailComponent } from './static-detail/static-detail.component';
+import { SettingPGS, StaticDetailComponent } from './static-detail/static-detail.component';
 import { HttpClientModule } from '@angular/common/http';
 
 // Angular Material Modules
@@ -23,10 +23,23 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSidenavModule } from '@angular/material/sidenav';
-
-
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {Component} from '@angular/core';
+import {MatDividerModule} from '@angular/material/divider';
+import {
+  MatDialog,
+  MatDialogRef,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogTitle,
+  MatDialogContent,
+} from '@angular/material/dialog';
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { PlayerDetailComponent } from './player-detail/player-detail.component';
+import { OutComponent } from './out/out.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +48,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     AboutComponent,
     NavbarComponent,
     StaticComponent,
-    StaticDetailComponent
+    StaticDetailComponent,
+    PlayerDetailComponent,
+    OutComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +68,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     MatCardModule,
     MatListModule,
     MatGridListModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatCheckboxModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatDividerModule,
+    MatDialogActions, 
+    MatDialogClose, 
+    MatDialogTitle, 
+    MatDialogContent
   ],
   providers: [
     provideAnimationsAsync()

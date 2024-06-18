@@ -11,6 +11,8 @@ public class StaticDTO
         public int Id { get; set; }
         public string Name { get; set; } = "No name";
         public string Job {get; set; } = string.Empty;
+
+        public string EtroBiS {get;set;} = string.Empty;
         public bool Locked { get; set; }
         public Dictionary<string,GearOptionsDTO.GearOption?> CurrentGearSet {get;set;} = new Dictionary<string,GearOptionsDTO.GearOption?>();
         public Dictionary<string,GearOptionsDTO.GearOption?> BisGearSet {get;set;} = new Dictionary<string,GearOptionsDTO.GearOption?>();
@@ -18,6 +20,7 @@ public class StaticDTO
         public int AverageItemLevelCurrent {get;set;}
         public int AverageItemLevelBis {get;set;}
         public decimal PlayerGearScore {get;set;}
+        public CostDTO Cost {get;set;} = new CostDTO();
     }
 
     public int Id { get; set; }

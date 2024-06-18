@@ -86,6 +86,8 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.WhiteMage, 1.0m/0.524m},
             {Job.Scholar, 1.0m/0.510m},
             {Job.Astrologian, 1.0m/0.445m},
+            {Job.Viper, 1.0m/0.877m}, // Assuming similar to Reaper
+            {Job.Pictomancer, 1.0m/0.836m}, // Assuming similar to Summoner
 
         };
 
@@ -110,17 +112,51 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.WhiteMage, 1.744820065m},
             {Job.Scholar, 4.060913706m},
             {Job.Astrologian, 3.827751196m},
+            {Job.Viper, 1.42m}, // Assuming similar to Reaper
+            {Job.Pictomancer, 1.21m}, // Assuming similar to Summoner
 
         };
 
         // Player object functions
 
-        public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff){
-            int PlayerILevel = get_avg_item_level();
+        public void ResetJobDependantValues(){
+            EtroBiS="";
+            
+            BisWeaponGearId=1;
+            BisHeadGearId=1;
+            BisBodyGearId=1 ;
+            BisHandsGearId=1;
+            BisLegsGearId=1;
+            BisFeetGearId=1;
+            BisEarringsGearId=1;
+            BisNecklaceGearId=1;
+            BisBraceletsGearId=1;
+            BisLeftRingGearId=1;
+            BisRightRingGearId=1;
+
+            CurWeaponGearId=1;
+            CurBodyGearId=1;
+            CurHeadGearId=1;
+            CurHandsGearId=1;
+            CurLegsGearId=1;
+            CurFeetGearId=1;
+            CurEarringsGearId=1;
+            CurNecklaceGearId=1;
+            CurBraceletsGearId=1;
+            CurLeftRingGearId=1;
+            CurRightRingGearId=1;
+        }
+
+        public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff, DataContext context){
+            int PlayerILevel = get_avg_item_level(context:context);
+
+            if (GroupAvgLevel == 0){
+                return 0;
+            }
 
             decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
                             c * NRaidBuff * JobGroupMultiplier[Job];
-
+            Console.WriteLine($"PlayerILevel: {PlayerILevel} PlayerId : {Id}");
             return score;
         }
 
@@ -147,8 +183,8 @@ namespace FFXIV_RaidLootAPI.Models
                 {GearType.Earrings , context.Gears.Find(BisEarringsGearId)},
                 {GearType.Necklace , context.Gears.Find(BisNecklaceGearId)},
                 {GearType.Bracelets , context.Gears.Find(BisBraceletsGearId)},
-                {GearType.RightRing , context.Gears.Find(BisLeftRingGearId)},
-                {GearType.LeftRing , context.Gears.Find(BisRightRingGearId)}
+                {GearType.LeftRing , context.Gears.Find(BisLeftRingGearId)},
+                {GearType.RightRing , context.Gears.Find(BisRightRingGearId)}
             };
             } else 
             {
@@ -162,8 +198,8 @@ namespace FFXIV_RaidLootAPI.Models
                 {GearType.Earrings , context.Gears.Find(CurEarringsGearId)},
                 {GearType.Necklace , context.Gears.Find(CurNecklaceGearId)},
                 {GearType.Bracelets , context.Gears.Find(CurBraceletsGearId)},
-                {GearType.RightRing , context.Gears.Find(CurLeftRingGearId)},
-                {GearType.LeftRing , context.Gears.Find(CurRightRingGearId)}
+                {GearType.LeftRing , context.Gears.Find(CurLeftRingGearId)},
+                {GearType.RightRing , context.Gears.Find(CurRightRingGearId)}
             };
             }
 
@@ -270,7 +306,8 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
     
-        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static, decimal GroupAvgLevel, decimal NumberRaidBuffs){
+        public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static){
+
             Dictionary<GearType, Gear?> CurrentGearSetDict = get_gearset_as_dict(false, context);
             Dictionary<GearType, Gear?> BisGearSetDict = get_gearset_as_dict(true, context);
 
@@ -301,13 +338,27 @@ namespace FFXIV_RaidLootAPI.Models
             foreach (GearType GearType in Enum.GetValues(typeof(GearType))){
                 GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context);
             }
+            List<decimal> GearInfo = Static.ComputeNumberRaidBuffsAndGroupAvgLevel(context);
+            decimal NumberRaidBuffs = GearInfo[0];
+            decimal TeamAverageItemLevel = GearInfo[1];
 
             List<decimal> ScoreParam = Static.GetGearScoreParameter();
-            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs);
+            decimal PlayerGearScore = ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], TeamAverageItemLevel, NumberRaidBuffs, context);
+
+            List<CostDTO> Costs = new List<CostDTO>();
+
+            foreach(KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                if((pair.Value is null) || BisGearSetDict[pair.Key] is null)
+                    continue;
+                Costs.Add(pair.Value.GetCost(BisGearSetDict[pair.Key]));
+            }
+
+            CostDTO Cost = CostDTO.SumCost(Costs);
 
             return new StaticDTO.PlayerInfoDTO(){
                 Id=Id,
                 Name=Name,
+                EtroBiS=EtroBiS,
                 Job=Job.ToString(),
                 Locked=Locked,
                 CurrentGearSet=CurrentGearSetInfo,
@@ -315,7 +366,8 @@ namespace FFXIV_RaidLootAPI.Models
                 GearOptionPerGearType=GearOptionPerGearType,
                 AverageItemLevelBis=AverageItemLevelBis,
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
-                PlayerGearScore=PlayerGearScore
+                PlayerGearScore=PlayerGearScore,
+                Cost=Cost
             };
         }
     }

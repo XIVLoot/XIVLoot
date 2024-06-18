@@ -1,4 +1,5 @@
 ﻿using FFXIV_RaidLootAPI.Models;
+using FFXIV_RaidLootAPI.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace FFXIV_RaidLootAPI.Data
@@ -17,5 +18,7 @@ namespace FFXIV_RaidLootAPI.Data
         public DbSet<Gear> Gears { get; set; }
 
         public DbSet<Raid> Raids { get; set; }
+
+        public DbSet<Users> Users { get; set; }
     }
 }

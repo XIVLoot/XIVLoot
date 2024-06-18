@@ -5,9 +5,6 @@ div {
   margin: 20px;
 }
 
-h1, h2, h3 {
-  color: #2c3e50;
-}
 
 /* Styling for the cards */
 mat-card {
@@ -36,7 +33,7 @@ mat-card-content {
 /* Grid list styling */
 mat-grid-list {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 0px;
 }
 
 mat-grid-tile {
@@ -68,4 +65,12 @@ mat-grid-tile {
   mat-grid-list {
     --mat-grid-list-cols: 4;
   }
+}
+
+.mat-form-field {
+  width: 150px; /* Adjust the width as needed */
+}
+p{
+color:white;
+font-size: 1.7ch;
 }
