@@ -9,11 +9,8 @@
       - MSSQL_PID=Express
       - SA_PASSWORD=Ice@dmin1320!
   web_api:
-    image: ffxiv-raidlootapi
+    image: "rickchinois/ffxivraidlootapi:latest"
     container_name: ffxiv-raidlootapi
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "5252:8080"
       - "7203:8081"
@@ -24,6 +21,6 @@
       - ASPNETCORE_Kestrel__Certificates__Default__Password=XIVLoot
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     volumes:
-      - ${USERPROFILE}\.aspnet\https:/https:ro
+      - ~/.aspnet/https:/https:ro
     depends_on:
       - sqlexpress
