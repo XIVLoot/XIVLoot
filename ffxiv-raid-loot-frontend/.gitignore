@@ -3,7 +3,9 @@
 # Compiled output
 /dist
 /tmp
-
+/out-tsc
+/bazel-out
+!app/out
 # Node
 /node_modules
 npm-debug.log

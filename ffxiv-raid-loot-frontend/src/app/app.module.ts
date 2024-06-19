@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
+import { AbAuthComponent } from './about/about.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { StaticComponent } from './static/static.component';
 import { SettingPGS, StaticDetailComponent } from './static-detail/static-detail.component';
@@ -39,18 +39,18 @@ import {
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
-import { OutComponent } from './out/out.component';
+import { AuthComponent } from './out/auth.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    AboutComponent,
+    AbAuthComponent,
     NavbarComponent,
     StaticComponent,
     StaticDetailComponent,
     PlayerDetailComponent,
-    OutComponent
+    AuthComponent
   ],
   imports: [
     BrowserModule,
