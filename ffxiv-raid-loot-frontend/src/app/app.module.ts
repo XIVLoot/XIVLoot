@@ -39,7 +39,7 @@ import {
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
-import { AuthComponent } from './out/auth.component';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   declarations: [

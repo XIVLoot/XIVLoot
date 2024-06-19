@@ -4,7 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { AbAuthComponent } from './about/about.component';
 import { StaticComponent } from './static/static.component';
 import { StaticDetailComponent } from './static-detail/static-detail.component';
-import { AuthComponent } from './out/auth.component';
+import { AuthComponent } from './auth/auth.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
