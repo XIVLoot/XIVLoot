@@ -11,9 +11,9 @@ public class StaticDTO
         public int Id { get; set; }
         public string Name { get; set; } = "No name";
         public string Job {get; set; } = string.Empty;
-
         public string EtroBiS {get;set;} = string.Empty;
         public bool Locked { get; set; }
+        public List<DateTime> LockedList {get;set;} = new List<DateTime>();
         public Dictionary<string,GearOptionsDTO.GearOption?> CurrentGearSet {get;set;} = new Dictionary<string,GearOptionsDTO.GearOption?>();
         public Dictionary<string,GearOptionsDTO.GearOption?> BisGearSet {get;set;} = new Dictionary<string,GearOptionsDTO.GearOption?>();
         public Dictionary<string, GearOptionsDTO> GearOptionPerGearType {get;set;} = new Dictionary<string, GearOptionsDTO>();
@@ -28,6 +28,6 @@ public class StaticDTO
     public string Name { get; set; } = string.Empty;
     
     public string UUID { get; set; } = string.Empty;
-    
+    public Dictionary<string, int> LockParam { get; set; } = new Dictionary<string, int>();
     public List<PlayerInfoDTO> PlayersInfoList { get; set; } = new List<PlayerInfoDTO>();
 }

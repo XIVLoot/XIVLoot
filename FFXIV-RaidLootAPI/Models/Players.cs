@@ -5,7 +5,12 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace FFXIV_RaidLootAPI.Models
 {
 
-
+    public enum Turn{
+        turn_1 = 1,
+        turn_2 = 2,
+        turn_3 = 3,
+        turn_4 = 4
+    }
 
     public class Players
     {   
@@ -37,7 +42,10 @@ namespace FFXIV_RaidLootAPI.Models
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
-
+        public DateTime Turn1LockedUntilDate {get;set;}
+        public DateTime Turn2LockedUntilDate {get;set;}
+        public DateTime Turn3LockedUntilDate {get;set;}
+        public DateTime Turn4LockedUntilDate {get;set;}
         public int staticId { get; set; }
 
         public string EtroBiS {get; set;} = "";
@@ -227,83 +235,257 @@ namespace FFXIV_RaidLootAPI.Models
 
             return TotalItemLevel/GEARSETSIZE;
         }
+
+        public void set_lock_player(int RESET_TIME_IN_WEEK, Turn turn){
+            DateTime now = DateTime.Now;
+            int daysUntilNextTuesday = (int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7;
+            DateTime nextTuesday = now.AddDays(daysUntilNextTuesday + 7 * RESET_TIME_IN_WEEK);
+            nextTuesday = nextTuesday.Date.AddHours(11);
+            switch(turn){
+                case Turn.turn_1:
+                    Turn1LockedUntilDate = nextTuesday;
+                    break;
+                case Turn.turn_2:
+                    Turn2LockedUntilDate = nextTuesday;
+                    break;
+                case Turn.turn_3:
+                    Turn3LockedUntilDate = nextTuesday;
+                    break;
+                case Turn.turn_4:
+                    Turn4LockedUntilDate = nextTuesday;
+                    break;
+            }
+            Console.WriteLine("Updating lock status until : " + nextTuesday.ToString());
+            return;
+        }
+
+        public async Task<bool> need_this_gear(Gear NewGear, DataContext context){
+            // Checks if the player needs this gear to see if it is being contested.
+            Gear? curGear;
+            Gear? bisGear;
+            switch (NewGear.GearType){
+                case GearType.Weapon:
+                   curGear = await context.Gears.FindAsync(CurWeaponGearId);
+                   bisGear = await context.Gears.FindAsync(BisWeaponGearId);
+                    break;
+                case GearType.Head:
+                    curGear = await context.Gears.FindAsync(CurHeadGearId);
+                    bisGear = await context.Gears.FindAsync(BisHeadGearId);
+                    break;
+                case GearType.Body:
+                    curGear = await context.Gears.FindAsync(CurBodyGearId);
+                    bisGear = await context.Gears.FindAsync(BisBodyGearId);
+                    break;
+                case GearType.Hands:
+                    curGear = await context.Gears.FindAsync(CurHandsGearId);
+                    bisGear = await context.Gears.FindAsync(BisHandsGearId);
+                    break;
+                case GearType.Legs:
+                    curGear = await context.Gears.FindAsync(CurLegsGearId);
+                    bisGear = await context.Gears.FindAsync(BisLegsGearId);
+                    break;
+                case GearType.Feet:
+                    curGear = await context.Gears.FindAsync(CurFeetGearId);
+                    bisGear = await context.Gears.FindAsync(BisFeetGearId);
+                    break;
+                case GearType.Earrings:
+                    curGear = await context.Gears.FindAsync(CurEarringsGearId);
+                    bisGear = await context.Gears.FindAsync(BisEarringsGearId);
+                    break;
+                case GearType.Necklace:
+                    curGear = await context.Gears.FindAsync(CurNecklaceGearId);
+                    bisGear = await context.Gears.FindAsync(BisNecklaceGearId);
+                    break;
+                case GearType.Bracelets:
+                    curGear = await context.Gears.FindAsync(CurBraceletsGearId);
+                    bisGear = await context.Gears.FindAsync(BisBraceletsGearId);
+                    break;
+                case GearType.LeftRing:
+                    curGear = await context.Gears.FindAsync(CurLeftRingGearId);
+                    bisGear = await context.Gears.FindAsync(BisLeftRingGearId);
+                    break;
+                case GearType.RightRing:
+                    curGear = await context.Gears.FindAsync(CurRightRingGearId);
+                    bisGear = await context.Gears.FindAsync(BisRightRingGearId);
+                    break;
+                default:
+                    return false;
+            }
+            if (curGear is null || bisGear is null)
+                return false;
+
+            return bisGear.GearStage == NewGear.GearStage && curGear.GearStage != NewGear.GearStage;
+        }
+
+        public async Task<bool> check_if_contested(Gear NewGear, Static s, DataContext context){
+
+            List<Players> players = s.GetPlayers(context);
+
+            foreach (Players player in players){
+                if (player.Id != Id && await player.need_this_gear(NewGear, context)){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public async Task update_lock_status(Gear OldGear, Gear NewGear, DataContext context, Turn turn){
+            Console.WriteLine("Updating lock status");
+            Static? s = await context.Statics.FindAsync(staticId);
+            if (s is null)
+                return;
+
+            // Loading static parameter
+            Dictionary<string, int> param = s.GetLockParam();
+
+            if (param["BOOL_LOCK_PLAYERS"] == 0)
+                return;
+
+            // Case 1 - Went from preperation to tome or preperation (Do nothing for now)
+            if (OldGear.GearStage == GearStage.Preparation && 
+               (NewGear.GearStage == GearStage.Tomes || NewGear.GearStage == GearStage.Preparation)){
+                return;
+            }
+
+            // Case 2 - Went from tome or preperation to augmented tome and we lock for that.
+            if ((OldGear.GearStage == GearStage.Tomes || OldGear.GearStage == GearStage.Preparation) && NewGear.GearStage == GearStage.Upgraded_Tomes 
+                  && param["LOCK_IF_TOME_AUGMENT"] == 1){
+                    // If (lock if not contested) is false and we are not contested, do nothing.
+                    if (param["BOOL_LOCK_IF_NOT_CONTESTED"] == 0 && !(await check_if_contested(NewGear, s, context))){
+                        return;
+                    }
+                    set_lock_player(param["RESET_TIME_IN_WEEK"],turn);
+                    return;
+                }
+
+            // Case 3 - Went from anything to raid
+            if (OldGear.GearStage != GearStage.Raid && NewGear.GearStage == GearStage.Raid){
+                Console.WriteLine("Raid update");
+                // If (lock if not contested) is false and we are not contested, do nothing.
+                    if (param["BOOL_LOCK_IF_NOT_CONTESTED"] == 0 && !(await check_if_contested(NewGear, s, context))){
+                        Console.WriteLine("Not doing aything");
+                        return;
+                    }
+                    Console.WriteLine("Locking");
+                    set_lock_player(param["RESET_TIME_IN_WEEK"],turn);
+                    return;
+            }
+
+
+        }
     
-        public void change_gear_piece(GearType GearToChange, bool UseBis, int NewGearId)
+        public async Task change_gear_piece(GearType GearToChange, bool UseBis, int NewGearId, Turn turn,DataContext context)
         {/*Updates the id of the specified gear piece for the player..
         GearToChange -> Value of the GearType to change.
         UseBis -> If true changes the value for Bis. Else for current.
         NewGearId -> Id (in database) of new gear to change to.
         */
+        int oldCurGearId = 0;
 
-        switch (GearToChange){
+                switch (GearToChange){
             case GearType.Weapon:
                 if (UseBis)
                     BisWeaponGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurWeaponGearId;
                     CurWeaponGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Head:
                 if (UseBis)
                     BisHeadGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurHeadGearId;
                     CurHeadGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Body:
                 if (UseBis)
                     BisBodyGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurBodyGearId;
                     CurBodyGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Hands:
                 if (UseBis)
                     BisHandsGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurHandsGearId;
                     CurHandsGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Legs:
                 if (UseBis)
                     BisLegsGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurLegsGearId;
                     CurLegsGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Feet:
                 if (UseBis)
                     BisFeetGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurFeetGearId;
                     CurFeetGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Earrings:
                 if (UseBis)
                     BisEarringsGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurEarringsGearId;
                     CurEarringsGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Necklace:
                 if (UseBis)
                     BisNecklaceGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurNecklaceGearId;
                     CurNecklaceGearId = NewGearId;
-                return;
+                }
+                break;
             case GearType.Bracelets:
                 if (UseBis)
                     BisBraceletsGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurBraceletsGearId;
                     CurBraceletsGearId = NewGearId;
-                return;
-            case GearType.RightRing: // TODO Add logic for both rings.
+                }
+                break;
+            case GearType.RightRing:
                 if (UseBis)
                     BisRightRingGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurRightRingGearId;
                     CurRightRingGearId = NewGearId;
-                return;
-            case GearType.LeftRing: // TODO Add logic for both rings.
+                }
+                break;
+            case GearType.LeftRing:
                 if (UseBis)
                     BisLeftRingGearId = NewGearId;
-                else 
+                else {
+                    oldCurGearId = CurLeftRingGearId;
                     CurLeftRingGearId = NewGearId;
-                return;
+                }
+                break;
+            default:
+                break;
         }
 
+        if (!UseBis){
+            Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
+            Gear? newGear = await context.Gears.FindAsync(NewGearId);
+            if (newGear is null || oldGear is null)
+                return;
+
+            await this.update_lock_status(oldGear, newGear, context, turn);
+            return;
+
+            }
         }
     
         public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static){
@@ -367,10 +549,29 @@ namespace FFXIV_RaidLootAPI.Models
                 AverageItemLevelBis=AverageItemLevelBis,
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
                 PlayerGearScore=PlayerGearScore,
-                Cost=Cost
+                Cost=Cost,
+                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
             };
         }
+    
+        public void remove_lock(Turn turn){
+            switch(turn){
+                case Turn.turn_1:
+                    Turn1LockedUntilDate =  DateTime.MinValue;
+                    return;
+                case Turn.turn_2:
+                    Turn2LockedUntilDate =  DateTime.MinValue;
+                    return;
+                case Turn.turn_3:
+                    Turn3LockedUntilDate =  DateTime.MinValue;
+                    return;
+                case Turn.turn_4:
+                    Turn4LockedUntilDate =  DateTime.MinValue;
+                    return;
+            }
+        }
     }
+    
 
     public enum Job
     {

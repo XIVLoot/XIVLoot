@@ -125,8 +125,24 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
-            player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId);
-            context.SaveChanges();
+            await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, Turn.turn_1, context);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+        }
+
+        [HttpPut("RemovePlayerLock/{turn}")]
+        public async Task<ActionResult> RemovePlayerLock(PlayerDTO dto, Turn turn)
+        {
+        using (var context = _context.CreateDbContext())
+        {
+            Players? player = await context.Players.FindAsync(dto.Id);
+            if (player is null)
+                return NotFound("Player not found");
+            player.remove_lock(turn);
+
+            await context.SaveChangesAsync();
             return Ok();
         }
         }

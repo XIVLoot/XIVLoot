@@ -54,6 +54,30 @@ namespace FFXIV_RaidLootAPI.Controllers
                 return Ok(new List<decimal>() {s.GearScoreA, s.GearScoreB, s.GearScoreC});
             }
         }
+        /*
+        - BOOL_LOCK_PLAYERS; (FALSE)
+        - BOOL_LOCK_IF_NOT_CONTESTED; (TRUE)
+        - RESET_TIME_IN_WEEK; (1)
+        - BOOL_FOR_1_FIGHT; (FALSE)
+        - INT_NUMBER_OF_PIECES_UNTIL_LOCK; (1)
+        - LOCK_IF_TOME_AUGMENT; (FALSE)
+        - BOOL_IF_ROLE_CHANGES_NUMBER_PIECES; (FALSE)
+        - DPS_NUMBER;TANK_NUMBER;HEALER_NUMBER (1),(1),(1)
+        */
+        [HttpPut("UpdateLockParam/{uuid}")]
+        public async Task<ActionResult<List<decimal>>> UpdateLockParam(string uuid, ParamUpdateDTO NewParam)
+        {
+            using (var context = _context.CreateDbContext())
+            {   
+                Static? s = await context.Statics.FirstOrDefaultAsync(u => u.UUID == uuid);
+                if (s is null)
+                    return NotFound("Static not found");
+                
+                s.LOCK_PARAM = Static.DictParamToString(NewParam.DTOAsDict());
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
 
         [HttpPut("SetPGSParam/{uuid}/{a}/{b}/{c}")]
         public async Task<ActionResult<List<decimal>>> GetPGSParam(string uuid, decimal a, decimal b, decimal c)
@@ -122,6 +146,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                     Id = dbStatic.Id,
                     Name = dbStatic.Name,
                     UUID = dbStatic.UUID,
+                    LockParam=dbStatic.GetLockParam(),
                     PlayersInfoList = PlayersInfoList
                 };
 
