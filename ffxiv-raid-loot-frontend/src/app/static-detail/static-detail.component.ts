@@ -49,6 +49,9 @@ export class StaticDetailComponent implements OnInit {
   public uuid: string; // UUID of the static
   public gridColumns = 3; // Default number of grid columns
   public groupList = [];
+  public test : boolean = true;
+  public OriginalLockParam : any;
+  public LockParamChangeCheck : boolean = false;;
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog
@@ -59,6 +62,9 @@ export class StaticDetailComponent implements OnInit {
    } // Constructor with dependency injection
 
   ngOnInit(): void {
+    this.test = true;
+    this.staticDetail = new Static(0, "", "", [], {});
+
     // Subscribe to route parameters to get the 'uuid'
     this.route.params.subscribe(params => {
       this.uuid = params['uuid'];
@@ -68,10 +74,28 @@ export class StaticDetailComponent implements OnInit {
     this.http.getStatic(this.uuid).subscribe(details => {
       console.log("Received details");
       this.staticDetail = details; // Assign the fetched details to staticDetail
+      this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
       console.log(this.staticDetail); // Log the static details to the console
       this.groupList = this.ComputeNumberPGSGroup();
     });
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
+  }
+
+  CheckChange(){
+    for (let key in this.OriginalLockParam){
+      if (this.OriginalLockParam[key] !== this.staticDetail.LockParam[key]){
+        this.LockParamChangeCheck=true;return;
+      }
+    }
+    this.LockParamChangeCheck=false;
+  }
+
+  SaveLockParam(){
+    this.http.updateStaticLockParam(this.staticDetail.uuid, this.staticDetail.LockParam).subscribe(res => {
+      console.log(res);
+      this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
+      this.LockParamChangeCheck=false;
+    });
   }
 
   SaveStaticToUser(){

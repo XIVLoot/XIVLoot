@@ -125,7 +125,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
-            await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, Turn.turn_1, context);
+            await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, dto.turn, context);
 
             await context.SaveChangesAsync();
             return Ok();

@@ -6,10 +6,13 @@ namespace FFXIV_RaidLootAPI.Models
 {
 
     public enum Turn{
+
+        turn_0 = 0, // turn_0 is used as an ignore case.
         turn_1 = 1,
         turn_2 = 2,
         turn_3 = 3,
-        turn_4 = 4
+        turn_4 = 4,
+        turn_5 = 5, // turn_5 is used as a lock (or unlock) in all fight case.
     }
 
     public class Players
@@ -236,23 +239,39 @@ namespace FFXIV_RaidLootAPI.Models
             return TotalItemLevel/GEARSETSIZE;
         }
 
-        public void set_lock_player(int RESET_TIME_IN_WEEK, Turn turn){
+        public void set_lock_player(Dictionary<string, int> param, Turn turn){
+            Console.WriteLine("Setting : " + turn.ToString());
+            int RESET_TIME_IN_WEEK = param["RESET_TIME_IN_WEEK"];
+            if (param["BOOL_FOR_1_FIGHT"] == 0)
+            {
+                turn = Turn.turn_5; // Lock out of all if so.
+                Console.WriteLine("Setting to turn_5");
+            }
+            Console.WriteLine("Passed changing");
             DateTime now = DateTime.Now;
             int daysUntilNextTuesday = (int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7;
             DateTime nextTuesday = now.AddDays(daysUntilNextTuesday + 7 * RESET_TIME_IN_WEEK);
             nextTuesday = nextTuesday.Date.AddHours(11);
             switch(turn){
+                case Turn.turn_0:
+                    break;
                 case Turn.turn_1:
-                    Turn1LockedUntilDate = nextTuesday;
+                    Turn1LockedUntilDate = Turn1LockedUntilDate > nextTuesday ? Turn1LockedUntilDate : nextTuesday;
                     break;
                 case Turn.turn_2:
-                    Turn2LockedUntilDate = nextTuesday;
+                    Turn2LockedUntilDate = Turn2LockedUntilDate > nextTuesday ? Turn2LockedUntilDate : nextTuesday;
                     break;
                 case Turn.turn_3:
-                    Turn3LockedUntilDate = nextTuesday;
+                    Turn3LockedUntilDate = Turn3LockedUntilDate > nextTuesday ? Turn3LockedUntilDate : nextTuesday;
                     break;
                 case Turn.turn_4:
-                    Turn4LockedUntilDate = nextTuesday;
+                    Turn4LockedUntilDate = Turn4LockedUntilDate > nextTuesday ? Turn4LockedUntilDate : nextTuesday;
+                    break;
+                case Turn.turn_5:
+                    Turn1LockedUntilDate = Turn1LockedUntilDate > nextTuesday ? Turn1LockedUntilDate : nextTuesday;
+                    Turn2LockedUntilDate = Turn2LockedUntilDate > nextTuesday ? Turn2LockedUntilDate : nextTuesday;
+                    Turn3LockedUntilDate = Turn3LockedUntilDate > nextTuesday ? Turn3LockedUntilDate : nextTuesday;
+                    Turn4LockedUntilDate = Turn4LockedUntilDate > nextTuesday ? Turn4LockedUntilDate : nextTuesday;
                     break;
             }
             Console.WriteLine("Updating lock status until : " + nextTuesday.ToString());
@@ -355,7 +374,7 @@ namespace FFXIV_RaidLootAPI.Models
                     if (param["BOOL_LOCK_IF_NOT_CONTESTED"] == 0 && !(await check_if_contested(NewGear, s, context))){
                         return;
                     }
-                    set_lock_player(param["RESET_TIME_IN_WEEK"],turn);
+                    set_lock_player(param,turn);
                     return;
                 }
 
@@ -368,7 +387,7 @@ namespace FFXIV_RaidLootAPI.Models
                         return;
                     }
                     Console.WriteLine("Locking");
-                    set_lock_player(param["RESET_TIME_IN_WEEK"],turn);
+                    set_lock_player(param,turn);
                     return;
             }
 
@@ -476,7 +495,7 @@ namespace FFXIV_RaidLootAPI.Models
                 break;
         }
 
-        if (!UseBis){
+        if (turn != Turn.turn_0 && !UseBis){
             Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
             Gear? newGear = await context.Gears.FindAsync(NewGearId);
             if (newGear is null || oldGear is null)
@@ -556,6 +575,8 @@ namespace FFXIV_RaidLootAPI.Models
     
         public void remove_lock(Turn turn){
             switch(turn){
+                case Turn.turn_0:
+                    return;
                 case Turn.turn_1:
                     Turn1LockedUntilDate =  DateTime.MinValue;
                     return;
@@ -566,6 +587,12 @@ namespace FFXIV_RaidLootAPI.Models
                     Turn3LockedUntilDate =  DateTime.MinValue;
                     return;
                 case Turn.turn_4:
+                    Turn4LockedUntilDate =  DateTime.MinValue;
+                    return;
+                case Turn.turn_5:
+                    Turn1LockedUntilDate =  DateTime.MinValue;
+                    Turn2LockedUntilDate =  DateTime.MinValue;
+                    Turn3LockedUntilDate =  DateTime.MinValue;
                     Turn4LockedUntilDate =  DateTime.MinValue;
                     return;
             }

@@ -9,6 +9,7 @@ public class PlayerDTO
     public int Id {get;set;}
     public bool UseBis {get;set;}
     public GearType GearToChange {get;set;}
+    public Turn turn {get;set;}
     public int NewGearId {get;set;}
     public string NewEtro {get;set;} = string.Empty;
     public string NewName {get;set;} = string.Empty;
