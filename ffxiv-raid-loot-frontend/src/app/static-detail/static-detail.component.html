@@ -65,6 +65,39 @@
   </mat-expansion-panel>
 </mat-accordion>
 
+  <div>
+    <mat-grid-list [cols]="4"rowHeight="1:0.3" style="width: 100%" gutterSize="10px">
+      <mat-grid-tile *ngFor="let player of staticDetail.players" (click)="selectPlayer(player)" [style.backgroundColor]="getBackgroundColor(player.job)" style="border: 3px solid rgba(255, 255, 255, 0.2);padding: 0;border-radius: 10px;"(mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)">
+        <div style="display: flex; flex-direction: column; height: 100%; width: 100%; margin: 0;">  
+        <div style="height: 30%;width: 100%;margin: 0;">  
+            <div style="display: flex; justify-content: flex-start; margin: 5px; position: relative; top: 0; left: 0;">
+              <p style="margin-right: 10px;">{{player.name}}</p>
+              <img [src]="getJobIcon(player.job)" style="width: 20px;height: 20px;">
+            </div>
+            <div style="position: absolute; top: 0; right: 0;margin: 5px;">
+              <p>{{player.CurrentAverageItemLevel}}/{{player.BisAverageItemLevel}}</p>
+            </div>
+          </div>
+
+          <div style="height: 25%; width: 100%; margin: 0;display: flex;flex-direction: row;margin-bottom: 1%;">
+              <div style="height: 100%;width: 24%;margin: 0;margin-left: 24%;"><p style="margin-bottom: 0;"><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></div>
+              <div style="height: 100%;width: 17%;margin: 0;"><p style="margin-bottom: 0;"><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></div>
+              <div style="height: 100%;width: 17%;margin: 0;"><p style="margin-bottom: 0;"><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></div>
+          </div>
+
+          <div style="height: 44%;width: 100%;margin: 0;display: flex;flex-direction: row;">
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_1.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_2.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_3.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_4.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(4) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(4) ? 'Locked from turn 4.' : 'Not locked.'"/></div>
+          </div>
+        </div>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
+  <div style="height: 500px;width: 100%;">
+    <app-player-details-single *ngIf="SelectedPlayer" [player]="SelectedPlayer"></app-player-details-single>
+  </div>
   </div>
   <!-- Container for player details -->
   <div style="width: 100%;">

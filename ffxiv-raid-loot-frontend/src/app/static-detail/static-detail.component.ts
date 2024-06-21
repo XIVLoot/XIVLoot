@@ -32,6 +32,7 @@ import { StaticEventsService } from '../service/static-events.service';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
+import { Player } from '../models/player';
 
 interface PlayerPGS {
   name: string;
@@ -51,7 +52,8 @@ export class StaticDetailComponent implements OnInit {
   public groupList = [];
   public test : boolean = true;
   public OriginalLockParam : any;
-  public LockParamChangeCheck : boolean = false;;
+  public LockParamChangeCheck : boolean = false;
+  public SelectedPlayer : Player;
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog
@@ -123,6 +125,52 @@ export class StaticDetailComponent implements OnInit {
         });
       });
     });
+  }
+
+  onMouseEnter(event: any) {
+    event.target.style.cursor = 'pointer';
+    event.target.style.border = '3px solid rgba(255, 255, 255, 0.5)'
+  }
+  onMouseLeave(event: any) {
+    event.target.style.border = '3px solid rgba(255, 255, 255, 0.2)'
+  }
+
+  selectPlayer(player : Player){
+    console.log("Selected : " + player.name);
+    this.SelectedPlayer = player;
+  }
+
+  getJobIcon(job : string){
+    return `assets/job/${job}.png`;
+  }
+
+  getBackgroundColor(job : string){
+    switch(job){
+      case "BlackMage":
+      case "RedMage":
+      case "Summoner":
+      case "Ninja":
+      case "Samurai":
+      case "Monk":
+      case "Reaper":
+      case "Dragoon":
+      case "Bard":
+      case "Machinist":
+      case "Dancer":
+      case "Viper":
+      case "Pictomancer":        
+        return "rgba(255, 0, 0, 0.25)";
+      case "Astrologian":
+      case "Sage":
+      case "Scholar":
+      case "WhiteMage":
+        return "rgba(0,255,0,0.25)";
+      case "DarkKnight":
+      case "Paladin":
+      case "Warrior":
+      case "Gunbreaker":
+        return "rgba(0, 0, 255, 0.25)";
+    }
   }
 
   onChangeStaticName(event : Event){

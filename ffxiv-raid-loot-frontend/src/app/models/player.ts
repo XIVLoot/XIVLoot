@@ -7,7 +7,7 @@ export class Player {
   public playerGearScore: number;
   public name: string;
   public job: string;
-  public locked: boolean;
+  public LockedList : Date[];
   public staticId: number;
   public TomestoneCost : number;
   public TwineCost : number;
@@ -52,11 +52,15 @@ export class Player {
   constructor(
   ){}
 
+  public IsLockedOutOfTurn(turn : number) : boolean{
+    return this.LockedList[turn-1] > new Date();
+  }
+
   public static CreatePlayerFromDict(Dict) : Player{
     let p = new Player();
     p.id = Dict["id"];
     p.job = Dict["job"];
-    p.locked = Dict["locked"];
+    p.LockedList = Dict["lockedList"].map(dateStr => new Date(dateStr));
     p.name = Dict["name"];
     p.playerGearScore = Dict["playerGearScore"];
     p.etroBiS=Dict["etroBiS"]; // TODO HAVE TO MAKE THIS WORK

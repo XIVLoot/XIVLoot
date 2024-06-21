@@ -46,6 +46,7 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
 import { AuthComponent } from './auth/auth.component';
+import { PlayerDetailsSingleComponent } from './player-details-single/player-details-single.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { AuthComponent } from './auth/auth.component';
     StaticComponent,
     StaticDetailComponent,
     PlayerDetailComponent,
-    AuthComponent
+    AuthComponent,
+    PlayerDetailsSingleComponent
   ],
   imports: [
     BrowserModule,

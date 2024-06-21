@@ -1,0 +1,157 @@
+<div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16)" [style.backgroundColor]="getBackgroundColor()">
+<div style="height: 13ch;background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;padding-bottom: 10px;margin-bottom: 5px;width: 40%;">
+    <!--Display names/job/etro-->
+    <div style="display: flex; margin-bottom: 0px;height:7ch;">
+    <mat-form-field style="width:39.5%;height: 8ch;margin-bottom: 0px;">
+      <mat-label>Name :</mat-label>
+        <input matInput value="{{player.name}}" (change)="onChangeName($event)">
+    </mat-form-field>
+
+    <mat-form-field style="width:35%;padding-left: 5%;height: 8ch;margin-bottom: 0px !important;">
+      <mat-label>Job :</mat-label>
+      <select matNativeControl [(ngModel)]="player.job" (change)="onChangeJob($event)">
+        <option *ngFor="let item of JOB">{{item}}</option>
+      </select>
+    </mat-form-field>
+    </div>
+    
+    <div style="display: flex; justify-content: space-between;margin-bottom: 0px;height:7ch;">
+    <mat-form-field style="width:80%;height: 8ch;margin-top: 0px!important;">
+        <mat-label>BiS Etro uuid : </mat-label>
+        <input matInput value="{{player.etroBiS}}"  id="etroField" #etroField [(ngModel)]="player.etroBiS">
+    </mat-form-field>
+      <div style="display: flex; flex-direction: column; align-items: center;padding-left: 0%;">
+        <button mat-raised-button color="accent" style="width: 20%;height: 2.5ch;" (click)="EtroDialogOpen(player.id)">Import</button>
+        <div style="padding-top: 0.5ch;">
+        <a mat-raised-button href="{{ 'https://etro.gg/gearset/' + player.etroBiS }}" target="_blank" style="width: 20%;height: 2.5ch;margin-left: 2ch;" title="View the gearset in etro.gg">Etro.gg</a>
+        </div>
+      </div>
+    </div>
+</div>
+<div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;margin-bottom: 5px;width: 50%;">
+    <!--Display Gearsets-->
+    <div style="display: flex; justify-content: space-between; align-items: center;height:7ch;">
+      <p style="padding-left:14%">Current : {{player.CurrentAverageItemLevel}}</p>
+      <p style="padding-right: 22%;">Bis : {{player.BisAverageItemLevel}}</p>
+    </div>
+
+      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="width: 25px;height: 25px;margin-bottom:20px">
+        <img [src]="getImageSource(player.curWeaponGear)"  style="width: 100%; height: 100%;">
+      </div>
+        <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
+            <select matNativeControl [(ngModel)]="player.curWeaponGear.gearName" (change)="onChangeGear('Weapon',false,$event)">
+              <option *ngFor="let item of player.WeaponChoice">{{item.gearName}}</option>
+            </select>
+          </mat-form-field>
+          <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Weapon</p>
+          <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
+          <select matNativeControl [(ngModel)]="player.bisWeaponGear.gearName" (change)="onChangeGear('Weapon',true,$event)">
+              <option *ngFor="let item of player.WeaponChoice">{{item.gearName}}</option>
+            </select>
+        </mat-form-field>
+        <div style="width: 25px;height: 25px;margin-bottom:20px">
+          <img [src]="getImageSource(player.bisWeaponGear)"  style="width: 100%; height: 100%;margin-bottom: 5p;">
+        </div>
+    </div>
+
+        <div style="display: flex;align-items: center;height:6ch;">
+      <div style="width: 25px;height: 25px;margin-bottom:20px">
+        <img [src]="getImageSource(player.curHeadGear)"  style="width: 100%; height: 100%;">
+      </div>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
+        <select matNativeControl [(ngModel)]="player.curHeadGear.gearName" (change)="onChangeGear('Head',false,$event)">
+          <option *ngFor="let item of player.HeadChoice">{{item.gearName}}</option>
+        </select>
+      </mat-form-field>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Head</p>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
+      <select matNativeControl [(ngModel)]="player.bisHeadGear.gearName" (change)="onChangeGear('Head',true,$event)">
+          <option *ngFor="let item of player.HeadChoice">{{item.gearName}}</option>
+        </select>
+    </mat-form-field>
+    <div style="width: 25px;height: 25px;margin-bottom:20px">
+      <img [src]="getImageSource(player.bisHeadGear)"  style="width: 100%; height: 100%;">
+    </div>
+    </div>
+
+      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="width: 25px;height: 25px;margin-bottom:20px">
+        <img [src]="getImageSource(player.curBodyGear)"  style="width: 100%; height: 100%;">
+      </div>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
+        <select matNativeControl [(ngModel)]="player.curBodyGear.gearName" (change)="onChangeGear('Body',false,$event)">
+          <option *ngFor="let item of player.BodyChoice">{{item.gearName}}</option>
+        </select>
+      </mat-form-field>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Body</p>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
+      <select matNativeControl [(ngModel)]="player.bisBodyGear.gearName" (change)="onChangeGear('Body',true,$event)">
+          <option *ngFor="let item of player.BodyChoice">{{item.gearName}}</option>
+        </select>
+    </mat-form-field>
+    <div style="width: 25px;height: 25px;margin-bottom:20px">
+      <img [src]="getImageSource(player.bisBodyGear)"  style="width: 100%; height: 100%;">
+    </div>
+    </div>
+
+      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="width: 25px;height: 25px;margin-bottom:20px">
+        <img [src]="getImageSource(player.curHandsGear)"  style="width: 100%; height: 100%;">
+      </div>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
+        <select matNativeControl [(ngModel)]="player.curHandsGear.gearName" (change)="onChangeGear('Hands',false,$event)">
+          <option *ngFor="let item of player.HandsChoice">{{item.gearName}}</option>
+        </select>
+      </mat-form-field>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Hands</p>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
+      <select matNativeControl [(ngModel)]="player.bisHandsGear.gearName" (change)="onChangeGear('Hands',true,$event)">
+          <option *ngFor="let item of player.HandsChoice">{{item.gearName}}</option>
+        </select>
+    </mat-form-field>
+    <div style="width: 25px;height: 25px;margin-bottom:20px">
+      <img [src]="getImageSource(player.bisHandsGear)"  style="width: 100%; height: 100%;">
+    </div>
+    </div>
+
+      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="width: 25px;height: 25px;margin-bottom:20px">
+        <img [src]="getImageSource(player.curLegsGear)"  style="width: 100%; height: 100%;">
+      </div>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
+        <select matNativeControl [(ngModel)]="player.curLegsGear.gearName" (change)="onChangeGear('Legs',false,$event)">
+          <option *ngFor="let item of player.LegsChoice">{{item.gearName}}</option>
+        </select>
+      </mat-form-field>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Legs</p>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
+      <select matNativeControl [(ngModel)]="player.bisLegsGear.gearName" (change)="onChangeGear('Legs',true,$event)">
+          <option *ngFor="let item of player.LegsChoice">{{item.gearName}}</option>
+        </select>
+    </mat-form-field>
+    <div style="width: 25px;height: 25px;margin-bottom:20px">
+      <img [src]="getImageSource(player.bisLegsGear)"  style="width: 100%; height: 100%;">
+    </div>
+    </div>
+
+      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="width: 25px;height: 25px;margin-bottom:20px">
+        <img [src]="getImageSource(player.curFeetGear)"  style="width: 100%; height: 100%;">
+      </div>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
+        <select matNativeControl [(ngModel)]="player.curFeetGear.gearName" (change)="onChangeGear('Feet',false,$event)">
+          <option *ngFor="let item of player.FeetChoice">{{item.gearName}}</option>
+        </select>
+      </mat-form-field>
+      <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Feet</p>
+      <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
+      <select matNativeControl [(ngModel)]="player.bisFeetGear.gearName" (change)="onChangeGear('Feet',true,$event)">
+          <option *ngFor="let item of player.FeetChoice">{{item.gearName}}</option>
+        </select>
+    </mat-form-field>
+    <div style="width: 25px;height: 25px;margin-bottom:20px">
+      <img [src]="getImageSource(player.bisFeetGear)"  style="width: 100%; height: 100%;">
+    </div>
+    </div>
+</div>
