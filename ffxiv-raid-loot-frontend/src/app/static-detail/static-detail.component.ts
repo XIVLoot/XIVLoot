@@ -53,7 +53,8 @@ export class StaticDetailComponent implements OnInit {
   public test : boolean = true;
   public OriginalLockParam : any;
   public LockParamChangeCheck : boolean = false;
-  public SelectedPlayer : Player;
+  
+  public SelectedPlayer : number;
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog
@@ -137,7 +138,7 @@ export class StaticDetailComponent implements OnInit {
 
   selectPlayer(player : Player){
     console.log("Selected : " + player.name);
-    this.SelectedPlayer = player;
+    this.SelectedPlayer = player.id;
   }
 
   getJobIcon(job : string){

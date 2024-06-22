@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Inject, Input, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, Input, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Player } from '../models/player';
 import { Gear } from '../models/gear';
 import { HttpService } from '../service/http.service'; // Importing the HttpService
@@ -7,7 +7,8 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-player-details-single',
   templateUrl: './player-details-single.component.html',
-  styleUrl: './player-details-single.component.css'
+  styleUrl: './player-details-single.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlayerDetailsSingleComponent {
   JOB : string[] = ["BlackMage", "Summoner", "RedMage", "WhiteMage", "Astrologian", "Sage",
@@ -19,6 +20,7 @@ export class PlayerDetailsSingleComponent {
   constructor(public http: HttpService, private route: ActivatedRoute, public dialog: MatDialog,
               private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService
   ) { } // Constructor with dependency injection
+
 
   async onChangeGear(GearType : string, bis : boolean, event: Event){
     const selectElement = event.target as HTMLSelectElement;
@@ -128,34 +130,54 @@ export class PlayerDetailsSingleComponent {
         break;
     }
 
-    //Assumed gear came from raid to give turn. Now checking and changing turn accordingly.
-    if (NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")
-      Turn = 0; // 0 Means ignore the lock. The API will not check for lock when Turn = 0.
+    if (!bis){
+      if (NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")
+        Turn = 0; // 0 Means ignore the lock. The API will not check for lock when Turn = 0.
 
-    if (NewGear.gearStage == "Upgraded_Tomes") // If is augment then change turn to turn where the augment drops.
-      switch(GearType){
-        case "Weapon":
-        case "Body":
-        case "Head":
-        case "Hands":
-        case "Legs":
-        case "Feet":
-          Turn = 3;
-          break;
-        case "Necklace":
-        case "Earrings":
-        case "Bracelets":
-        case "RightRing":
-        case "LeftRing":
-          Turn = 2;
-          break;
+      if (NewGear.gearStage == "Upgraded_Tomes") // If is augment then change turn to turn where the augment drops.
+        switch(GearType){
+          case "Weapon":
+          case "Body":
+          case "Head":
+          case "Hands":
+          case "Legs":
+          case "Feet":
+            Turn = 3;
+            break;
+          case "Necklace":
+          case "Earrings":
+          case "Bracelets":
+          case "RightRing":
+          case "LeftRing":
+            Turn = 2;
+            break;
+        }
+
+      if (Turn == -1){
+        // If turn == -1 then there is ambiguity and we need to ask player if it dropped from 2 or 3 (Since head/hand/feet can drop from both)
+        this.dialog.open(ConfirmDialog, {
+          width: '500px',
+          height: '200px',
+          data: {title : "Fight uncertainty", content : "The gear you selected can be dropped from turn 2 and turn 3, please select where it came from.", yes_option : "Turn 2", no_option : "Turn 3"}
+        }).afterClosed().subscribe(result => {
+          console.log("after closed")
+          console.log(result)
+          if (result === "No"){
+            Turn = 3;
+          } else if (result === "Yes") {
+            Turn = 2;
+          }
+          else{
+            return;
+          }
+          this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
+            console.log(data);
+            this.RegetPlayerInfo();
+          });
+        });
+        return;
       }
-
-    if (Turn == -1){
-      // If turn == -1 then there is ambiguity and we need to ask player if it dropped from 2 or 3 (Since head/hand/feet can drop from both)
-      Turn = 0; // TODO: Ask player if it dropped from 2 or 3
     }
-
 
     await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
       console.log(data);
@@ -266,11 +288,35 @@ export class PlayerDetailsSingleComponent {
       newPlayer.staticId = this.player.staticId;
       var index = this.player.staticRef.players.findIndex(player => player.id == this.player.id);
       this.player.staticRef.players[index] = newPlayer;
-      
       this.RecomputePGSWholeStatic();
       this.cdr.detectChanges();
-      this.player = this.player.staticRef.players[index];
+      
     });
+  }
+
+  RemoveLockOnTurn(turn : number){
+    this.dialog.open(ConfirmDialog, {
+      width: '500px',
+      height: '200px',
+      data: {title : "Remove lock.", content : "Are you sure you want to remove the lock of this player on turn " + turn + "?", yes_option : "Yes", no_option : "No"}
+    }).afterClosed().subscribe(result => {
+      console.log("after closed")
+      console.log(result)
+      if (result === "Yes"){
+        this.http.RemoveLock(this.player.id, turn).subscribe((data) => {
+          console.log(data);
+          this.RegetPlayerInfo();
+        });
+      }
+    });
+  }
+
+  onMouseEnter(event: any) {
+    event.target.style.cursor = 'pointer';
+    event.target.style.filter = 'brightness(1.1)';
+  }
+  onMouseLeave(event: any) {
+    event.target.style.filter = '';
   }
 
 }
@@ -334,4 +380,26 @@ export class EtroDialog {
       this.dialogRef.close("Yes");
     });
   }
+}
+
+@Component({
+  selector: 'import-etro',
+  template: `<h2 mat-dialog-title>{{data.title}}</h2>
+            <mat-dialog-content>
+              {{data.content}}
+            </mat-dialog-content>
+            <mat-dialog-actions>
+              <button mat-button (click)="dialogRef.close('Yes')">{{data.yes_option}}</button>
+              <button mat-button (click)="dialogRef.close('No')">{{data.no_option}}</button>
+            </mat-dialog-actions>`,
+  standalone: true,
+  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent],
+})
+export class ConfirmDialog {
+  constructor(public dialogRef: MatDialogRef<EtroDialog>,public http: HttpService,
+    @Inject(MAT_DIALOG_DATA) public data: { title : string, content : string , yes_option : string, no_option : string },
+    private sanitizer: DomSanitizer, private _snackBar: MatSnackBar
+  ) {}
+
+  
 }

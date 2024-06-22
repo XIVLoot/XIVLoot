@@ -201,6 +201,13 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
+  RemoveLock(playerId : number, turn : number){
+    const url = `${this.api}Player/RemovePlayerLock/${turn}`;
+    return this.http.put(url, {"id" : playerId}).pipe(
+      catchError(error => throwError(() => new Error('Failed to remove lock: ' + error.message)))
+    );
+  }
+
 }
 
 
