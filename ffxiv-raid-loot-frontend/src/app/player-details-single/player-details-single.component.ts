@@ -152,11 +152,7 @@ export class PlayerDetailsSingleComponent {
       });
     });
 
-    if (check){
-      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
-        console.log(data);
-        this.RegetPlayerInfo();
-      });
+    if (!check){
       switch (GearType){
         case "Weapon":
           if(bis)
@@ -225,6 +221,10 @@ export class PlayerDetailsSingleComponent {
             this.player.curLeftRingGear = NewGear;
           break;
       }
+      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
+        console.log(data);
+        this.RegetPlayerInfo();
+      });
       return true;
     }
     return false

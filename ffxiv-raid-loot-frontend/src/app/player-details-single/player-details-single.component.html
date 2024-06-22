@@ -285,7 +285,7 @@
         <img [src]="getImageSource(player.curLeftRingGear)"  style="width: 100%; height: 100%;">
       </div>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-left: 4%;">
-        <select matNativeControl #leftRingSelect [(ngModel)]="player.curLeftRingGear.gearName" (ngModelChange)="onChangeGear('LeftRing', false, leftRingSelect.selectedIndex)">
+        <select matNativeControl #leftRingSelect [value]="player.curLeftRingGear.gearName" (change)="onChangeGear('LeftRing', false, $event)">
           <option *ngFor="let item of player.LeftRingChoice">{{item.gearName}}</option>
         </select>
       </mat-form-field>
