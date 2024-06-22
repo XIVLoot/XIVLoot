@@ -1,8 +1,12 @@
-<div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16);display: flex;flex-direction: column;height: 500px;" [style.backgroundColor]="getBackgroundColor()">
-<div style="height: 25%; width: 100%;display: flex;flex-direction: row;">
-  <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;padding-bottom: 10px;margin-bottom: 5px;width: 40%;">
+<div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16);display: flex;flex-direction: row;height: 500px;" [style.backgroundColor]="getBackgroundColor()">
+
+
+<div style="height: 100%;width: 70%;display: flex;flex-direction: column;">
+
+<div style="height: 24.5%; width: 100%;display: flex;flex-direction: row;padding-bottom: 0.5%;">
+  <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;width: 50%;height: 100%;padding: 0;padding-left: 0.5%;">
       <!--Display names/job/etro-->
-      <div style="display: flex; margin-bottom: 0px;height:7ch;">
+      <div style="display: flex; margin-bottom: 0px;height:7ch;padding-top: 0.5%;">
       <mat-form-field style="width:39.5%;height: 8ch;margin-bottom: 0px;">
         <mat-label>Name :</mat-label>
           <input matInput value="{{player.name}}" (change)="onChangeName($event)">
@@ -29,21 +33,27 @@
         </div>
       </div>
   </div>
-  <div style="width: 59%;">
-    <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;margin-left: 1%;">
+    <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;margin-left: 1%;width: 49%;height: 100%;">
       <!--Display cost-->
-      <mat-grid-list cols="2" rowHeight="1:0.16">
-        <mat-grid-tile><p><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></mat-grid-tile>
-        <mat-grid-tile><p><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></mat-grid-tile>
-        <mat-grid-tile><p><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></mat-grid-tile>
-        <mat-grid-tile><p>PGS : {{player.playerGearScore | number : '1.0-3'}}</p></mat-grid-tile>
-      </mat-grid-list>
-  </div>
+      <div style="display: flex;flex-direction: row;">
+        <div style="width: 50%;">    
+          <div style="margin: 0;margin-left: 5px;border-bottom: 3px solid rgba(0, 0, 0, 0.2);width: 80%;"><h3 style="margin: 0;">Needed components :</h3></div>    
+          <div style="margin: 2px;margin-bottom: 3%;margin-left: 3%;"><p style="margin: 0;font-size: 18px;"><img src="assets/gear_tome_icon.png" style="width: 12%;height: 12%;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></div>
+          <div style="margin: 2px;margin-bottom: 3%;margin-left: 3%;"><p style="margin: 0;font-size: 18px;"><img src="assets/twine_icon.png" style="width: 12%;height: 12%;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></div>
+          <div style="margin: 2px;margin-bottom: 3%;margin-left: 3%;"><p style="margin: 0;font-size: 18px;"><img src="assets/shine_icon.png" style="width: 12%;height: 12%;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></div>
+        </div>
+        <div>
+          <div style="margin: 0;margin-left: 5px;border-bottom: 3px solid rgba(0, 0, 0, 0.2);width: 80%;"><h3 style="margin: 0;">Gearset info :</h3></div>   
+          <div style="margin-bottom: 5%;margin-top: 5%;"><p style="margin: 2px;">Current item level : {{player.CurrentAverageItemLevel}}</p></div>
+          <div style="margin-bottom: 5%;"><p style="margin: 2px;">BiS item level : {{player.BisAverageItemLevel}}</p></div>
+          <div style="margin-bottom: 5%;display: flex;flex-direction: row;align-items: center;"><p style="margin: 2px;">PGS :</p><div [style.backgroundColor]="player.GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;"></div><p style="margin: 2px;">({{player.playerGearScore | number : '1.0-3'}})</p></div>
+        </div>
+      </div>
 </div>
 </div>
-<div style="height: 75%;display: flex;flex-direction: row;">
-  <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;padding: 5px;width: 65%;margin-bottom: 5px;display: flex;flex-direction: row;">
-    <div style="width: 50%;">
+
+<div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;height: 75.5%;width: 100%;display: flex;flex-direction: row;">
+  <div style="width: 50%;">
     <div style="display: flex; justify-content: space-between; align-items: center;height:7ch;">
       <p style="padding-left:14%">Current : {{player.CurrentAverageItemLevel}}</p>
       <p style="padding-right: 22%;">Bis : {{player.BisAverageItemLevel}}</p>
@@ -275,30 +285,40 @@
     </div>
   </div>
 </div>
-  <div style="width: 34.5%; display: flex;flex-direction: column;padding-left: 0.5%;">
 
-    <div style="height: 24%;width: 100%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;">
+</div>
+
+
+
+<div style="height: 100%;width: 29.5%;display: flex;flex-direction: column;;background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;margin-left: 0.5%;">
+  <div style="height: 10%;text-align: center;">
+    <h3 style="margin: 0;color: white;">Lock status</h3>
+    <p style="margin: 0;color: rgba(255, 255, 255, 0.7);">(Click on a fight to remove the lock)</p>
+  </div>
+  <div style="width: 100%;height: 90%; display: flex;flex-direction: column;padding-left: 0.5%;">
+
+    <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;">
       <img src="assets/raid/turn_1.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(1)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[0] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>
     </div>
 
-    <div style="height: 24%;width: 100%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;">
+    <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;">
       <img src="assets/raid/turn_2.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(2)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[1] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>
     </div>
 
-    <div style="height: 24%;width: 100%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;">
+    <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;">
       <img src="assets/raid/turn_3.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(3)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[2] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>
     </div>
 
-    <div style="height: 24%;width: 100%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;">
+    <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;">
       <img src="assets/raid/turn_4.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(4) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(4) ? 'Locked from turn 1.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(4)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[3] | date:'MMMM dd HH:mm' }} AM EST</p>
@@ -306,6 +326,8 @@
     </div>
 
   </div>
+
+
 
 </div>
 </div>

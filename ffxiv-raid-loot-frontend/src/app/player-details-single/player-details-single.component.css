@@ -1,3 +1,4 @@
-p{
+p, h1, h2, h3{
     color: white;
+    font-family: var(--mat-form-field-container-text-font);
 }

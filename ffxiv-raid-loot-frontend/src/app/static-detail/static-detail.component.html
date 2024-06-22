@@ -80,9 +80,10 @@
           </div>
 
           <div style="height: 25%; width: 100%; margin: 0;display: flex;flex-direction: row;margin-bottom: 1%;">
-              <div style="height: 100%;width: 24%;margin: 0;margin-left: 24%;"><p style="margin-bottom: 0;"><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></div>
-              <div style="height: 100%;width: 17%;margin: 0;"><p style="margin-bottom: 0;"><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></div>
-              <div style="height: 100%;width: 17%;margin: 0;"><p style="margin-bottom: 0;"><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></div>
+              <div style="height: 100%;width: 26%;margin: 0;margin-left: 5px;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></div>
+              <div style="height: 100%;width: 20%;margin: 0;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></div>
+              <div style="height: 100%;width: 20%;margin: 0;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></div>
+              <div style="width:40%;display: flex;flex-direction: row;align-items: center;margin: 0;"><p style="margin:0;">PGS :</p><div [style.backgroundColor]="player.GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;margin: 0;margin-left: 1px;"></div></div>
           </div>
 
           <div style="height: 44%;width: 100%;margin: 0;display: flex;flex-direction: row;">
@@ -99,14 +100,17 @@
     <app-player-details-single *ngIf="SelectedPlayer" [player]="SelectedPlayer"></app-player-details-single>
   </div>
   </div>
-  <!-- Container for player details -->
+  <div style="height: 200px;">
+
+  </div>
+  <!-- Container for player details 
   <div style="width: 100%;">
-    <h2 style="color:white;">Players:</h2> <!-- Title for the players section -->
-    <mat-grid-list [cols]="3"rowHeight="1:2"> <!-- Grid list to display players dynamically based on screen size -->
-      <mat-grid-tile *ngFor="let player of staticDetail.players" > <!-- Loop through each player in staticDetail.players -->
+    <h2 style="color:white;">Players:</h2>  Title for the players section
+    <mat-grid-list [cols]="3"rowHeight="1:2">  Grid list to display players dynamically based on screen size 
+      <mat-grid-tile *ngFor="let player of staticDetail.players" >  Loop through each player in staticDetail.players 
           <app-player-detail [player]="player" style=""/>
       </mat-grid-tile>
     </mat-grid-list>
-  </div>
+  </div>-->
 
 </div>

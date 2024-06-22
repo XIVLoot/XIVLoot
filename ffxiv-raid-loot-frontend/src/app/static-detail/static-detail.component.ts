@@ -230,6 +230,7 @@ export class StaticDetailComponent implements OnInit {
       let curGroup = [];
       for (let i = group[0];i<=group[1];i+=1){
         curGroup.push(PGSList[i]);
+        PGSList[i].PGSGroupNumber = nGroup;
       }
       playerGroupList.push({group : curGroup, nGroup : nGroup});
       nGroup+=1;
@@ -238,6 +239,15 @@ export class StaticDetailComponent implements OnInit {
       playerGroupList.push({group : [], nGroup : 2*i}) // 2*i so there is no color and so it is empty
     }
     return playerGroupList;
+  }
+
+  GetGroupOfPlayer(player : Player){
+    let playerGroupList = this.ComputeNumberPGSGroup();
+    for (let group of playerGroupList){
+      if (group.group.includes(player)){
+        return group.nGroup;
+      }
+    }
   }
 
   GetGroupColor(nGroup : number){
