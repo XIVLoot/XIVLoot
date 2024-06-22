@@ -17,124 +17,70 @@ export class PlayerDetailsSingleComponent {
   @Input({required:true}) player! : Player;
   @ViewChild('etroField') etroInputRef: ElementRef;
 
+  public GetGroupColorNoAlpha : string;
+
   constructor(public http: HttpService, private route: ActivatedRoute, public dialog: MatDialog,
               private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService
   ) { } // Constructor with dependency injection
 
+  ngOnInit(){
+    this.player.GetGroupColorNoAlpha();
+  }
 
   async onChangeGear(GearType : string, bis : boolean, event: Event){
     const selectElement = event.target as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex;
     var NewGear : Gear;
     var GearTypeNumber : number;
-    var Turn : number;
+    var Turn = 0;
     switch (GearType){
       case "Weapon":
-        Turn = 4;
         NewGear = this.player.WeaponChoice[selectedIndex];
         GearTypeNumber = 1;
-        if(bis)
-          this.player.bisWeaponGear = NewGear;
-        else
-          this.player.curWeaponGear = NewGear;
         break;
       case "Head":
-        Turn = -1;
         NewGear = this.player.HeadChoice[selectedIndex];
         GearTypeNumber = 2;
-        if(bis)
-          this.player.bisHeadGear = NewGear;
-        else
-          this.player.curHeadGear = NewGear;
         break;
       case "Hands":
-        Turn = -1;
         NewGear = this.player.HandsChoice[selectedIndex];
         GearTypeNumber = 4;
-        if(bis)
-          this.player.bisHandsGear = NewGear;
-        else
-          this.player.curHandsGear = NewGear;
         break;
       case "Body":
-        Turn = 3;
         NewGear = this.player.BodyChoice[selectedIndex];
         GearTypeNumber = 3;
-        if(bis)
-          this.player.bisBodyGear = NewGear;
-        else
-          this.player.curBodyGear = NewGear;
         break;
       case "Legs":
-        Turn = 3;
         NewGear = this.player.LegsChoice[selectedIndex];
         GearTypeNumber = 5;
-        if(bis)
-          this.player.bisLegsGear = NewGear;
-        else
-          this.player.curLegsGear = NewGear;
         break;
       case "Feet":
-        Turn = -1;
         NewGear = this.player.FeetChoice[selectedIndex];
         GearTypeNumber = 6;
-        if(bis)
-          this.player.bisFeetGear = NewGear;
-        else
-          this.player.curFeetGear = NewGear;
         break;
       case "Necklace":
-        Turn = 1;
         NewGear = this.player.NecklaceChoice[selectedIndex];
         GearTypeNumber = 8;
-        if(bis)
-          this.player.bisNecklaceGear = NewGear;
-        else
-          this.player.curNecklaceGear = NewGear;
         break;
       case "Earrings":
-        Turn = 1;
         NewGear = this.player.EarringsChoice[selectedIndex];
         GearTypeNumber = 7;
-        if(bis)
-          this.player.bisEarringsGear = NewGear;
-        else
-          this.player.curEarringsGear = NewGear;
         break;
       case "Bracelets":
-        Turn = 1;
         NewGear = this.player.BraceletsChoice[selectedIndex];
         GearTypeNumber = 9;
-        if(bis)
-          this.player.bisBraceletsGear = NewGear;
-        else
-          this.player.curBraceletsGear = NewGear;
         break;
       case "RightRing":
-        Turn = 1;
         NewGear = this.player.RightRingChoice[selectedIndex];
         GearTypeNumber = 10;
-        if(bis)
-          this.player.bisRightRingGear = NewGear;
-        else
-          this.player.curRightRingGear = NewGear;
         break;
       case "LeftRing":
-        Turn = 1;
         NewGear = this.player.LeftRingChoice[selectedIndex];
-        if(bis)
-          this.player.bisLeftRingGear = NewGear;
-        else
-          this.player.curLeftRingGear = NewGear;
         GearTypeNumber = 11;
         break;
     }
-
-    if (!bis){
-      if (NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")
-        Turn = 0; // 0 Means ignore the lock. The API will not check for lock when Turn = 0.
-
-      if (NewGear.gearStage == "Upgraded_Tomes") // If is augment then change turn to turn where the augment drops.
+    if (!bis && !(NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")){
+      if (NewGear.gearStage == "Upgraded_Tomes"){ // If is augment then change turn to turn where the augment drops.
         switch(GearType){
           case "Weapon":
           case "Body":
@@ -152,10 +98,34 @@ export class PlayerDetailsSingleComponent {
             Turn = 2;
             break;
         }
+      }
+      else{
+      switch(GearType){
+        case "Weapon":
+          Turn = 4;
+          break;
+        case "Body":
+        case "Legs":
+          Turn = 3;
+          break;
+        case "Feet":
+        case "Hands":
+        case "Head":
+          Turn = -1
+          break;
+        case "Necklace":
+        case "Earrings":
+        case "Bracelets":
+        case "RightRing":
+        case "LeftRing":
+          Turn = 1;
+            break;
+        }
+      }
 
       if (Turn == -1){
         // If turn == -1 then there is ambiguity and we need to ask player if it dropped from 2 or 3 (Since head/hand/feet can drop from both)
-        this.dialog.open(ConfirmDialog, {
+        Turn = await new Promise<number>((resolve) => this.dialog.open(ConfirmDialog, {
           width: '500px',
           height: '200px',
           data: {title : "Fight uncertainty", content : "The gear you selected can be dropped from turn 2 and turn 3, please select where it came from.", yes_option : "Turn 2", no_option : "Turn 3"}
@@ -163,28 +133,124 @@ export class PlayerDetailsSingleComponent {
           console.log("after closed")
           console.log(result)
           if (result === "No"){
-            Turn = 3;
+            return resolve(3);
           } else if (result === "Yes") {
-            Turn = 2;
+            return resolve(2);
           }
           else{
-            return;
+            return resolve(-1);
           }
-          this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
-            console.log(data);
-            this.RegetPlayerInfo();
-          });
-        });
-        return;
+        }));
+        if (Turn === -1)
+          return false;
       }
     }
 
-    await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
-      console.log(data);
-      this.RegetPlayerInfo();
+    var check = await new Promise<boolean>((resolve) => {
+      this.CheckConfirmGear(Turn).then((result) => {
+        resolve(result);
+      });
     });
-    
-    
+
+    if (check){
+      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
+        console.log(data);
+        this.RegetPlayerInfo();
+      });
+      switch (GearType){
+        case "Weapon":
+          if(bis)
+            this.player.bisWeaponGear = NewGear;
+          else
+            this.player.curWeaponGear = NewGear;
+          break;
+        case "Head":
+          if(bis)
+            this.player.bisHeadGear = NewGear;
+          else
+            this.player.curHeadGear = NewGear;
+          break;
+        case "Hands":
+          if(bis)
+            this.player.bisHandsGear = NewGear;
+          else
+            this.player.curHandsGear = NewGear;
+          break;
+        case "Body":
+          if(bis)
+            this.player.bisBodyGear = NewGear;
+          else
+            this.player.curBodyGear = NewGear;
+          break;
+        case "Legs":
+          if(bis)
+            this.player.bisLegsGear = NewGear;
+          else
+            this.player.curLegsGear = NewGear;
+          break;
+        case "Feet":
+          if(bis)
+            this.player.bisFeetGear = NewGear;
+          else
+            this.player.curFeetGear = NewGear;
+          break;
+        case "Necklace":
+          if(bis)
+            this.player.bisNecklaceGear = NewGear;
+          else
+            this.player.curNecklaceGear = NewGear;
+          break;
+        case "Earrings":
+          if(bis)
+            this.player.bisEarringsGear = NewGear;
+          else
+            this.player.curEarringsGear = NewGear;
+          break;
+        case "Bracelets":
+          if(bis)
+            this.player.bisBraceletsGear = NewGear;
+          else
+            this.player.curBraceletsGear = NewGear;
+          break;
+        case "RightRing":
+          if(bis)
+            this.player.bisRightRingGear = NewGear;
+          else
+            this.player.curRightRingGear = NewGear;
+          break;
+        case "LeftRing":
+          if(bis)
+            this.player.bisLeftRingGear = NewGear;
+          else
+            this.player.curLeftRingGear = NewGear;
+          break;
+      }
+      return true;
+    }
+    return false
+  }
+
+  CheckConfirmGear(turn: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (this.player.IsLockedOutOfTurn(turn)) {
+        this.dialog.open(ConfirmDialog, {
+          width: '500px',
+          height: '200px',
+          data: {
+            title: "Confirm choice",
+            content: "The player (" + this.player.name + ") is currently locked out of gear for the turn " + turn + ". Do you still wish to proceed?",
+            yes_option: "Yes",
+            no_option: "No"
+          }
+        }).afterClosed().subscribe(result => {
+          console.log("after closed");
+          console.log(result);
+          resolve(result === "Yes"); // Resolve the promise with true if the result is "Yes"
+        });
+      } else {
+        resolve(true); // If not locked, resolve the promise with true immediately
+      }
+    });
   }
 
   getImageSource(gear): string {
@@ -248,7 +314,7 @@ export class PlayerDetailsSingleComponent {
     const selectElement = event.target as HTMLSelectElement;
     const value = selectElement.value;
     this.http.changePlayerName(this.player.id, value).subscribe((data) => {
-      console.log(data);
+      this.player.name = value;
     });
   }
   onChangeJob(event : Event){
@@ -266,6 +332,8 @@ export class PlayerDetailsSingleComponent {
     this.RegetPlayerInfo(); // Reloads and recomputes all value
 
   }
+
+
 
   RecomputePGSWholeStatic(){
       // Recomputing PGS
@@ -288,6 +356,7 @@ export class PlayerDetailsSingleComponent {
       newPlayer.staticId = this.player.staticId;
       var index = this.player.staticRef.players.findIndex(player => player.id == this.player.id);
       this.player.staticRef.players[index] = newPlayer;
+      this.player.GetGroupColorNoAlpha();
       this.RecomputePGSWholeStatic();
       this.cdr.detectChanges();
       
@@ -295,6 +364,9 @@ export class PlayerDetailsSingleComponent {
   }
 
   RemoveLockOnTurn(turn : number){
+    if (! this.player.IsLockedOutOfTurn(turn)){
+      return;
+    }
     this.dialog.open(ConfirmDialog, {
       width: '500px',
       height: '200px',
@@ -311,9 +383,11 @@ export class PlayerDetailsSingleComponent {
     });
   }
 
-  onMouseEnter(event: any) {
-    event.target.style.cursor = 'pointer';
-    event.target.style.filter = 'brightness(1.1)';
+  onMouseEnter(turn : number, event: any) {
+    if (this.player.IsLockedOutOfTurn(turn)){
+      event.target.style.cursor = 'pointer';
+      event.target.style.filter = 'brightness(1.1)';
+    }
   }
   onMouseLeave(event: any) {
     event.target.style.filter = '';

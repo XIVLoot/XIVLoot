@@ -49,6 +49,7 @@ export class Player {
   public RightRingChoice : Gear[] = [];
   public LeftRingChoice : Gear[] = [];
   public PGSGroupNumber : number = 0;
+  public PGSGroupColor : string = 'rgba(255, 247, 0, 1)';
   constructor(
   ){}
 
@@ -195,13 +196,13 @@ export class Player {
   GetGroupColorNoAlpha(){
     switch(this.PGSGroupNumber){
       case 0:
-        return 'rgba(255, 247, 0, 1)';
+        return'rgba(255, 247, 0, 1)';
       case 1:
-        return 'rgba(200, 0, 255, 1)';
+        return'rgba(200, 0, 255, 1)';
       case 2:
-        return 'rgba(0, 21, 255, 1)';
+        return'rgba(0, 21, 255, 1)';
       case 3:
-        return 'rgba(38, 255, 0, 1)';
+        return'rgba(38, 255, 0, 1)';
     }
   }
 }

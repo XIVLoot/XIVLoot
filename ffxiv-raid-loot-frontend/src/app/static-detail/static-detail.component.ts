@@ -197,12 +197,17 @@ export class StaticDetailComponent implements OnInit {
   }
 
   ComputeNumberPGSGroup(){
-    let tol : number = 11;
+
     let PGSList = [];
     let groupList = [];
     for (let i = 0;i<this.staticDetail.players.length;i++){
       PGSList.push(this.staticDetail.players[i]);
     }
+    let highestPGS = Math.max(...PGSList.map(player => player.playerGearScore));
+    let lowestPGS = Math.min(...PGSList.map(player => player.playerGearScore));
+
+    let tol = (highestPGS - lowestPGS)/4;
+
     PGSList.sort((a, b) => a.playerGearScore - b.playerGearScore);
     let minPGS = PGSList[0].playerGearScore;
     let curMinPGSIndex = 0;
