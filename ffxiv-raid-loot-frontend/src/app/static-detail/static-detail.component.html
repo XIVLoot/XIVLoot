@@ -44,29 +44,29 @@
           </div>
           <div style="display: flex;flex-direction: row;">
           <div style="display: flex;flex-direction: column;">
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']" (ngModelChange)="CheckChange()">Lock a player out of gear even if it is not contested : {{staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']}}</mat-slide-toggle>
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_FOR_1_FIGHT']" (ngModelChange)="CheckChange()">Lock per fight : {{staticDetail.LockParam['BOOL_FOR_1_FIGHT']}}</mat-slide-toggle>
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']" (ngModelChange)="CheckChange()">Lock a player for augment item : {{staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']}}</mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock a player out of gear even if it is not contested : {{staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']}}</mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_FOR_1_FIGHT']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock per fight : {{staticDetail.LockParam['BOOL_FOR_1_FIGHT']}}</mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock a player for augment item : {{staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']}}</mat-slide-toggle>
         </div>
         <div style="display: flex;flex-direction: row;">
           <div style="display: flex;flex-direction: column;margin: 0; margin-right: 5%;">
             <span>{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}</span>
             <mat-form-field style="width:180px;">
               <mat-label># Piece until lock</mat-label>
-              <input  matInput type="number" min="1" [(ngModel)]="staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']" value="{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}" (ngModelChange)="CheckChange()">
+              <input  matInput type="number" min="1" [(ngModel)]="staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']" value="{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">
               </mat-form-field>
           </div>
           <div style="display: flex;flex-direction: column;margin: 0;">
             <span>{{staticDetail.LockParam['RESET_TIME_IN_WEEK']}}</span>
             <mat-form-field style="width:180px;">
               <mat-label># Week Reset</mat-label>
-              <input matInput  min="1" type="number" [(ngModel)]="staticDetail.LockParam['RESET_TIME_IN_WEEK']" value="{{staticDetail.LockParam['RESET_TIME_IN_WEEK']}}" (ngModelChange)="CheckChange()">
+              <input matInput  min="1" type="number" [(ngModel)]="staticDetail.LockParam['RESET_TIME_IN_WEEK']" value="{{staticDetail.LockParam['RESET_TIME_IN_WEEK']}}" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">
               </mat-form-field>
           </div>
         </div>
         </div>
         </div>
-        <button mat-raised-button color="primary" (click)="SaveLockParam()" [disabled]="!LockParamChangeCheck" [style.opacity]="LockParamChangeCheck ? '1' : '0.5'">Update Parameters</button>
+        <button mat-raised-button color="primary" (click)="SaveLockParam()" [disabled]="!LockParamChangeCheck" [style.opacity]="LockParamChangeCheck ? '1' : '0.5'" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Update Parameters</button>
     </div>
   </mat-expansion-panel>
 </mat-accordion>
