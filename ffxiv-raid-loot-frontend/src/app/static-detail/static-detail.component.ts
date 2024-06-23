@@ -53,6 +53,7 @@ export class StaticDetailComponent implements OnInit {
   public test : boolean = true;
   public OriginalLockParam : any;
   public LockParamChangeCheck : boolean = false;
+  public ShowAllPlayer : boolean = false;
   
   public SelectedPlayer : number;
 
@@ -84,6 +85,10 @@ export class StaticDetailComponent implements OnInit {
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
   }
 
+  c(){
+    
+  }
+
   CheckChange(){
     for (let key in this.OriginalLockParam){
       if (this.OriginalLockParam[key] !== this.staticDetail.LockParam[key]){
@@ -98,6 +103,14 @@ export class StaticDetailComponent implements OnInit {
       console.log(res);
       this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
       this.LockParamChangeCheck=false;
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Successfuly updated parameters.",
+          subMessage: "",
+          color : ""
+        }
+      });
     });
   }
 

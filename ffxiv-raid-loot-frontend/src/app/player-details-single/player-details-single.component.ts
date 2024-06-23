@@ -81,22 +81,24 @@ export class PlayerDetailsSingleComponent {
     }
     if (!bis && !(NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")){
       if (NewGear.gearStage == "Upgraded_Tomes"){ // If is augment then change turn to turn where the augment drops.
-        switch(GearType){
-          case "Weapon":
-          case "Body":
-          case "Head":
-          case "Hands":
-          case "Legs":
-          case "Feet":
-            Turn = 3;
-            break;
-          case "Necklace":
-          case "Earrings":
-          case "Bracelets":
-          case "RightRing":
-          case "LeftRing":
-            Turn = 2;
-            break;
+        if (this.player.staticRef.LockParam["LOCK_IF_TOME_AUGMENT"]){
+          switch(GearType){
+            case "Weapon":
+            case "Body":
+            case "Head":
+            case "Hands":
+            case "Legs":
+            case "Feet":
+              Turn = 3;
+              break;
+            case "Necklace":
+            case "Earrings":
+            case "Bracelets":
+            case "RightRing":
+            case "LeftRing":
+              Turn = 2;
+              break;
+          }
         }
       }
       else{
@@ -146,13 +148,14 @@ export class PlayerDetailsSingleComponent {
       }
     }
 
+
     var check = await new Promise<boolean>((resolve) => {
       this.CheckConfirmGear(Turn).then((result) => {
         resolve(result);
       });
     });
 
-    if (!check){
+    if (check){
       switch (GearType){
         case "Weapon":
           if(bis)
@@ -223,11 +226,82 @@ export class PlayerDetailsSingleComponent {
       }
       await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
         console.log(data);
-        this.RegetPlayerInfo();
+        this.RegetPlayerInfoSoft();
       });
       return true;
     }
-    return false
+    else{
+      // Reverting change
+      switch (GearType){
+        case "Weapon":
+          if(bis)
+            selectElement.value = this.player.bisWeaponGear.gearName;
+          else
+            selectElement.value = this.player.curWeaponGear.gearName;
+          break;
+        case "Head":
+          if(bis)
+            selectElement.value = this.player.bisHeadGear.gearName;
+          else
+            selectElement.value = this.player.curHeadGear.gearName;
+          break;
+        case "Hands":
+          if(bis)
+            selectElement.value = this.player.bisHandsGear.gearName;
+          else
+            selectElement.value = this.player.curHandsGear.gearName;
+          break;
+        case "Body":
+          if(bis)
+            selectElement.value = this.player.bisBodyGear.gearName;
+          else
+            selectElement.value = this.player.curBodyGear.gearName;
+          break;
+        case "Legs":
+          if(bis)
+            selectElement.value = this.player.bisLegsGear.gearName;
+          else
+            selectElement.value = this.player.curLegsGear.gearName;
+          break;
+        case "Feet":
+          if(bis)
+            selectElement.value = this.player.bisFeetGear.gearName;
+          else
+            selectElement.value = this.player.curFeetGear.gearName;
+          break;
+        case "Necklace":
+          if(bis)
+            selectElement.value = this.player.bisNecklaceGear.gearName;
+          else
+            selectElement.value = this.player.curNecklaceGear.gearName;
+          break;
+        case "Earrings":
+          if(bis)
+            selectElement.value = this.player.bisEarringsGear.gearName;
+          else
+            selectElement.value = this.player.curEarringsGear.gearName;
+          break;
+        case "Bracelets":
+          if(bis)
+            selectElement.value = this.player.bisBraceletsGear.gearName;
+          else
+            selectElement.value = this.player.curBraceletsGear.gearName;
+          break;
+        case "RightRing":
+          if(bis)
+            selectElement.value = this.player.bisRightRingGear.gearName;
+          else
+            selectElement.value = this.player.curRightRingGear.gearName;
+          break;
+        case "LeftRing":
+          if(bis)
+            selectElement.value = this.player.bisLeftRingGear.gearName;
+          else
+            selectElement.value = this.player.curLeftRingGear.gearName;
+          break;
+      }
+      return false;
+    }
   }
 
   CheckConfirmGear(turn: number): Promise<boolean> {
@@ -329,8 +403,6 @@ export class PlayerDetailsSingleComponent {
       this.RegetPlayerInfo();
     });
 
-    this.RegetPlayerInfo(); // Reloads and recomputes all value
-
   }
 
 
@@ -344,7 +416,9 @@ export class PlayerDetailsSingleComponent {
           var index = this.player.staticRef.players.findIndex((player, b, c) => player.id === data[i].id);
           this.player.staticRef.players[index].playerGearScore = data[i].score;
         }
+        
         this.staticEventsService.triggerRecomputePGS(); // Triggers event to recompute recommended order.
+        this.cdr.detectChanges();
       });
   }
 
@@ -363,6 +437,24 @@ export class PlayerDetailsSingleComponent {
     });
   }
 
+  RegetPlayerInfoSoft(){
+    this.http.GetSingletonPlayerInfoSoft(this.player.id).subscribe((data) => {
+      console.log(data);
+      this.player.LockedList = data["lockedList"].map(dateStr => new Date(dateStr));
+
+      this.player.BisAverageItemLevel = data["averageItemLevelBis"];
+      this.player.CurrentAverageItemLevel = data["averageItemLevelCurrent"];
+      this.player.ShineCost = data["cost"]["shineCost"];
+      this.player.TwineCost = data["cost"]["twineCost"];
+      this.player.TomestoneCost = data["cost"]["tomeCost"];
+      var index = this.player.staticRef.players.findIndex(player => player.id == this.player.id);
+      this.player.staticRef.players[index] = this.player;
+      this.RecomputePGSWholeStatic();
+      this.player.GetGroupColorNoAlpha();
+      this.cdr.detectChanges();
+    });
+  }
+
   RemoveLockOnTurn(turn : number){
     if (! this.player.IsLockedOutOfTurn(turn)){
       return;
@@ -377,14 +469,16 @@ export class PlayerDetailsSingleComponent {
       if (result === "Yes"){
         this.http.RemoveLock(this.player.id, turn).subscribe((data) => {
           console.log(data);
-          this.RegetPlayerInfo();
+          this.RegetPlayerInfoSoft();
         });
       }
     });
   }
 
   onMouseEnter(turn : number, event: any) {
-    if (this.player.IsLockedOutOfTurn(turn)){
+    var check = this.player.IsLockedOutOfTurn(turn);
+    console.log(check);
+    if (check){
       event.target.style.cursor = 'pointer';
       event.target.style.filter = 'brightness(1.1)';
     }

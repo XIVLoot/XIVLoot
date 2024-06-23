@@ -249,9 +249,10 @@ namespace FFXIV_RaidLootAPI.Models
             }
             Console.WriteLine("Passed changing");
             DateTime now = DateTime.Now;
-            int daysUntilNextTuesday = (int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7;
+            int daysUntilNextTuesday = ((int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7) % 7;
+            Console.WriteLine("Days until next tuesday : " + daysUntilNextTuesday.ToString());
             DateTime nextTuesday = now.AddDays(daysUntilNextTuesday + 7 * RESET_TIME_IN_WEEK);
-            nextTuesday = nextTuesday.Date.AddHours(11);
+            nextTuesday = nextTuesday.Date.AddHours(4);
             switch(turn){
                 case Turn.turn_0:
                     break;
@@ -572,7 +573,31 @@ namespace FFXIV_RaidLootAPI.Models
                 LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
             };
         }
-    
+
+        public StaticDTO.PlayerInfoSoftDTO get_player_info_soft(DataContext context){
+
+            Dictionary<GearType, Gear?> CurrentGearSetDict = get_gearset_as_dict(false, context);
+            Dictionary<GearType, Gear?> BisGearSetDict = get_gearset_as_dict(true, context);
+            int AverageItemLevelCurrent = get_avg_item_level(GearDict:CurrentGearSetDict);
+            int AverageItemLevelBis = get_avg_item_level(GearDict:BisGearSetDict);
+            
+            List<CostDTO> Costs = new List<CostDTO>();
+
+            foreach(KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                if((pair.Value is null) || BisGearSetDict[pair.Key] is null)
+                    continue;
+                Costs.Add(pair.Value.GetCost(BisGearSetDict[pair.Key]));
+            }
+
+            CostDTO Cost = CostDTO.SumCost(Costs);
+
+            return new StaticDTO.PlayerInfoSoftDTO(){
+                AverageItemLevelBis=AverageItemLevelBis,
+                AverageItemLevelCurrent=AverageItemLevelCurrent,
+                Cost=Cost,
+                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
+            };
+        }   
         public void remove_lock(Turn turn){
             switch(turn){
                 case Turn.turn_0:

@@ -23,6 +23,14 @@ public class StaticDTO
         public CostDTO Cost {get;set;} = new CostDTO();
     }
 
+    public class PlayerInfoSoftDTO
+    {
+        public List<DateTime> LockedList {get;set;} = new List<DateTime>();
+        public int AverageItemLevelCurrent {get;set;}
+        public int AverageItemLevelBis {get;set;}
+        public CostDTO Cost {get;set;} = new CostDTO();
+    }
+
     public int Id { get; set; }
     [Required]
     public string Name { get; set; } = string.Empty;

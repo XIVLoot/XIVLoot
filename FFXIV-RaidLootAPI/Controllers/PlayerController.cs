@@ -102,6 +102,20 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        // Returns less info than GetSingletonPlayerInfo
+        [HttpGet("GetSingletonPlayerInfoSoft/{id}")]
+        public async Task<ActionResult<StaticDTO.PlayerInfoSoftDTO>> GetSingletonPlayerInfoSoft(int id){
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found.");
+
+                return Ok(player.get_player_info_soft(context));
+
+            }
+        }
+
         // POST
 
         [HttpPost("ResetJobDependantInfo")]

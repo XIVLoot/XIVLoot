@@ -193,13 +193,18 @@ namespace FFXIV_RaidLootAPI.Models
             int TotalSolventCost = 0;
             int TotalHermeticCost = 0;
 
-
+            Console.WriteLine("Getting cost");
+            Console.WriteLine(Name);
+            Console.WriteLine(BisGear.Name);
             if (GearStage == BisGear.GearStage) // Equal so no cost
                 return new CostDTO {TomeCost=TotalTomeCost, TwineCost=TotalTwineCost, ShineCost=TotalShineCost,SolventCost=TotalSolventCost,WeaponTomestoneCost=TotalHermeticCost};
+
+            Console.WriteLine("1");
 
             if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == 0) && // Need to buy tome
                 (BisGear.GearStage == GearStage.Upgraded_Tomes || BisGear.GearStage == GearStage.Tomes))
                 {
+                    Console.WriteLine("2");
                     switch (GearType)
                     {
                         case GearType.Weapon:
@@ -225,11 +230,12 @@ namespace FFXIV_RaidLootAPI.Models
                     }
                 }
 
-            
+            Console.WriteLine("3");
             // Need to augment (and maybe buy)
-            if ((GearStage == GearStage.Raid | GearStage == GearStage.Preparation | BisGear.GearStage == GearStage.Tomes  || GearStage == 0) &&
+            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == GearStage.Tomes || GearStage == 0) &&
                 (BisGear.GearStage == GearStage.Upgraded_Tomes))
                 {
+                    Console.WriteLine("4");
                     switch (GearType)
                     {
                         case GearType.Weapon:
@@ -240,6 +246,7 @@ namespace FFXIV_RaidLootAPI.Models
                         case GearType.Hands:
                         case GearType.Legs:
                         case GearType.Feet:
+                        Console.WriteLine("5");
                             TotalTwineCost += 1;
                             break;
                         case GearType.Earrings:
@@ -247,10 +254,12 @@ namespace FFXIV_RaidLootAPI.Models
                         case GearType.Bracelets:
                         case GearType.LeftRing:
                         case GearType.RightRing:
+                            Console.WriteLine("6");
                             TotalShineCost += 1;
                             break;
                     }
                 }
+            Console.WriteLine("7");
             return new CostDTO {TomeCost=TotalTomeCost, TwineCost=TotalTwineCost, ShineCost=TotalShineCost,SolventCost=TotalSolventCost,WeaponTomestoneCost=TotalHermeticCost};
 
         }
@@ -261,7 +270,16 @@ namespace FFXIV_RaidLootAPI.Models
               Job -> Job to request the gear for 
               GearType -> What gear piece to request (ie. Ring, Weapon, etc.)
             */
-            List<GearOptionsDTO.GearOption> OptionList = new List<GearOptionsDTO.GearOption>();
+            List<GearOptionsDTO.GearOption> OptionList = new List<GearOptionsDTO.GearOption>()
+            {
+                new GearOptionsDTO.GearOption()
+                {
+                    GearName = "No Equipment",
+                    GearItemLevel = 0,
+                    GearStage = "Preparation",
+                    GearId = 0
+                }
+            };
             if (GearType == GearType.Weapon)
             {
                 IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearWeaponCategory == Job && g.GearCategory == GearCategory.Weapon);

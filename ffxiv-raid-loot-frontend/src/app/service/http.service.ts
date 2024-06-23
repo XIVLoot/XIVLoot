@@ -136,6 +136,13 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
+  GetSingletonPlayerInfoSoft(id : number) : Observable<any>{
+    const url = `${this.api}Player/GetSingletonPlayerInfoSoft/${id}`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to get singleton player info: ' + error.message)))
+    );
+  }
+
   RecomputePGS(uuid : string) : Observable<any>{
     const url = `${this.api}Static/PlayerGearScore/${uuid}`;
     return this.http.get(url).pipe(
