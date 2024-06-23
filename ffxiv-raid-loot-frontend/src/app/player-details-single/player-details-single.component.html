@@ -82,7 +82,7 @@
           <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Weapon</p>
           <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
           <select matNativeControl (change)="onChangeGear('Weapon',true,$event)">
-              <option *ngFor="let item of player.WeaponChoice" [selected]="item.gearName === player.bisWeaponGeargearName">{{item.gearName}}</option>
+              <option *ngFor="let item of player.WeaponChoice" [selected]="item.gearName === player.bisWeaponGear.gearName">{{item.gearName}}</option>
             </select>
         </mat-form-field>
         <div style="width: 25px;height: 25px;margin-bottom:20px">
