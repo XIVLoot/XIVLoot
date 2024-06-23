@@ -1,13 +1,21 @@
-# FFXIV-RaidLoot-Frontend
+# Pushing the changes to production
+Open the terminal in the ffxiv-raid-loot-frontend folder and execute the following scripts below.
+Make sure you are logged into your docker hub account to be able to push to the docker hub repo or you will have permission errors.
 
-## Prepare your environment
+## Build the front-end
 
-You need
+``` shell
+docker build -t xivloot-app .
+```
 
-* [Node.js](https://nodejs.org/en/)
-* [Angular](https://angular.io/) npm install -g @angular/cli
-* [Angular Material](https://material.angular.io/) npm install --save @angular/material
+## Tag the image
 
-## Update your database
+``` shell
+docker tag xivloot-app rickchinois/xivloot-app
+```
 
-Using EF Core Tools, Update your database Use the UI if you are using Riders. If you are using Visual Studio, use the package manager terminal and enter the command `Update-Database`. If you are using anything else, open a terminal and use the command `dotnet ef update-database`
+## Push the image
+
+``` shell
+docker push rickchinois/xivloot-app
+```
