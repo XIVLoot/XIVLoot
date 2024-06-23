@@ -102,6 +102,20 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        // Returns less info than GetSingletonPlayerInfo
+        [HttpGet("GetSingletonPlayerInfoSoft/{id}")]
+        public async Task<ActionResult<StaticDTO.PlayerInfoSoftDTO>> GetSingletonPlayerInfoSoft(int id){
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found.");
+
+                return Ok(player.get_player_info_soft(context));
+
+            }
+        }
+
         // POST
 
         [HttpPost("ResetJobDependantInfo")]
@@ -125,8 +139,24 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
-            player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId);
-            context.SaveChanges();
+            await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, dto.turn, context);
+
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+        }
+
+        [HttpPut("RemovePlayerLock/{turn}")]
+        public async Task<ActionResult> RemovePlayerLock(PlayerDTO dto, Turn turn)
+        {
+        using (var context = _context.CreateDbContext())
+        {
+            Players? player = await context.Players.FindAsync(dto.Id);
+            if (player is null)
+                return NotFound("Player not found");
+            player.remove_lock(turn);
+
+            await context.SaveChangesAsync();
             return Ok();
         }
         }

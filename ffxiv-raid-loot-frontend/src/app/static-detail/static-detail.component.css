@@ -74,3 +74,11 @@ p{
 color:white;
 font-size: 1.7ch;
 }
+
+.param-toggle{
+  margin-bottom: 10px;
+}
+p, h1, h2, h3{
+  color: white;
+  font-family: var(--mat-form-field-container-text-font);
+}

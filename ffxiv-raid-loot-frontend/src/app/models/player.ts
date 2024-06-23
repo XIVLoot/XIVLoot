@@ -7,7 +7,7 @@ export class Player {
   public playerGearScore: number;
   public name: string;
   public job: string;
-  public locked: boolean;
+  public LockedList : Date[];
   public staticId: number;
   public TomestoneCost : number;
   public TwineCost : number;
@@ -48,15 +48,20 @@ export class Player {
   public BraceletsChoice : Gear[] = [];
   public RightRingChoice : Gear[] = [];
   public LeftRingChoice : Gear[] = [];
-
+  public PGSGroupNumber : number = 0;
+  public PGSGroupColor : string = 'rgba(255, 247, 0, 1)';
   constructor(
   ){}
+
+  public IsLockedOutOfTurn(turn : number) : boolean{
+    return this.LockedList[turn-1] > new Date();
+  }
 
   public static CreatePlayerFromDict(Dict) : Player{
     let p = new Player();
     p.id = Dict["id"];
     p.job = Dict["job"];
-    p.locked = Dict["locked"];
+    p.LockedList = Dict["lockedList"].map(dateStr => new Date(dateStr));
     p.name = Dict["name"];
     p.playerGearScore = Dict["playerGearScore"];
     p.etroBiS=Dict["etroBiS"]; // TODO HAVE TO MAKE THIS WORK
@@ -186,5 +191,18 @@ export class Player {
     }
 
     return p;
+  }
+  
+  GetGroupColorNoAlpha(){
+    switch(this.PGSGroupNumber){
+      case 0:
+        return'rgba(255, 247, 0, 1)';
+      case 1:
+        return'rgba(200, 0, 255, 1)';
+      case 2:
+        return'rgba(0, 21, 255, 1)';
+      case 3:
+        return'rgba(38, 255, 0, 1)';
+    }
   }
 }

@@ -20,11 +20,27 @@ constructor(public http: HttpClient, public data: DataService) { }
         map(response => {
           console.log("Get Static Answer");
           console.log(response);
-          let currentStatic = new Static(response['id'], response['name'], response['uuid'], response['playersInfoList']);
+          let currentStatic = new Static(response['id'], response['name'], response['uuid'], response['playersInfoList'], response['lockParam']);
           return currentStatic;
         }),
         catchError(error => throwError(error))
       );
+  }
+
+  updateStaticLockParam(uuid : string, lockParam : any) : Observable<any>{
+    const url = `${this.api}Static/UpdateLockParam/${uuid}`;
+    var body = {}
+
+    for (let key in lockParam){
+      if (typeof lockParam[key] === 'boolean') 
+        body[key] = lockParam[key] ? 1 : 0;
+      else
+        body[key] = lockParam[key];
+    }
+
+    return this.http.put(url, body).pipe(
+      catchError(error => throwError(() => new Error('Failed to update lock parameter : ' + error.message)))
+    );
   }
 
   getStaticName(uuid : string) : Observable<any>{
@@ -34,13 +50,14 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
-  changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean) : Observable<any>{
+  changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean, Turn : number) : Observable<any>{
     const url = `${this.api}Player/GearToChange`; // Adjust the endpoint as necessary
     const body = {
       "id": playerId,
       "useBis": useBis,
       "gearToChange": GearType,
-      "newGearId": GearId
+      "newGearId": GearId,
+      "turn": Turn
     }
     return this.http.put(url, body).pipe(
       catchError(error => throwError(() => new Error('Failed to change player gear: ' + error.message)))
@@ -119,6 +136,13 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
+  GetSingletonPlayerInfoSoft(id : number) : Observable<any>{
+    const url = `${this.api}Player/GetSingletonPlayerInfoSoft/${id}`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to get singleton player info: ' + error.message)))
+    );
+  }
+
   RecomputePGS(uuid : string) : Observable<any>{
     const url = `${this.api}Static/PlayerGearScore/${uuid}`;
     return this.http.get(url).pipe(
@@ -181,6 +205,13 @@ constructor(public http: HttpClient, public data: DataService) { }
     const url = `${this.api}Static/SetPGSParam/${uuid}/${a}/${b}/${c}`;
     return this.http.put(url, {}).pipe(
       catchError(error => throwError(() => new Error('Failed to set PGS param: ' + error.message)))
+    );
+  }
+
+  RemoveLock(playerId : number, turn : number){
+    const url = `${this.api}Player/RemovePlayerLock/${turn}`;
+    return this.http.put(url, {"id" : playerId}).pipe(
+      catchError(error => throwError(() => new Error('Failed to remove lock: ' + error.message)))
     );
   }
 

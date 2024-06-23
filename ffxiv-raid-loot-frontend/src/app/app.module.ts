@@ -36,10 +36,17 @@ import {
   MatDialogTitle,
   MatDialogContent,
 } from '@angular/material/dialog';
+import {
+  MatSlideToggleModule,
+  _MatSlideToggleRequiredValidatorModule,
+} from '@angular/material/slide-toggle';
+
+
 // Animation Provider
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
 import { AuthComponent } from './auth/auth.component';
+import { PlayerDetailsSingleComponent } from './player-details-single/player-details-single.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +57,8 @@ import { AuthComponent } from './auth/auth.component';
     StaticComponent,
     StaticDetailComponent,
     PlayerDetailComponent,
-    AuthComponent
+    AuthComponent,
+    PlayerDetailsSingleComponent
   ],
   imports: [
     BrowserModule,
@@ -70,13 +78,13 @@ import { AuthComponent } from './auth/auth.component';
     MatGridListModule,
     MatSidenavModule,
     MatCheckboxModule,
-    ReactiveFormsModule,
     MatSelectModule,
     MatDividerModule,
     MatDialogActions, 
     MatDialogClose, 
     MatDialogTitle, 
-    MatDialogContent
+    MatDialogContent,
+    MatSlideToggleModule
   ],
   providers: [
     provideAnimationsAsync()

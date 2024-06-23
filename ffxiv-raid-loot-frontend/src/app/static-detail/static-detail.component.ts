@@ -32,6 +32,7 @@ import { StaticEventsService } from '../service/static-events.service';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
+import { Player } from '../models/player';
 
 interface PlayerPGS {
   name: string;
@@ -49,6 +50,12 @@ export class StaticDetailComponent implements OnInit {
   public uuid: string; // UUID of the static
   public gridColumns = 3; // Default number of grid columns
   public groupList = [];
+  public test : boolean = true;
+  public OriginalLockParam : any;
+  public LockParamChangeCheck : boolean = false;
+  public ShowAllPlayer : boolean = false;
+  
+  public SelectedPlayer : number;
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog
@@ -59,6 +66,9 @@ export class StaticDetailComponent implements OnInit {
    } // Constructor with dependency injection
 
   ngOnInit(): void {
+    this.test = true;
+    this.staticDetail = new Static(0, "", "", [], {});
+
     // Subscribe to route parameters to get the 'uuid'
     this.route.params.subscribe(params => {
       this.uuid = params['uuid'];
@@ -68,10 +78,40 @@ export class StaticDetailComponent implements OnInit {
     this.http.getStatic(this.uuid).subscribe(details => {
       console.log("Received details");
       this.staticDetail = details; // Assign the fetched details to staticDetail
+      this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
       console.log(this.staticDetail); // Log the static details to the console
       this.groupList = this.ComputeNumberPGSGroup();
     });
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
+  }
+
+  c(){
+    
+  }
+
+  CheckChange(){
+    for (let key in this.OriginalLockParam){
+      if (this.OriginalLockParam[key] !== this.staticDetail.LockParam[key]){
+        this.LockParamChangeCheck=true;return;
+      }
+    }
+    this.LockParamChangeCheck=false;
+  }
+
+  SaveLockParam(){
+    this.http.updateStaticLockParam(this.staticDetail.uuid, this.staticDetail.LockParam).subscribe(res => {
+      console.log(res);
+      this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
+      this.LockParamChangeCheck=false;
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Successfuly updated parameters.",
+          subMessage: "",
+          color : ""
+        }
+      });
+    });
   }
 
   SaveStaticToUser(){
@@ -101,6 +141,52 @@ export class StaticDetailComponent implements OnInit {
     });
   }
 
+  onMouseEnter(event: any) {
+    event.target.style.cursor = 'pointer';
+    event.target.style.border = '3px solid rgba(255, 255, 255, 0.5)'
+  }
+  onMouseLeave(event: any) {
+    event.target.style.border = '3px solid rgba(255, 255, 255, 0.2)'
+  }
+
+  selectPlayer(player : Player){
+    console.log("Selected : " + player.name);
+    this.SelectedPlayer = player.id;
+  }
+
+  getJobIcon(job : string){
+    return `assets/job/${job}.png`;
+  }
+
+  getBackgroundColor(job : string){
+    switch(job){
+      case "BlackMage":
+      case "RedMage":
+      case "Summoner":
+      case "Ninja":
+      case "Samurai":
+      case "Monk":
+      case "Reaper":
+      case "Dragoon":
+      case "Bard":
+      case "Machinist":
+      case "Dancer":
+      case "Viper":
+      case "Pictomancer":        
+        return "rgba(255, 0, 0, 0.25)";
+      case "Astrologian":
+      case "Sage":
+      case "Scholar":
+      case "WhiteMage":
+        return "rgba(0,255,0,0.25)";
+      case "DarkKnight":
+      case "Paladin":
+      case "Warrior":
+      case "Gunbreaker":
+        return "rgba(0, 0, 255, 0.25)";
+    }
+  }
+
   onChangeStaticName(event : Event){
     const selectElement = event.target as HTMLSelectElement;
     const newValue = selectElement.value;
@@ -124,12 +210,17 @@ export class StaticDetailComponent implements OnInit {
   }
 
   ComputeNumberPGSGroup(){
-    let tol : number = 11;
+
     let PGSList = [];
     let groupList = [];
     for (let i = 0;i<this.staticDetail.players.length;i++){
       PGSList.push(this.staticDetail.players[i]);
     }
+    let highestPGS = Math.max(...PGSList.map(player => player.playerGearScore));
+    let lowestPGS = Math.min(...PGSList.map(player => player.playerGearScore));
+
+    let tol = (highestPGS - lowestPGS)/4;
+
     PGSList.sort((a, b) => a.playerGearScore - b.playerGearScore);
     let minPGS = PGSList[0].playerGearScore;
     let curMinPGSIndex = 0;
@@ -158,6 +249,7 @@ export class StaticDetailComponent implements OnInit {
       let curGroup = [];
       for (let i = group[0];i<=group[1];i+=1){
         curGroup.push(PGSList[i]);
+        PGSList[i].PGSGroupNumber = nGroup;
       }
       playerGroupList.push({group : curGroup, nGroup : nGroup});
       nGroup+=1;
@@ -166,6 +258,15 @@ export class StaticDetailComponent implements OnInit {
       playerGroupList.push({group : [], nGroup : 2*i}) // 2*i so there is no color and so it is empty
     }
     return playerGroupList;
+  }
+
+  GetGroupOfPlayer(player : Player){
+    let playerGroupList = this.ComputeNumberPGSGroup();
+    for (let group of playerGroupList){
+      if (group.group.includes(player)){
+        return group.nGroup;
+      }
+    }
   }
 
   GetGroupColor(nGroup : number){

@@ -25,8 +25,10 @@ export class PlayerDetailComponent {
     const selectedIndex = selectElement.selectedIndex;
     var NewGear : Gear;
     var GearTypeNumber : number;
+    var Turn : number;
     switch (GearType){
       case "Weapon":
+        Turn = 4;
         NewGear = this.player.WeaponChoice[selectedIndex];
         GearTypeNumber = 1;
         if(bis)
@@ -35,6 +37,7 @@ export class PlayerDetailComponent {
           this.player.curWeaponGear = NewGear;
         break;
       case "Head":
+        Turn = -1;
         NewGear = this.player.HeadChoice[selectedIndex];
         GearTypeNumber = 2;
         if(bis)
@@ -43,6 +46,7 @@ export class PlayerDetailComponent {
           this.player.curHeadGear = NewGear;
         break;
       case "Hands":
+        Turn = -1;
         NewGear = this.player.HandsChoice[selectedIndex];
         GearTypeNumber = 4;
         if(bis)
@@ -51,6 +55,7 @@ export class PlayerDetailComponent {
           this.player.curHandsGear = NewGear;
         break;
       case "Body":
+        Turn = 3;
         NewGear = this.player.BodyChoice[selectedIndex];
         GearTypeNumber = 3;
         if(bis)
@@ -59,6 +64,7 @@ export class PlayerDetailComponent {
           this.player.curBodyGear = NewGear;
         break;
       case "Legs":
+        Turn = 3;
         NewGear = this.player.LegsChoice[selectedIndex];
         GearTypeNumber = 5;
         if(bis)
@@ -67,6 +73,7 @@ export class PlayerDetailComponent {
           this.player.curLegsGear = NewGear;
         break;
       case "Feet":
+        Turn = -1;
         NewGear = this.player.FeetChoice[selectedIndex];
         GearTypeNumber = 6;
         if(bis)
@@ -75,6 +82,7 @@ export class PlayerDetailComponent {
           this.player.curFeetGear = NewGear;
         break;
       case "Necklace":
+        Turn = 1;
         NewGear = this.player.NecklaceChoice[selectedIndex];
         GearTypeNumber = 8;
         if(bis)
@@ -83,6 +91,7 @@ export class PlayerDetailComponent {
           this.player.curNecklaceGear = NewGear;
         break;
       case "Earrings":
+        Turn = 1;
         NewGear = this.player.EarringsChoice[selectedIndex];
         GearTypeNumber = 7;
         if(bis)
@@ -91,6 +100,7 @@ export class PlayerDetailComponent {
           this.player.curEarringsGear = NewGear;
         break;
       case "Bracelets":
+        Turn = 1;
         NewGear = this.player.BraceletsChoice[selectedIndex];
         GearTypeNumber = 9;
         if(bis)
@@ -99,6 +109,7 @@ export class PlayerDetailComponent {
           this.player.curBraceletsGear = NewGear;
         break;
       case "RightRing":
+        Turn = 1;
         NewGear = this.player.RightRingChoice[selectedIndex];
         GearTypeNumber = 10;
         if(bis)
@@ -107,6 +118,7 @@ export class PlayerDetailComponent {
           this.player.curRightRingGear = NewGear;
         break;
       case "LeftRing":
+        Turn = 1;
         NewGear = this.player.LeftRingChoice[selectedIndex];
         if(bis)
           this.player.bisLeftRingGear = NewGear;
@@ -115,7 +127,37 @@ export class PlayerDetailComponent {
         GearTypeNumber = 11;
         break;
     }
-    await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis).subscribe((data) => {
+
+    //Assumed gear came from raid to give turn. Now checking and changing turn accordingly.
+    if (NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")
+      Turn = 0; // 0 Means ignore the lock. The API will not check for lock when Turn = 0.
+
+    if (NewGear.gearStage == "Upgraded_Tomes") // If is augment then change turn to turn where the augment drops.
+      switch(GearType){
+        case "Weapon":
+        case "Body":
+        case "Head":
+        case "Hands":
+        case "Legs":
+        case "Feet":
+          Turn = 3;
+          break;
+        case "Necklace":
+        case "Earrings":
+        case "Bracelets":
+        case "RightRing":
+        case "LeftRing":
+          Turn = 2;
+          break;
+      }
+
+    if (Turn == -1){
+      // If turn == -1 then there is ambiguity and we need to ask player if it dropped from 2 or 3 (Since head/hand/feet can drop from both)
+      Turn = 0; // TODO: Ask player if it dropped from 2 or 3
+    }
+
+
+    await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
       console.log(data);
       this.RegetPlayerInfo();
     });
@@ -128,11 +170,11 @@ export class PlayerDetailComponent {
       return 'assets/no_gear.png';
     switch (gear.gearStage) {
       case 'Preparation':
-        return 'assets/crafted_gear_icon.png';
+        return 'assets/crafted_gear_icon.webp';
       case 'Tomes':
         return 'assets/tomestone_icon.png';
       case 'Raid':
-        return 'assets/raid_icon.png';
+        return 'assets/raid_icon.webp';
       case 'Upgraded_Tomes':
           return 'assets/tomestone_icon_upgraded.png';
     }
