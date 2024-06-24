@@ -96,6 +96,18 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        [HttpGet("GetAllTimestampOfStatic/{uuid}")]
+        public async Task<ActionResult<GearAcquisitionDTO>> GetAllTimestampOfStatic(string uuid){
+            using (var context = _context.CreateDbContext()){
+                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound("Static not found");
+                return Ok(new GearAcquisitionDTO(){
+                    info=dbStatic.GetAllTimestampOfStatic(context)
+                });
+            }
+        }
+
         [HttpGet("PlayerGearScore/{uuid}")]
         public async Task<ActionResult<List<PlayerGearScoreDTO>>> GetPlayerGearScore(string uuid)
         {   

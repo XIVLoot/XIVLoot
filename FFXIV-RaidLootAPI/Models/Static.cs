@@ -28,6 +28,10 @@ namespace FFXIV_RaidLootAPI.Models
         - DPS_NUMBER;TANK_NUMBER;HEALER_NUMBER (1),(1),(1)
         */
 
+
+        public Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> GetAllTimestampOfStatic(DataContext context){
+            return GearAcquisitionTimestamp.GetAllTimestampOfStatic(Id, context);
+        }
         public List<decimal> GetGearScoreParameter(){return new List<decimal>{GearScoreA, GearScoreB, GearScoreC};}
         public List<decimal> ComputeNumberRaidBuffsAndGroupAvgLevel(DataContext context){
             var playerList = context.Players.Where(p => p.staticId == Id).ToList();

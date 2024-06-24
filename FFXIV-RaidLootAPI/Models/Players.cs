@@ -496,16 +496,28 @@ namespace FFXIV_RaidLootAPI.Models
                 break;
         }
 
-        if (turn != Turn.turn_0 && !UseBis){
-            Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
-            Gear? newGear = await context.Gears.FindAsync(NewGearId);
-            if (newGear is null || oldGear is null)
+        Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
+        Gear? newGear = await context.Gears.FindAsync(NewGearId);
+        if (newGear is null || oldGear is null)
                 return;
 
+        if (turn != Turn.turn_0 && !UseBis)
             await this.update_lock_status(oldGear, newGear, context, turn);
-            return;
+        if (!UseBis)
+            await this.add_gear_acquisition_timestamp(newGear, context);
+        }
 
-            }
+        public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, DataContext context){
+            if (newGear is null || newGear.GearStage == GearStage.Preparation || newGear.GearStage == GearStage.Tomes)
+                return false;
+            GearAcquisitionTimestamp newTimestamp = new GearAcquisitionTimestamp(){
+                GearId = newGear.Id,
+                PlayerId = Id,
+                Timestamp = DateOnly.FromDateTime(DateTime.Now)
+            };
+            await context.GearAcquisitionTimestamps.AddAsync(newTimestamp);
+            await context.SaveChangesAsync();
+            return true;
         }
     
         public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static){
