@@ -81,24 +81,22 @@ export class PlayerDetailsSingleComponent {
     }
     if (!bis && !(NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")){
       if (NewGear.gearStage == "Upgraded_Tomes"){ // If is augment then change turn to turn where the augment drops.
-        if (this.player.staticRef.LockParam["LOCK_IF_TOME_AUGMENT"]){
-          switch(GearType){
-            case "Weapon":
-            case "Body":
-            case "Head":
-            case "Hands":
-            case "Legs":
-            case "Feet":
-              Turn = 3;
-              break;
-            case "Necklace":
-            case "Earrings":
-            case "Bracelets":
-            case "RightRing":
-            case "LeftRing":
-              Turn = 2;
-              break;
-          }
+        switch(GearType){
+          case "Weapon":
+          case "Body":
+          case "Head":
+          case "Hands":
+          case "Legs":
+          case "Feet":
+            Turn = 3;
+            break;
+          case "Necklace":
+          case "Earrings":
+          case "Bracelets":
+          case "RightRing":
+          case "LeftRing":
+            Turn = 2;
+            break;
         }
       }
       else{
@@ -224,7 +222,12 @@ export class PlayerDetailsSingleComponent {
             this.player.curLeftRingGear = NewGear;
           break;
       }
-      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn).subscribe((data) => {
+
+      var CheckPlayerLock = this.player.staticRef.LockParam["BOOL_LOCK_PLAYERS"];
+      if (CheckPlayerLock && !this.player.staticRef.LockParam["LOCK_IF_TOME_AUGMENT"] && NewGear.gearStage === "Upgraded_Tomes")
+        CheckPlayerLock=false;
+
+      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock).subscribe((data) => {
         console.log(data);
         this.RegetPlayerInfoSoft();
       });

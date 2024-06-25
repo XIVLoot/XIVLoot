@@ -11,7 +11,7 @@ namespace FFXIV_RaidLootAPI.Models
         public DateOnly Timestamp {get;set;}
         public int GearId {get;set;}
         public int PlayerId {get;set;}
-
+        public Turn turn {get;set;}
 
         public static Dictionary<GearType, Gear?> ComputeGearAtTimestamp(int PlayerId, DateOnly Timestamp, DataContext context){
             List<GearAcquisitionTimestamp> listValid = context.GearAcquisitionTimestamps.Where(p => p.PlayerId == PlayerId && p.Timestamp <= Timestamp).
@@ -45,14 +45,14 @@ namespace FFXIV_RaidLootAPI.Models
             return response;
         }
 
-        public static Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> GetAllTimestampOfStatic(int staticId, DataContext context){
+        public static Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> GetAllTimestampOfStatic(int staticId, DateOnly minDate, DataContext context){
 
             List<Players> players = context.Players.Where(p => p.staticId == staticId).ToList();
             
             Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> response = new Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>>();
 
             foreach (Players player in players){
-                List<GearAcquisitionTimestamp> list = context.GearAcquisitionTimestamps.Where(p => p.PlayerId == player.Id).ToList();
+                List<GearAcquisitionTimestamp> list = context.GearAcquisitionTimestamps.Where(p => p.PlayerId == player.Id && p.Timestamp >= minDate).ToList();
 
                 foreach (GearAcquisitionTimestamp p in list){
                     Gear? gear = context.Gears.FirstOrDefault(g => g.Id == p.GearId);
@@ -63,7 +63,8 @@ namespace FFXIV_RaidLootAPI.Models
                         response[p.Timestamp].Add(new GearAcquisitionDTO.GearAcqInfo(){
                             GearType = gear.GearType.ToString(),
                             PlayerId = p.PlayerId,
-                            IsAugment = gear.GearStage == GearStage.Upgraded_Tomes
+                            IsAugment = gear.GearStage == GearStage.Upgraded_Tomes,
+                            turn = p.turn
                         });
                     }
                     else{
@@ -71,7 +72,8 @@ namespace FFXIV_RaidLootAPI.Models
                             new GearAcquisitionDTO.GearAcqInfo(){
                             GearType = gear.GearType.ToString(),
                             PlayerId = p.PlayerId,
-                            IsAugment = gear.GearStage == GearStage.Upgraded_Tomes
+                            IsAugment = gear.GearStage == GearStage.Upgraded_Tomes,
+                            turn = p.turn
                         }};
                     }
                 }

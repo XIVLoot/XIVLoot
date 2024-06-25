@@ -1,0 +1,18 @@
+<div style="display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.785);">
+
+    <div *ngFor="let turn of [1,2,3,4]" style="display: flex;flex-direction: column;padding: 5px;width: 20%;margin: 0;margin-right: 0.5%;margin-left: 0.5%;background-color: rgba(0, 0, 0, 0.5);">
+        <img src="assets/raid/turn_{{turn}}.png" style="width: 95%;height:40%;margin: 0;margin-left: 2.5%;">
+        <div style="height: 60%; overflow-y: auto;">
+
+            <div *ngFor="let e of ListOfTurnInfo[turn] | keyvalue" style="display: flex;flex-direction: column;">
+                <p>{{e.key}} received : </p>
+                <div style="flex-direction: row;display: flex;">
+                <p *ngFor="let v of ListOfTurnInfo[turn][e.key]">{{v.gearType}} </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

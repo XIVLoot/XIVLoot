@@ -107,15 +107,30 @@
       <mat-slide-toggle class="param-toggle" [(ngModel)]="ShowAllPlayer" (ngModelChange)="CheckChange()">Show all players</mat-slide-toggle>
     </div>
   </div>
-  <div  style="height: 500px;width: 100%;max-height: 500px;margin: 0;">
-    <div *ngIf="!SelectedPlayer && !ShowAllPlayer" style="margin: 0;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;">
+  <div  style="width: 100%;margin: 0;border-top:3px solid rgba(0, 0, 0, 0.5);padding-top:1%;padding-bottom:1%;border-bottom:3px solid rgba(0, 0, 0, 0.5);">
+    <div *ngIf="!SelectedPlayer && !ShowAllPlayer" style="margin: 0;width: 100%;max-width:1241px;height: 500px;display: flex;justify-content: center;align-items: center;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;">
     <h2 style="color: white;">SELECT A PLAYER ABOVE TO EDIT OR SHOW ALL PLAYERS.</h2>
     </div>
     <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;"><app-player-details-single *ngIf="player.id == SelectedPlayer || ShowAllPlayer" [player]="player"></app-player-details-single></div>
   </div>
   </div>
-  <div style="height: 200px;">
-
+  <div style="height: 100px;">
+    <div style="display: flex;flex-direction: row;align-items: center;justify-content: space-between;background-color: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 2px;">
+      <h2>Gear acquisition history</h2>
+      <div style="display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 5px;">
+        <mat-form-field>
+          <mat-label>Number of weeks to display.</mat-label>
+          <input matInput type="number" min="1" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="CheckChange()" [disabled]="ShowAllHistory">
+        </mat-form-field>
+      <div style="display: flex;flex-direction: row;">
+        <p style="margin-right: 10px;">Or show all gear acquisition</p>
+        <mat-slide-toggle class="param-toggle" [(ngModel)]="ShowAllHistory" (ngModelChange)="CheckChange()"></mat-slide-toggle>
+      </div>
+      </div>
+    </div>
+    <div *ngFor="let week of GearAcqHistory  | keyvalue">
+      <app-gear-acq-history-single [week]="week" [staticRef]="staticDetail"></app-gear-acq-history-single>
+    </div>
   </div>
   <!-- Container for player details 
   <div style="width: 100%;">
@@ -126,5 +141,5 @@
       </mat-grid-tile>
     </mat-grid-list>
   </div>-->
-
+  <div style="height: 200px;"></div>
 </div>

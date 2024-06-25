@@ -14,6 +14,7 @@ public class PlayerDTO
     public string NewEtro {get;set;} = string.Empty;
     public string NewName {get;set;} = string.Empty;
     public Job NewJob {get;set;}
-    public bool NewLock {get;set;}
+    public bool CheckLockPlayer {get;set;}
+
 
 }

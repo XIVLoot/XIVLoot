@@ -1,7 +1,6 @@
 using FFXIV_RaidLootAPI.Models;
 
 namespace FFXIV_RaidLootAPI.DTO;
-
 public class GearAcquisitionDTO
 {
     public class GearAcqInfo
@@ -11,7 +10,7 @@ public class GearAcquisitionDTO
         public bool IsAugment {get;set;}
 
         public int PlayerId {get;set;}
+        public Turn turn {get;set;}
     }
-
     public Dictionary<DateOnly, List<GearAcqInfo>> info {get;set;} = new Dictionary<DateOnly, List<GearAcqInfo>>();
 }

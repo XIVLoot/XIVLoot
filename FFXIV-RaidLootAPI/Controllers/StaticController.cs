@@ -103,8 +103,54 @@ namespace FFXIV_RaidLootAPI.Controllers
                 if (dbStatic is null)
                     return NotFound("Static not found");
                 return Ok(new GearAcquisitionDTO(){
-                    info=dbStatic.GetAllTimestampOfStatic(context)
+                    info=dbStatic.GetAllTimestampOfStatic(DateOnly.FromDateTime(DateTime.MinValue),context)
                 });
+            }
+        }
+
+                [HttpGet("GetGearAcquisitionForPastWeeksPerTurn/{uuid}/{numberWeek}")]
+        public async Task<ActionResult<GearAcquisitionDTO>> GetAllTimestampOfStatic(string uuid, int numberWeek){
+            using (var context = _context.CreateDbContext()){
+                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound("Static not found");
+
+                int DaysBeforeLastTuesday = ((int)DateTime.Now.DayOfWeek - (int)DayOfWeek.Tuesday + 7)%7;
+
+                DateOnly FirstTuesdayToConsider = DateOnly.FromDateTime(DateTime.Now.AddDays(-1*DaysBeforeLastTuesday).AddDays(-7 * (numberWeek-1)));
+
+                Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> info = dbStatic.GetAllTimestampOfStatic(FirstTuesdayToConsider, context);
+
+                DateOnly CounterDate = FirstTuesdayToConsider;
+
+                Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> response = new Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>>();
+
+                while (CounterDate <= DateOnly.FromDateTime(DateTime.Now)){
+                    response[CounterDate] = new List<GearAcquisitionDTO.GearAcqInfo>();
+                    CounterDate = CounterDate.AddDays(7);
+                }
+
+                List<DateOnly> PossibleStartDate = response.Keys.ToList();
+                Console.WriteLine(PossibleStartDate.ToString() + " -- ARRAY");
+
+                foreach (KeyValuePair<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> pair in info){
+                    DateOnly KeyDate = DateOnly.FromDateTime(DateTime.Now);
+                    for (int i = 0;i<PossibleStartDate.Count;i++){
+                        if (i == PossibleStartDate.Count-1 || (pair.Key >= PossibleStartDate[i] && pair.Key < PossibleStartDate[i+1])){
+                            KeyDate = PossibleStartDate[i];
+                            break;
+                        }
+                    }
+
+                    foreach (GearAcquisitionDTO.GearAcqInfo p in pair.Value){
+                        response[KeyDate].Add(p);
+                    }   
+                }
+
+                return Ok(new GearAcquisitionDTO(){
+                    info=response
+                });
+
             }
         }
 

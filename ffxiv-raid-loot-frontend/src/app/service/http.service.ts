@@ -50,14 +50,15 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
-  changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean, Turn : number) : Observable<any>{
+  changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean, Turn : number, CheckLockPlayer : boolean) : Observable<any>{
     const url = `${this.api}Player/GearToChange`; // Adjust the endpoint as necessary
     const body = {
       "id": playerId,
       "useBis": useBis,
       "gearToChange": GearType,
       "newGearId": GearId,
-      "turn": Turn
+      "turn": Turn,
+      "CheckLockPlayer": CheckLockPlayer
     }
     return this.http.put(url, body).pipe(
       catchError(error => throwError(() => new Error('Failed to change player gear: ' + error.message)))
@@ -212,6 +213,13 @@ constructor(public http: HttpClient, public data: DataService) { }
     const url = `${this.api}Player/RemovePlayerLock/${turn}`;
     return this.http.put(url, {"id" : playerId}).pipe(
       catchError(error => throwError(() => new Error('Failed to remove lock: ' + error.message)))
+    );
+  }
+
+  GetGearAcqHistory(uuid : string, numberWeek : number){
+    const url = `${this.api}Static/GetGearAcquisitionForPastWeeksPerTurn/${uuid}/${numberWeek}`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to get gear acq history: ' + error.message)))
     );
   }
 

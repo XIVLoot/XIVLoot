@@ -29,8 +29,8 @@ namespace FFXIV_RaidLootAPI.Models
         */
 
 
-        public Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> GetAllTimestampOfStatic(DataContext context){
-            return GearAcquisitionTimestamp.GetAllTimestampOfStatic(Id, context);
+        public Dictionary<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> GetAllTimestampOfStatic(DateOnly minDate, DataContext context){
+            return GearAcquisitionTimestamp.GetAllTimestampOfStatic(Id,minDate, context);
         }
         public List<decimal> GetGearScoreParameter(){return new List<decimal>{GearScoreA, GearScoreB, GearScoreC};}
         public List<decimal> ComputeNumberRaidBuffsAndGroupAvgLevel(DataContext context){
