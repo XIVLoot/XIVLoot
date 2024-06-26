@@ -20,5 +20,7 @@ namespace FFXIV_RaidLootAPI.Data
         public DbSet<Raid> Raids { get; set; }
 
         public DbSet<Users> Users { get; set; }
+
+        public DbSet<GearAcquisitionTimestamp> GearAcquisitionTimestamps {get;set;}
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, ChangeDetectorRef } from '@angular/core';
 import { Static } from '../models/static'; // Importing the Static model
 import { HttpService } from '../service/http.service'; // Importing the HttpService
 import { ActivatedRoute } from '@angular/router'; // Importing ActivatedRoute to access route parameters
@@ -54,11 +54,14 @@ export class StaticDetailComponent implements OnInit {
   public OriginalLockParam : any;
   public LockParamChangeCheck : boolean = false;
   public ShowAllPlayer : boolean = false;
-  
   public SelectedPlayer : number;
+  public ShowNumberLastWeekHistory : number = 4;
+  public ShowAllHistory : boolean = false;
+  public GearAcqHistory : Object = {};
+  public HistoryGear : any = [];
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
-    private staticEventsService: StaticEventsService, private dialog : MatDialog
+    private staticEventsService: StaticEventsService, private dialog : MatDialog, private cdr: ChangeDetectorRef
   ) {
     this.staticEventsService.recomputePGS$.subscribe(() => {
       this.groupList = this.ComputeNumberPGSGroup();
@@ -81,12 +84,37 @@ export class StaticDetailComponent implements OnInit {
       this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
       console.log(this.staticDetail); // Log the static details to the console
       this.groupList = this.ComputeNumberPGSGroup();
+      this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(data => {
+        this.GearAcqHistory = data["info"];
+        const keys = Object.keys(this.GearAcqHistory);
+
+        for (let x = keys.length-1;x>=0;x--){
+          this.HistoryGear.push(keys[x]);
+        }
+
+        this.cdr.detectChanges();
+    });
     });
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
   }
 
   c(){
     
+  }
+
+  ChangeHistoryLoaded(){
+    this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(data => {
+      // TODO : THIS UPADATE IS NOT VERY EFFICIENT
+      this.GearAcqHistory = data["info"];
+      this.HistoryGear = [];
+      const keys = Object.keys(this.GearAcqHistory);
+
+      for (let x = keys.length-1;x>=0;x--){
+        this.HistoryGear.push(keys[x]);
+      }
+
+      this.cdr.detectChanges();
+  });
   }
 
   CheckChange(){

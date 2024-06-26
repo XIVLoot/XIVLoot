@@ -1,4 +1,4 @@
-<div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16);display: flex;flex-direction: row;height: 500px;" [style.backgroundColor]="getBackgroundColor()">
+<div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16);display: flex;flex-direction: row;height: 500px;width:100%;max-width: 1241px;" [style.backgroundColor]="getBackgroundColor()">
 
 
 <div style="height: 100%;width: 70%;display: flex;flex-direction: column;">
@@ -295,7 +295,7 @@
       <p style="padding-right: 5%;padding-left: 5%;width:9ch;text-align: center;">Left Ring</p>
       <mat-form-field style="width: 10ch !important;height: 7ch;padding-right: 4%;">
         <select matNativeControl (change)="onChangeGear('LeftRing',true,$event)">
-          <option *ngFor="let item of player.LeftRingChoice" [selected]="item.gearName === player.bisLeftRingGeargearName">{{item.gearName}}</option>
+          <option *ngFor="let item of player.LeftRingChoice" [selected]="item.gearName === player.bisLeftRingGear.gearName">{{item.gearName}}</option>
         </select>
       </mat-form-field>
     <div style="width: 25px;height: 25px;margin-bottom:20px">

@@ -395,7 +395,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
     
-        public async Task change_gear_piece(GearType GearToChange, bool UseBis, int NewGearId, Turn turn,DataContext context)
+        public async Task change_gear_piece(GearType GearToChange, bool UseBis, int NewGearId, Turn turn,bool CheckLockPlayer, DataContext context)
         {/*Updates the id of the specified gear piece for the player..
         GearToChange -> Value of the GearType to change.
         UseBis -> If true changes the value for Bis. Else for current.
@@ -496,16 +496,34 @@ namespace FFXIV_RaidLootAPI.Models
                 break;
         }
 
-        if (turn != Turn.turn_0 && !UseBis){
+        
+
+
+        if (CheckLockPlayer && !UseBis){
             Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
             Gear? newGear = await context.Gears.FindAsync(NewGearId);
-            if (newGear is null || oldGear is null)
+            
+            if (oldGear is null || newGear is null)
                 return;
-
             await this.update_lock_status(oldGear, newGear, context, turn);
-            return;
+        
+            if (!UseBis)
+                await this.add_gear_acquisition_timestamp(newGear, turn, context);
+        }
+        }
 
-            }
+        public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, Turn turn, DataContext context){
+            if (newGear is null || newGear.GearStage == GearStage.Preparation || newGear.GearStage == GearStage.Tomes)
+                return false;
+            GearAcquisitionTimestamp newTimestamp = new GearAcquisitionTimestamp(){
+                GearId = newGear.Id,
+                PlayerId = Id,
+                Timestamp = DateOnly.FromDateTime(DateTime.Now),
+                turn = turn
+            };
+            await context.GearAcquisitionTimestamps.AddAsync(newTimestamp);
+            await context.SaveChangesAsync();
+            return true;
         }
     
         public StaticDTO.PlayerInfoDTO get_player_info(DataContext context, Static Static){

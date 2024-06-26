@@ -47,6 +47,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { PlayerDetailComponent } from './player-detail/player-detail.component';
 import { AuthComponent } from './auth/auth.component';
 import { PlayerDetailsSingleComponent } from './player-details-single/player-details-single.component';
+import { GearAcqHistorySingleComponent } from './gear-acq-history-single/gear-acq-history-single.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { PlayerDetailsSingleComponent } from './player-details-single/player-det
     StaticDetailComponent,
     PlayerDetailComponent,
     AuthComponent,
-    PlayerDetailsSingleComponent
+    PlayerDetailsSingleComponent,
+    GearAcqHistorySingleComponent
   ],
   imports: [
     BrowserModule,
