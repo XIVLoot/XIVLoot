@@ -19,7 +19,7 @@
       </mat-expansion-panel-header>
   
       <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.4)">
-        <h3 style="color:white">Gear order priority (according to your settings) : </h3>
+        <h3 style="color:white">Group gear order priority (left to right) : </h3>
         <div style="display: flex; justify-content: space-between;">
           <div *ngFor="let group of groupList" [style.border]="GetGroupBorderColor(group.nGroup)" [style.backgroundColor]="GetGroupColor(group.nGroup)" style="width:240px;border-radius: 10px;padding: 5px;">
             <p *ngFor="let player of group.group" style="color: white;">{{player.name}}</p>
@@ -37,7 +37,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <div style="margin: 0;">
+    <div style="margin: 0;background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border:3px solid rgba(0, 0, 0, 0.4);">
         <div style="display: flex;flex-direction: column;">
           <div style="border-bottom: 3px solid black;">
           <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_PLAYERS']" (ngModelChange)="CheckChange()">Activate Lock logic : {{staticDetail.LockParam['BOOL_LOCK_PLAYERS']}}</mat-slide-toggle>
@@ -66,14 +66,14 @@
         </div>
         </div>
         </div>
-        <button mat-raised-button color="primary" (click)="SaveLockParam()" [disabled]="!LockParamChangeCheck" [style.opacity]="LockParamChangeCheck ? '1' : '0.5'">Update Parameters</button>
+        <button mat-raised-button style="margin: 10px;" color="primary" (click)="SaveLockParam()" [style.opacity]="LockParamChangeCheck ? '1' : '0.5'">Update Parameters</button>
     </div>
   </mat-expansion-panel>
 </mat-accordion>
 
   <div>
     <mat-grid-list [cols]="4"rowHeight="1:0.3" style="width: 100%" gutterSize="10px">
-      <mat-grid-tile *ngFor="let player of staticDetail.players" (click)="selectPlayer(player)" [style.backgroundColor]="getBackgroundColor(player.job)" style="border: 3px solid rgba(255, 255, 255, 0.2);padding: 0;border-radius: 10px;"(mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)">
+      <mat-grid-tile *ngFor="let player of staticDetail.players" (click)="selectPlayer(player)" [style.backgroundColor]="getBackgroundColor(player.job)" style="border: 3px solid rgba(255, 255, 255, 0.2);padding: 0;border-radius: 10px;max-width: 295px;max-height: 97px;"(mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)">
         <div style="display: flex; flex-direction: column; height: 100%; width: 100%; margin: 0;">  
         <div style="height: 30%;width: 100%;margin: 0;">  
             <div style="display: flex; justify-content: flex-start; margin: 5px; position: relative; top: 0; left: 0;">
@@ -114,22 +114,23 @@
     <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;"><app-player-details-single *ngIf="player.id == SelectedPlayer || ShowAllPlayer" [player]="player"></app-player-details-single></div>
   </div>
   </div>
-  <div style="height: 100px;">
-    <div style="display: flex;flex-direction: row;align-items: center;justify-content: space-between;background-color: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 2px;">
+  <div style="background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border:5px solid rgba(0, 0, 0, 0.4)">
+    <div style="display: flex;flex-direction: row;align-items: center;justify-content: space-between;">
       <h2>Gear acquisition history</h2>
-      <div style="display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.7);border-radius: 10px;padding: 5px;">
+      <h4>(Only showing weeks where gear was acquired)</h4>
+      <div style="display: flex;flex-direction: row;border-radius: 10px;padding: 5px;">
         <mat-form-field>
           <mat-label>Number of weeks to display.</mat-label>
-          <input matInput type="number" min="1" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="CheckChange()" [disabled]="ShowAllHistory">
+          <input matInput type="number" min="1" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="ChangeHistoryLoaded()" [disabled]="ShowAllHistory">
         </mat-form-field>
-      <div style="display: flex;flex-direction: row;">
+      <!--<div style="display: flex;flex-direction: row;">
         <p style="margin-right: 10px;">Or show all gear acquisition</p>
         <mat-slide-toggle class="param-toggle" [(ngModel)]="ShowAllHistory" (ngModelChange)="CheckChange()"></mat-slide-toggle>
-      </div>
+      </div>-->
       </div>
     </div>
-    <div *ngFor="let week of GearAcqHistory  | keyvalue">
-      <app-gear-acq-history-single [week]="week" [staticRef]="staticDetail"></app-gear-acq-history-single>
+    <div *ngFor="let week of HistoryGear">
+      <app-gear-acq-history-single *ngIf="GearAcqHistory[week].length > 0" [week]="{value : GearAcqHistory[week], key : week}" [staticRef]="staticDetail"></app-gear-acq-history-single>
     </div>
   </div>
   <!-- Container for player details 
@@ -141,5 +142,5 @@
       </mat-grid-tile>
     </mat-grid-list>
   </div>-->
-  <div style="height: 200px;"></div>
+  <div style="height: 2000px;"></div>
 </div>

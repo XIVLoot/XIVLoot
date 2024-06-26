@@ -108,8 +108,8 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
-                [HttpGet("GetGearAcquisitionForPastWeeksPerTurn/{uuid}/{numberWeek}")]
-        public async Task<ActionResult<GearAcquisitionDTO>> GetAllTimestampOfStatic(string uuid, int numberWeek){
+        [HttpGet("GetGearAcquisitionForPastWeeksPerTurn/{uuid}/{numberWeek}")]
+        public async Task<ActionResult<GearAcquisitionDTO>> GetGearAcquisitionForPastWeeksPerTurn(string uuid, int numberWeek){
             using (var context = _context.CreateDbContext()){
                 var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
                 if (dbStatic is null)
@@ -131,7 +131,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 }
 
                 List<DateOnly> PossibleStartDate = response.Keys.ToList();
-                Console.WriteLine(PossibleStartDate.ToString() + " -- ARRAY");
+                //Console.WriteLine(PossibleStartDate.ToString() + " -- ARRAY");
 
                 foreach (KeyValuePair<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> pair in info){
                     DateOnly KeyDate = DateOnly.FromDateTime(DateTime.Now);

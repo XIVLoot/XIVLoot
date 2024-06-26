@@ -15,6 +15,8 @@ interface showInfo{
 export class GearAcqHistorySingleComponent {
   @Input() week: any;
   @Input() staticRef : Static;
+  public upToDate : Date;
+  public isCurrent : boolean;
 
   public ListOfTurnInfo : any = {
     1 : {},
@@ -23,7 +25,16 @@ export class GearAcqHistorySingleComponent {
     4 : {}
   }
 
+  public ListOfTurnInfoNumber = [];
+
   ngOnInit(){
+
+
+    this.upToDate = new Date(this.week.key);
+    this.upToDate.setDate(this.upToDate.getDate() + 6);
+    this.isCurrent = this.upToDate > new Date();
+
+  
     for (let v of this.week.value){
       if (v.turn == 0) 
         v.turn = 1;
@@ -40,7 +51,27 @@ export class GearAcqHistorySingleComponent {
         }];
       }
     }
-    var x = 0;
+    for (let key of Object.keys(this.ListOfTurnInfo)){
+      var x = Object.keys(this.ListOfTurnInfo[parseInt(key)]).length;
+      this.ListOfTurnInfoNumber.push(x);
+    }
+  }
+
+  GetIcon(v){
+    if (v.isAugment){
+      switch(v.gearType){
+        case "Weapon":
+        case "Body":
+        case "Head":
+        case "Hands":
+        case "Legs":
+        case "Feet":
+          return "assets/twine_icon.png";
+        default:
+          return "assets/shine_icon.png";
+      }
+    }
+    return "assets/gear_icon/"+v.gearType+"_chest.png";
   }
 
 }

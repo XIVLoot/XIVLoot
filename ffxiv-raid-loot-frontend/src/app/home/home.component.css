@@ -54,14 +54,16 @@ nav ul li a {
   background-color: rgb(32, 31, 31);
   padding: 50px 0;
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 .features .feature {
   display: inline-block;
-  width: 30%;
+  width: 50%;
   margin: 20px;
 }
 .features .feature img {
-  height: 100px;
+  width: 100%;
 }
 .features .feature h3 {
   font-size: 1.5em;
@@ -137,4 +139,13 @@ footer ul li {
 footer ul li a {
   color: white;
   text-decoration: none;
+}
+.feature_row{
+  display: flex;
+  flex-direction: row;
+}
+
+.feature_row img{
+  border-radius: 10px;
+  border:3px solid white;
 }

@@ -30,6 +30,78 @@ export class PlayerDetailsSingleComponent {
   async onChangeGear(GearType : string, bis : boolean, event: Event){
     const selectElement = event.target as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex;
+    if (selectedIndex == 0){
+      // Reverting change
+      switch (GearType){
+        case "Weapon":
+          if(bis)
+            selectElement.value = this.player.bisWeaponGear.gearName;
+          else
+            selectElement.value = this.player.curWeaponGear.gearName;
+          break;
+        case "Head":
+          if(bis)
+            selectElement.value = this.player.bisHeadGear.gearName;
+          else
+            selectElement.value = this.player.curHeadGear.gearName;
+          break;
+        case "Hands":
+          if(bis)
+            selectElement.value = this.player.bisHandsGear.gearName;
+          else
+            selectElement.value = this.player.curHandsGear.gearName;
+          break;
+        case "Body":
+          if(bis)
+            selectElement.value = this.player.bisBodyGear.gearName;
+          else
+            selectElement.value = this.player.curBodyGear.gearName;
+          break;
+        case "Legs":
+          if(bis)
+            selectElement.value = this.player.bisLegsGear.gearName;
+          else
+            selectElement.value = this.player.curLegsGear.gearName;
+          break;
+        case "Feet":
+          if(bis)
+            selectElement.value = this.player.bisFeetGear.gearName;
+          else
+            selectElement.value = this.player.curFeetGear.gearName;
+          break;
+        case "Necklace":
+          if(bis)
+            selectElement.value = this.player.bisNecklaceGear.gearName;
+          else
+            selectElement.value = this.player.curNecklaceGear.gearName;
+          break;
+        case "Earrings":
+          if(bis)
+            selectElement.value = this.player.bisEarringsGear.gearName;
+          else
+            selectElement.value = this.player.curEarringsGear.gearName;
+          break;
+        case "Bracelets":
+          if(bis)
+            selectElement.value = this.player.bisBraceletsGear.gearName;
+          else
+            selectElement.value = this.player.curBraceletsGear.gearName;
+          break;
+        case "RightRing":
+          if(bis)
+            selectElement.value = this.player.bisRightRingGear.gearName;
+          else
+            selectElement.value = this.player.curRightRingGear.gearName;
+          break;
+        case "LeftRing":
+          if(bis)
+            selectElement.value = this.player.bisLeftRingGear.gearName;
+          else
+            selectElement.value = this.player.curLeftRingGear.gearName;
+          break;
+      }
+      return false;
+    }
     var NewGear : Gear;
     var GearTypeNumber : number;
     var Turn = 0;
