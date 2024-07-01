@@ -59,6 +59,7 @@ export class StaticDetailComponent implements OnInit {
   public ShowAllHistory : boolean = false;
   public GearAcqHistory : Object = {};
   public HistoryGear : any = [];
+  public IsLoading : boolean = true;
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog, private cdr: ChangeDetectorRef
@@ -76,6 +77,13 @@ export class StaticDetailComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.uuid = params['uuid'];
     });
+
+
+    this.dialog.open(LoadingDialogComponent, {
+      disableClose:true,
+      data : {uuid : this.uuid}
+    });
+
     console.log("Trying details");
     // Fetch static details from the server using the uuid
     this.http.getStatic(this.uuid).subscribe(details => {
@@ -91,7 +99,8 @@ export class StaticDetailComponent implements OnInit {
         for (let x = keys.length-1;x>=0;x--){
           this.HistoryGear.push(keys[x]);
         }
-
+        this.IsLoading = false;
+        this.dialog.closeAll();
         this.cdr.detectChanges();
     });
     });
@@ -170,11 +179,11 @@ export class StaticDetailComponent implements OnInit {
   }
 
   onMouseEnter(event: any) {
+    event.target.style.outline = "2px solid rgba(255, 255, 255, 0.7)";
     event.target.style.cursor = 'pointer';
-    event.target.style.border = '3px solid rgba(255, 255, 255, 0.5)'
   }
   onMouseLeave(event: any) {
-    event.target.style.border = '3px solid rgba(255, 255, 255, 0.2)'
+    event.target.style.outline = "";
   }
 
   selectPlayer(player : Player){
@@ -445,5 +454,18 @@ export class SettingPGS {
       this.dialogRef.close()});
   }
 
+}
+
+@Component({
+  selector: 'app-loading-dialog',
+  template: `
+    <div style="text-align: center; padding: 20px;">
+      <h1 style="color:white;">Loading Static : {{data.uuid}}</h1>
+      <img src="assets/loading_gif.gif" style="width:100px;height:100px;">
+    </div>
+  `,
+})
+export class LoadingDialogComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { uuid : string },){}
 }
 

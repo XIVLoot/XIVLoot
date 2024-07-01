@@ -223,6 +223,20 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
+  DeleteGearAcqEvent(id : number){
+    const url = `${this.api}GearAcquisition/RemoveGearAcquisition/${id}`
+    return this.http.delete(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to delete gear acq history: ' + error.message)))
+    );
+  }
+
+  LoginDiscord(){
+    const url = `${this.api}Auth/signin-discord`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to login discord: ' + error.message)))
+    );
+  }
+
 }
 
 

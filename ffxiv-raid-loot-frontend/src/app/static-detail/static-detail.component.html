@@ -1,4 +1,5 @@
-<div>
+<div style="display: flex; justify-content: center; align-items: center;">
+<div style="max-width: 1350px;">
   <!-- Container for static detail header -->
   <div>
     <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding-top: 10px;padding-left: 10px;border: 5px solid rgba(0, 0, 0, 0.4);">
@@ -108,7 +109,8 @@
     </div>
   </div>
   <div  style="width: 100%;margin: 0;border-top:3px solid rgba(0, 0, 0, 0.5);padding-top:1%;padding-bottom:1%;border-bottom:3px solid rgba(0, 0, 0, 0.5);">
-    <div *ngIf="!SelectedPlayer && !ShowAllPlayer" style="margin: 0;width: 100%;max-width:1241px;height: 500px;display: flex;justify-content: center;align-items: center;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;">
+    
+    <div *ngIf="!SelectedPlayer && !ShowAllPlayer" style="margin: 0;padding:10px;width: 100%;max-width:1250px;height: 500px;display: flex;justify-content: center;align-items: center;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;">
     <h2 style="color: white;">SELECT A PLAYER ABOVE TO EDIT OR SHOW ALL PLAYERS.</h2>
     </div>
     <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;"><app-player-details-single *ngIf="player.id == SelectedPlayer || ShowAllPlayer" [player]="player"></app-player-details-single></div>
@@ -121,7 +123,7 @@
       <div style="display: flex;flex-direction: row;border-radius: 10px;padding: 5px;">
         <mat-form-field>
           <mat-label>Number of weeks to display.</mat-label>
-          <input matInput type="number" min="1" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="ChangeHistoryLoaded()" [disabled]="ShowAllHistory">
+          <input matInput type="number" min="1" max="16" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="ChangeHistoryLoaded()" [disabled]="ShowAllHistory">
         </mat-form-field>
       <!--<div style="display: flex;flex-direction: row;">
         <p style="margin-right: 10px;">Or show all gear acquisition</p>
@@ -130,7 +132,8 @@
       </div>
     </div>
     <div *ngFor="let week of HistoryGear">
-      <app-gear-acq-history-single *ngIf="GearAcqHistory[week].length > 0" [week]="{value : GearAcqHistory[week], key : week}" [staticRef]="staticDetail"></app-gear-acq-history-single>
+      <!-- *ngIf="GearAcqHistory[week].length > 0" -->
+      <app-gear-acq-history-single  [week]="{value : GearAcqHistory[week], key : week}" [staticRef]="staticDetail"></app-gear-acq-history-single>
     </div>
   </div>
   <!-- Container for player details 
@@ -143,4 +146,5 @@
     </mat-grid-list>
   </div>-->
   <div style="height: 2000px;"></div>
+</div>
 </div>

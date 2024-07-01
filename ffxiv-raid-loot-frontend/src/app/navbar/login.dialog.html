@@ -1,0 +1,65 @@
+<div style="padding: 20px;display: flex;flex-direction: column;height: 550px;">
+    <h1 style="color:white;">Login to XIVLoot</h1>
+    <div style="height: 5px;width: 430px;border-bottom: 3px solid rgba(0, 0, 0, 0.4);margin-left: 15px;margin-bottom: 10px;"></div>
+    <div style="display: flex; margin-bottom: 5px;">
+        <button mat-button style="margin-right: 15px;border-radius: 0px;" (click)="showLogin = true" [ngStyle]="{'border-bottom': showLogin ? '2px solid white' : ''}">Login</button>
+        <button mat-button style="border-radius: 0px;" (click)="showLogin = false" [ngStyle]="{'border-bottom': !showLogin ? '2px solid white' : ''}">Sign Up</button>
+    </div>
+    <div style="padding: 10px;background-color: rgba(0, 0, 0, 0.2);border-radius: 3px;">
+        <!-- Login Section -->
+        <ng-container *ngIf="showLogin ; else Register">
+            <h1 style="color:white;">Login</h1>
+        <div >
+            <!-- Email Field -->
+            <div style="display: flex;flex-direction: column;">
+                <mat-form-field appearance="fill">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" required style="margin-bottom: 10px;">
+                </mat-form-field>
+            </div>
+            <div style="display: flex;flex-direction: column;">
+                <!-- Password Field -->
+                <mat-form-field appearance="fill">
+                    <mat-label>Password</mat-label>
+                    <input matInput required type="password" style="margin-bottom: 10px;">
+                </mat-form-field>
+            </div>
+            <div style="display: flex;flex-direction: column;align-items: center;">
+                <button mat-raised-button color="primary" style="width: 100%;margin-bottom: 10px;">Login</button>
+                <h3 style="color:white">Or</h3>
+                <button mat-raised-button style="width: 100%;background-color: rgba(0, 30, 255, 0.511);">Login with Discord</button>
+            </div>
+        </div>
+        </ng-container>
+        <!-- Register Section -->
+        <ng-template #Register>
+            <h1 style="color:white;">Sign Up</h1>
+        <div >
+            <!-- Email Field -->
+            <div style="display: flex;flex-direction: column;">
+                <mat-form-field appearance="fill">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" required style="margin-bottom: 10px;">
+                </mat-form-field>
+            </div>
+            <div style="display: flex;flex-direction: column;">
+                <!-- Password Field -->
+                <mat-form-field appearance="fill">
+                    <mat-label>Password</mat-label>
+                    <input matInput required type="password" style="margin-bottom: 10px;">
+                </mat-form-field>
+            </div>
+            <div style="display: flex;flex-direction: column;">
+                <!-- Confirm Password Field -->
+                <mat-form-field appearance="fill">
+                    <mat-label>Confirm Password</mat-label>
+                    <input matInput required type="password" style="margin-bottom: 10px;">
+                </mat-form-field>
+            </div>
+            <div style="display: flex;flex-direction: column;align-items: center;">
+                <button mat-raised-button color="primary" style="width: 100%;margin-bottom: 10px;">Sign Up</button>
+            </div>
+        </div>
+        </ng-template>
+    </div>
+</div>

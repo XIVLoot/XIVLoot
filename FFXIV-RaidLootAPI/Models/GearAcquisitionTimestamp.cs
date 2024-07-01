@@ -64,7 +64,8 @@ namespace FFXIV_RaidLootAPI.Models
                             GearType = gear.GearType.ToString(),
                             PlayerId = p.PlayerId,
                             IsAugment = gear.GearStage == GearStage.Upgraded_Tomes,
-                            turn = p.turn
+                            turn = p.turn,
+                            Id=p.Id
                         });
                     }
                     else{
@@ -73,7 +74,8 @@ namespace FFXIV_RaidLootAPI.Models
                             GearType = gear.GearType.ToString(),
                             PlayerId = p.PlayerId,
                             IsAugment = gear.GearStage == GearStage.Upgraded_Tomes,
-                            turn = p.turn
+                            turn = p.turn,
+                            Id=p.Id
                         }};
                     }
                 }

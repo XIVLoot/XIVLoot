@@ -80,7 +80,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
 
         [HttpPut("SetPGSParam/{uuid}/{a}/{b}/{c}")]
-        public async Task<ActionResult<List<decimal>>> GetPGSParam(string uuid, decimal a, decimal b, decimal c)
+        public async Task<ActionResult<List<decimal>>> SetPGSParam(string uuid, decimal a, decimal b, decimal c)
         {
             using (var context = _context.CreateDbContext())
             {   

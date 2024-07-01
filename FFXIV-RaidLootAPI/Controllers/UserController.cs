@@ -23,7 +23,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             {
 
 
-            Users? checkUser = await context.Users.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
+            Users? checkUser = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
 
             if (!(checkUser is null)){
                 Console.WriteLine("User already exists");
@@ -37,7 +37,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 user_discord_id=user_discord_id,
                 user_saved_static=""
             };
-            await context.Users.AddAsync(newuser);
+            await context.User.AddAsync(newuser);
             await context.SaveChangesAsync();
             return Ok(newuser);
             }
@@ -48,7 +48,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
-            Users? user = await context.Users.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
+            Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
             if (user is null){
                 return NotFound("User not found");
             }
@@ -63,7 +63,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
-            Users? user = await context.Users.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
+            Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
             if (user is null){
                 return NotFound("User not found");
             }
@@ -86,7 +86,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
-            Users? user = await context.Users.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
+            Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
             if (user is null){
                 return NotFound("User not found");
             }

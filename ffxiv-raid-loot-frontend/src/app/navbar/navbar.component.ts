@@ -4,6 +4,11 @@ import { HttpService } from '../service/http.service';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../environments/environments';
+import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButton } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +22,7 @@ export class NavbarComponent {
   }
   public userSavedStatic = [];
 
-  constructor(private http : HttpService, private _snackBar: MatSnackBar){}
+  constructor(private http : HttpService, private _snackBar: MatSnackBar, private _dialog : MatDialog){}
 
   ngOnInit(){
     this.isLoggedIn = localStorage.getItem('discord_access_token_xiv_loot') !== null;
@@ -47,8 +52,9 @@ export class NavbarComponent {
   }
 
   openLoginDialog(){
-    localStorage.setItem('return_url', window.location.href);
-    window.open(environment.site_url + "auth/discord/callback", "_blank");
+    this._dialog.open(ConfirmDialog, {height:'530px',width:'500px'});
+    //localStorage.setItem('return_url', window.location.href);
+    //window.open(environment.site_url + "auth/discord/callback", "_blank");
   }
 
   get discordAvatarUrl(): string {
@@ -91,4 +97,19 @@ export class NavbarComponent {
   }
 
 
+}
+
+@Component({
+  selector: 'import-etro',
+  templateUrl: `login.dialog.html`,
+  standalone: true,
+  imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule],
+})
+export class ConfirmDialog {
+  constructor() {}
+
+  public showLogin: boolean = true;
+  ngOnInit(){
+    this.showLogin = true;
+  }
 }

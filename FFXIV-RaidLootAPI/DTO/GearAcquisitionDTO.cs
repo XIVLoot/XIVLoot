@@ -11,6 +11,7 @@ public class GearAcquisitionDTO
 
         public int PlayerId {get;set;}
         public Turn turn {get;set;}
+        public int Id {get;set;}
     }
     public Dictionary<DateOnly, List<GearAcqInfo>> info {get;set;} = new Dictionary<DateOnly, List<GearAcqInfo>>();
 }
