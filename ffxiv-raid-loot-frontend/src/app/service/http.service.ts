@@ -205,7 +205,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
 
   GetUsernameDefault(){
     const url = `${this.api}User/GetUsernameDefault`;
-    return this.http.get(url, {withCredentials:true}).pipe(
+    return this.http.get(url, {withCredentials:true, responseType: 'text'}).pipe(
       catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
     );
   }
@@ -361,6 +361,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     var url = `${this.api}User/logout`
     return this.http.get(url, {withCredentials: true}).pipe(catchError(error => {
       return throwError(() => new Error('Failed to register: ' + error.message));
+    }));
+  }
+
+  SetUsername(username : string){
+    var url = `${this.api}User/SetUsername/${username}`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to set username: ' + error.message));
     }));
   }
 

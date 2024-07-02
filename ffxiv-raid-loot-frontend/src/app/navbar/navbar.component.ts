@@ -174,15 +174,7 @@ export class LoginDialog {
   public registerEmail : string = "";
   public registerPassword : string = "";
   public confirmPassword : string = "";
-  ngOnInit(){
-    this.showLogin = true;
-    this.loginEmail = "";
-    this.loginPassword = "";
-    
-    this.registerEmail = "";
-    this.registerPassword  = "";
-    this.confirmPassword = "";
-  }
+  public registerUsername : string = "";
 
   register(){
     if(this.registerPassword !== this.confirmPassword){
@@ -225,7 +217,11 @@ export class LoginDialog {
             color : ""
           }
         });
-      }
+      }else {
+        this.http.SetUsername(this.registerUsername).subscribe((res : any) => {
+        console.log(res);
+      });
+}
       resolve(true);
     }, (error : any) => {this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
