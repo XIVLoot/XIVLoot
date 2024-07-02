@@ -44,6 +44,8 @@ namespace FFXIV_RaidLootAPI.Models
         public string Name { get; set; } = "Enter the name here";
         public Job Job {get; set; }
 
+        public string Test {get;set;} = "test";
+
         public bool Locked { get; set; }
         public DateTime Turn1LockedUntilDate {get;set;}
         public DateTime Turn2LockedUntilDate {get;set;}

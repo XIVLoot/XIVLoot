@@ -153,4 +153,10 @@ export class LoginDialog {
       });
     });
   }
+
+  login(){
+    this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {
+      console.log(res);
+    });
+  }
 }

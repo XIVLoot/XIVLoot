@@ -293,12 +293,12 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   }
 
   Login(email : string, password : string){
-    const url = `${this.home}login?useCookies=true&useSessionCookies=true`;
+    const url = `${this.home}login?useCookies=true`;
     const body = {
       "email": email,
       "password": password
     }
-    return this.http.post(url, body, {withCredentials : true}).pipe(
+    return this.http.post(url, body).pipe(
       catchError(error => throwError(() => {
         new Error('Failed to login: ' + error.message)
       }))

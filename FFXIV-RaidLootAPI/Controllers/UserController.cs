@@ -1,5 +1,8 @@
 using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.Models;
 using FFXIV_RaidLootAPI.User;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -98,5 +101,40 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok(user);
             }
         }
+    /*
+        [HttpPost("SetUserName/{new_name}")]
+        public async Task<IActionResult> GetEmail(string new_name)
+        {
+            if (!Request.Cookies.TryGetValue("Id", out var user_id))
+            {
+                return BadRequest("User ID cookie not found");
+            }
+
+            using (var context = _context.CreateDbContext())
+            {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == user_id);
+            if (user is null)
+                return NotFound("USer not found");
+            user.user_displayed_name = new_name;
+            await context.SaveChangesAsync();
+            return Ok();
+            }
+        }
+
+        [HttpGet("GetUserInfo"), Authorize]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            using (var context = _context.CreateDbContext())
+            {
+            ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == "0");
+            if (user is null){
+                return NotFound("User not found");
+            }
+            string static_list_as_string = user.user_saved_static;
+            List<string> uuidList = static_list_as_string.Split(';').ToList();
+            return Ok(new {staticList = uuidList, userName = user.user_displayed_name});
+            }
+        }
+        */
     }
 }
