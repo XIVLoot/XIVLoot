@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FFXIV_RaidLootAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240702170405_Pleasw rok")]
-    partial class Pleaswrok
+    [Migration("20240702171643_Reverting")]
+    partial class Reverting
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -177,10 +177,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Test")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

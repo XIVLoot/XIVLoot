@@ -177,10 +177,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Test")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Turn1LockedUntilDate")
                         .HasColumnType("datetime2");
 

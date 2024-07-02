@@ -5,7 +5,7 @@
 namespace FFXIV_RaidLootAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class Pleaswrok : Migration
+    public partial class Reverting : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen( options =>
 
 builder.Services.AddDbContextFactory<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DockerConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddAuthorization();
