@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FFXIV_RaidLootAPI.Data
 {
-    public class DataContext : IdentityDbContext
+    public class DataContext : IdentityDbContext<ApplicationUser>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

@@ -170,11 +170,16 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       catchError(error => throwError(() => new Error('Failed to get discord info : ' + error.message)))
     );
   }
-  SaveStaticToUser(user_discord_id : string, static_uuid : string){
+  SaveStaticToUserDiscord(user_discord_id : string, static_uuid : string){
     const url = `${this.api}User/AddStaticToUserSaved/${user_discord_id}/${static_uuid}`;
     return this.http.put(url, {}).pipe(
       catchError(error => throwError(() => new Error('Failed to save static to user: ' + error.message)))
     );
+  }
+
+  SaveStaticToUserDefault(static_uuid : string){
+    const url = `${this.api}User/AddStaticToUserSaved/${static_uuid}`;
+    return this.http.put(url, {}, {withCredentials:true});
   }
 
   AddDicordUserToDB(user_discord_id : string){
@@ -184,16 +189,38 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     );
   }
 
-  GetUserSavedStatic(user_discord_id : string){
+  GetUserSavedStaticDiscord(user_discord_id : string){
     const url = `${this.api}User/GetUserSavedStatic/${user_discord_id}`;
     return this.http.get(url).pipe(
       catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
     );
   }
 
-  RemoveUserSavedStatic(user_discord_id : string, uuid : string){
+  GetUserSavedStaticDefault(){
+    const url = `${this.api}User/GetUserSavedStatic`;
+    return this.http.get(url, {withCredentials:true}).pipe(
+      catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
+    );
+  }
+
+  GetUsernameDefault(){
+    const url = `${this.api}User/GetUsernameDefault`;
+    return this.http.get(url, {withCredentials:true}).pipe(
+      catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
+    );
+  }
+
+
+  RemoveUserSavedStaticDiscord(user_discord_id : string, uuid : string){
     const url = `${this.api}User/RemoveStaticToUserSaved/${user_discord_id}/${uuid}`;
     return this.http.put(url, {}, { responseType: 'text' }).pipe(
+      catchError(error => throwError(() => new Error('Failed to remove user saved static: ' + error.message)))
+    );
+  }
+
+  RemoveUserSavedStaticDefault(uuid : string){
+    const url = `${this.api}User/RemoveStaticToUserSaved/${uuid}`;
+    return this.http.put(url, {}, {withCredentials:true }).pipe(
       catchError(error => throwError(() => new Error('Failed to remove user saved static: ' + error.message)))
     );
   }
@@ -292,17 +319,49 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     );
   }
 
+  getEmail(){
+    var url = `${this.api}User/GetUserEmail`;
+    return this.http.get(url, {withCredentials : true}).pipe();
+  }
+
   Login(email : string, password : string){
     const url = `${this.home}login?useCookies=true`;
     const body = {
       "email": email,
       "password": password
     }
-    return this.http.post(url, body).pipe(
-      catchError(error => throwError(() => {
-        new Error('Failed to login: ' + error.message)
-      }))
+    return this.http.post(url, body, { withCredentials: true }).pipe(
+      catchError(error => {
+        if (error.error.details !== undefined){
+          const firstKey = Object.keys(error.error.details)[0];
+          var message = "Unknown error happened.";
+          var subMessage = firstKey;
+          if (firstKey === "DuplicateUserName"){
+            message = "Invalid email";
+            subMessage = `${email} is already taken.`;
+          }
+
+
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 7000,
+            data: {
+              message: message,
+              subMessage: subMessage,
+              color : "red"
+            }
+          });
+          
+        }
+        return throwError(() => new Error('Failed to register: ' + error.message));
+      })
     );
+  }
+
+  Logout(){
+    var url = `${this.api}User/logout`
+    return this.http.get(url, {withCredentials: true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to register: ' + error.message));
+    }));
   }
 
 }

@@ -152,6 +152,15 @@ export class StaticDetailComponent implements OnInit {
   }
 
   SaveStaticToUser(){
+
+    try{this.http.GetUsernameDefault().subscribe(res => {
+      this.http.SaveStaticToUserDefault(this.staticDetail.uuid).subscribe(res => {
+        console.log(res);
+      });
+    });
+    return true;
+    } catch(error){
+
     if (localStorage.getItem('discord_access_token_xiv_loot') === null){
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
@@ -162,9 +171,10 @@ export class StaticDetailComponent implements OnInit {
         }
       });
       return false;
-    }
+    } 
+    
     this.http.getDiscorduserInfo(localStorage.getItem('discord_access_token_xiv_loot')!).subscribe(data => {
-      this.http.SaveStaticToUser(data['id'], this.staticDetail.uuid).subscribe(res => {
+      this.http.SaveStaticToUserDiscord(data['id'], this.staticDetail.uuid).subscribe(res => {
         console.log(res);
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
@@ -176,6 +186,7 @@ export class StaticDetailComponent implements OnInit {
         });
       });
     });
+  }
   }
 
   onMouseEnter(event: any) {

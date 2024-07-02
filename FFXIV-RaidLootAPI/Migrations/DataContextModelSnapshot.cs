@@ -58,7 +58,7 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gears");
+                    b.ToTable("Gears", (string)null);
                 });
 
             modelBuilder.Entity("FFXIV_RaidLootAPI.Models.GearAcquisitionTimestamp", b =>
@@ -83,7 +83,7 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GearAcquisitionTimestamps");
+                    b.ToTable("GearAcquisitionTimestamps", (string)null);
                 });
 
             modelBuilder.Entity("FFXIV_RaidLootAPI.Models.Players", b =>
@@ -194,7 +194,7 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Players");
+                    b.ToTable("Players", (string)null);
                 });
 
             modelBuilder.Entity("FFXIV_RaidLootAPI.Models.Raid", b =>
@@ -211,7 +211,7 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Raids");
+                    b.ToTable("Raids", (string)null);
                 });
 
             modelBuilder.Entity("FFXIV_RaidLootAPI.Models.Static", b =>
@@ -245,7 +245,7 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Statics");
+                    b.ToTable("Statics", (string)null);
                 });
 
             modelBuilder.Entity("FFXIV_RaidLootAPI.User.Users", b =>
@@ -266,7 +266,7 @@ namespace FFXIV_RaidLootAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

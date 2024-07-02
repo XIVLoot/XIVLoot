@@ -23,28 +23,21 @@ builder.Services.AddSwaggerGen( options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+builder.Services.AddAuthorizationBuilder();
 builder.Services.AddDbContextFactory<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DockerConnection"));
 });
-
+builder.Services.AddIdentityCore<ApplicationUser>()
+    .AddEntityFrameworkStores<DataContext>()
+    .AddApiEndpoints();
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = DiscordAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.LoginPath = "/signin";
-    options.LogoutPath = "/signout";
-})
-.AddDiscord(options =>
-{
-    options.ClientId = builder.Configuration["Authentication:Discord:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Discord:ClientSecret"];
-    options.SaveTokens = true;
-});
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.LoginPath = "/login";
+            options.LogoutPath = "/api/auth/logout";
+        });
 
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<DataContext>();
@@ -54,7 +47,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder => builder.WithOrigins("http://localhost:4200")
                           .AllowAnyHeader()
-                          .AllowAnyMethod());
+                          .AllowAnyMethod()
+                          .AllowCredentials());
 });
 
 builder.Services.AddMvc();
@@ -69,9 +63,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowSpecificOrigin");
-
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dataContext.Database.Migrate();
+}
 app.UseAuthentication();
 app.UseAuthorization();
 

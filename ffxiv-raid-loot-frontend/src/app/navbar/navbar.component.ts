@@ -4,7 +4,7 @@ import { HttpService } from '../service/http.service';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../environments/environments';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
@@ -19,22 +19,43 @@ import { FormsModule } from '@angular/forms';
 export class NavbarComponent {
   public title = 'Loot Management';
   public isLoggedIn = false;
-  public discordInfo = {
-  }
+  public isLoggedInDiscord = false;
+  public isLoggedInDefault = false;
+  public discordInfo : any = {};
   public userSavedStatic = [];
+
+  public username = "";
 
   constructor(private http : HttpService, private _snackBar: MatSnackBar, private _dialog : MatDialog){}
 
   ngOnInit(){
-    this.isLoggedIn = localStorage.getItem('discord_access_token_xiv_loot') !== null;
+    try{
+      this.http.GetUsernameDefault()
+      .subscribe(
+        (res : string) => {
+          this.username = res;
+          this.isLoggedInDefault = true;
+          this.isLoggedInDiscord = false;
+          this.isLoggedIn = true;
+          localStorage.removeItem('discord_access_token_xiv_loot');
+          this.getUserSavedStatic();
+          
+        }
+      );
+    } catch(error){
+      this.isLoggedInDefault = false;
+      this.isLoggedInDiscord = false;
+    }
 
-    // Retrieving discord info
+    this.isLoggedInDiscord = localStorage.getItem('discord_access_token_xiv_loot') !== null;
 
-    if (this.isLoggedIn){
+    if (this.isLoggedInDiscord){
+      // Retrieving discord info
       try{
         this.http.getDiscorduserInfo(localStorage.getItem('discord_access_token_xiv_loot')!).
         subscribe((data) => {
           this.discordInfo = data;
+          this.username = this.discordInfo.global_name;
           this.getUserSavedStatic();
         });
       }
@@ -47,28 +68,40 @@ export class NavbarComponent {
   }
 
   logout(){
-    localStorage.removeItem('discord_access_token_xiv_loot');
+    
     this.isLoggedIn = false; // Update isLoggedIn status
-    window.location.reload();
+    this.isLoggedInDiscord = false;
+    localStorage.removeItem('discord_access_token_xiv_loot');
+    this.http.Logout().subscribe(res => {
+      this.isLoggedInDefault=false
+      window.location.reload();
+  });
+    
   }
 
   openLoginDialog(){
-    this._dialog.open(LoginDialog, {height:'530px',width:'500px'});
+    this._dialog.open(LoginDialog, {height:'530px',width:'500px'}).afterClosed().subscribe(res => {
+      this.isLoggedInDefault = res;
+      this.ngOnInit();
+
+
+    });
     //localStorage.setItem('return_url', window.location.href);
     //window.open(environment.site_url + "auth/discord/callback", "_blank");
   }
 
   get discordAvatarUrl(): string {
-    if (this.isLoggedIn) {
-      return `https://cdn.discordapp.com/avatars/${this.discordInfo["id"]}/${this.discordInfo["avatar"]}.png`;
+    if (this.isLoggedInDiscord) {
+        return `https://cdn.discordapp.com/avatars/${this.discordInfo["id"]}/${this.discordInfo["avatar"]}.png`;
     } else {
       return 'assets/t.png';  // Path to a default image
     }
   }
 
   removeStatic(uuid : string){
-    this.http.RemoveUserSavedStatic(this.discordInfo["id"], uuid).subscribe((res : string) => {
-      console.log(res);
+    if (this.isLoggedInDiscord){
+      this.http.RemoveUserSavedStaticDiscord(this.discordInfo["id"], uuid).subscribe((res : string) => {
+        console.log(res);
       this.userSavedStatic = this.userSavedStatic.filter((s) => s.url !== uuid);
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
@@ -77,8 +110,22 @@ export class NavbarComponent {
           subMessage: "",
           color : ""
         }
+        });
       });
-    });
+    } else if (this.isLoggedInDefault){
+      this.http.RemoveUserSavedStaticDefault(uuid).subscribe((res : string) => {
+        console.log(res);
+        this.userSavedStatic = this.userSavedStatic.filter((s) => s.url !== uuid);
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly removed static.",
+            subMessage: "",
+            color : ""
+          }
+        });
+      });
+    }
   }
 
   GetStaticLink(){
@@ -86,8 +133,19 @@ export class NavbarComponent {
   }
 
   getUserSavedStatic(){
-    if(this.discordInfo["id"] !== undefined){
-      this.http.GetUserSavedStatic(this.discordInfo["id"]).subscribe((res : string[])   => {
+    if (this.isLoggedInDiscord){
+      if(this.discordInfo["id"] !== undefined){
+        this.http.GetUserSavedStaticDiscord(this.discordInfo["id"]).subscribe((res : string[])   => {
+          for(let i = 0; i < res.length; i++){
+            this.http.getStaticName(res[i]).subscribe((data) => {
+              this.userSavedStatic.push({name : data, url : res[i]});
+            });
+          }
+        });
+      }
+    }
+    else if (this.isLoggedInDefault){
+      this.http.GetUserSavedStaticDefault().subscribe((res : string[])   => {
         for(let i = 0; i < res.length; i++){
           this.http.getStaticName(res[i]).subscribe((data) => {
             this.userSavedStatic.push({name : data, url : res[i]});
@@ -107,7 +165,7 @@ export class NavbarComponent {
   imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule, FormsModule],
 })
 export class LoginDialog {
-  constructor(private _snackBar: MatSnackBar, private http : HttpService) {}
+  constructor(private _snackBar: MatSnackBar, private http : HttpService, private dialogRef: MatDialogRef<LoginDialog>) {}
 
   public showLogin: boolean = true;
   public loginEmail : string = "";
@@ -149,14 +207,36 @@ export class LoginDialog {
         }
       });
       this.http.Login(this.registerEmail, this.registerPassword).subscribe((res : any) => {
-        console.log(res);
+        this.loginEmail = this.registerEmail;
+        this.loginPassword = this.registerPassword;
+        this.login(false);
       });
     });
   }
 
-  login(){
-    this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {
-      console.log(res);
-    });
-  }
+  async login(ShowSuccess : boolean){
+    var check = await new Promise<boolean>(resolve => {this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {
+      if (ShowSuccess){
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly logged in.",
+            subMessage: "",
+            color : ""
+          }
+        });
+      }
+      resolve(true);
+    }, (error : any) => {this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 3500,
+      data: {
+        message: "Error while logging in.",
+        subMessage: "",
+        color : ""
+      }
+    });resolve(false);});
+  });
+  this.dialogRef.close(check); 
+  
+}
 }
