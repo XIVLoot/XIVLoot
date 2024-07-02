@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
@@ -52,7 +53,7 @@ export class NavbarComponent {
   }
 
   openLoginDialog(){
-    this._dialog.open(ConfirmDialog, {height:'530px',width:'500px'});
+    this._dialog.open(LoginDialog, {height:'530px',width:'500px'});
     //localStorage.setItem('return_url', window.location.href);
     //window.open(environment.site_url + "auth/discord/callback", "_blank");
   }
@@ -103,13 +104,53 @@ export class NavbarComponent {
   selector: 'import-etro',
   templateUrl: `login.dialog.html`,
   standalone: true,
-  imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule],
+  imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule, FormsModule],
 })
-export class ConfirmDialog {
-  constructor() {}
+export class LoginDialog {
+  constructor(private _snackBar: MatSnackBar, private http : HttpService) {}
 
   public showLogin: boolean = true;
+  public loginEmail : string = "";
+  public loginPassword : string = "";
+  
+  public registerEmail : string = "";
+  public registerPassword : string = "";
+  public confirmPassword : string = "";
   ngOnInit(){
     this.showLogin = true;
+    this.loginEmail = "";
+    this.loginPassword = "";
+    
+    this.registerEmail = "";
+    this.registerPassword  = "";
+    this.confirmPassword = "";
+  }
+
+  register(){
+    if(this.registerPassword !== this.confirmPassword){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Passwords do not match.",
+          subMessage: "",
+          color : "red"
+        }
+      });
+      return;
+    }
+
+    this.http.Register(this.registerEmail, this.registerPassword).subscribe((res : any) => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Successfuly registered.",
+          subMessage: "",
+          color : ""
+        }
+      });
+      this.http.Login(this.registerEmail, this.registerPassword).subscribe((res : any) => {
+        console.log(res);
+      });
+    });
   }
 }

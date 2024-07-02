@@ -4,14 +4,17 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { Static } from '../models/static';
 import { DataService } from './data.service';
 import { environment } from '../../environments/environments';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
 
-constructor(public http: HttpClient, public data: DataService) { }
+constructor(public http: HttpClient, public data: DataService, private _snackBar : MatSnackBar) { }
 
-  private api = environment.api_url;
+  private api = environment.api_url + "api/";
+  private home = environment.api_url;
 
 
   getStatic(uuid: String): Observable<Static>{
@@ -234,6 +237,71 @@ constructor(public http: HttpClient, public data: DataService) { }
     const url = `${this.api}Auth/signin-discord`;
     return this.http.get(url).pipe(
       catchError(error => throwError(() => new Error('Failed to login discord: ' + error.message)))
+    );
+  }
+
+  Register(email : string, password : string){
+    const url = `${this.home}register`;
+    const body = {
+      "email": email,
+      "password": password
+    }
+    return this.http.post(url, body).pipe(
+      catchError(error => {
+        if (error.error.errors !== undefined){
+          const firstKey = Object.keys(error.error.errors)[0];
+          var message = "Unknown error happened.";
+          var subMessage = firstKey;
+          if (firstKey === "DuplicateUserName"){
+            message = "Invalid email";
+            subMessage = `${email} is already taken.`;
+          }
+          else if (firstKey === "InvalidEmail"){
+            message = "Invalid email";
+            subMessage = `${email} is invalid.`;
+          }
+          else if (firstKey === "PasswordRequiresLower"){
+            message = "Invalid password";
+            subMessage = `The password must contain a lower capital letter.`;
+          }
+          else if (firstKey === "PasswordRequiresUpper"){
+            message = "Invalid password";
+            subMessage = `The password must contain an upper capital letter.`;
+          }
+          else if (firstKey === "PasswordRequiresNonAlphanumeric"){
+            message = "Invalid password";
+            subMessage = `The password must contain a special character.`;
+          }
+          else if (firstKey === "PasswordTooShort"){
+            message = "Invalid password";
+            subMessage = `The password must contain at least 6 characters.`;
+          }
+
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 7000,
+            data: {
+              message: message,
+              subMessage: subMessage,
+              color : "red"
+            }
+          });
+          
+        }
+        return throwError(() => new Error('Failed to register: ' + error.message));
+      })
+    );
+  }
+
+  Login(email : string, password : string){
+    const url = `${this.home}login?useCookies=true&useSessionCookies=true`;
+    const body = {
+      "email": email,
+      "password": password
+    }
+    return this.http.post(url, body, {withCredentials : true}).pipe(
+      catchError(error => throwError(() => {
+        new Error('Failed to login: ' + error.message)
+      }))
     );
   }
 

@@ -14,14 +14,14 @@
             <div style="display: flex;flex-direction: column;">
                 <mat-form-field appearance="fill">
                     <mat-label>Email</mat-label>
-                    <input matInput type="email" required style="margin-bottom: 10px;">
+                    <input matInput [(ngModel)]="loginEmail" type="email" required style="margin-bottom: 10px;">
                 </mat-form-field>
             </div>
             <div style="display: flex;flex-direction: column;">
                 <!-- Password Field -->
                 <mat-form-field appearance="fill">
                     <mat-label>Password</mat-label>
-                    <input matInput required type="password" style="margin-bottom: 10px;">
+                    <input matInput [(ngModel)]="loginPassword" required type="password" style="margin-bottom: 10px;">
                 </mat-form-field>
             </div>
             <div style="display: flex;flex-direction: column;align-items: center;">
@@ -39,25 +39,25 @@
             <div style="display: flex;flex-direction: column;">
                 <mat-form-field appearance="fill">
                     <mat-label>Email</mat-label>
-                    <input matInput type="email" required style="margin-bottom: 10px;">
+                    <input matInput [(ngModel)]="registerEmail" type="email" required style="margin-bottom: 10px;">
                 </mat-form-field>
             </div>
             <div style="display: flex;flex-direction: column;">
                 <!-- Password Field -->
                 <mat-form-field appearance="fill">
                     <mat-label>Password</mat-label>
-                    <input matInput required type="password" style="margin-bottom: 10px;">
+                    <input matInput [(ngModel)]="registerPassword" required type="password" style="margin-bottom: 10px;">
                 </mat-form-field>
             </div>
             <div style="display: flex;flex-direction: column;">
                 <!-- Confirm Password Field -->
                 <mat-form-field appearance="fill">
                     <mat-label>Confirm Password</mat-label>
-                    <input matInput required type="password" style="margin-bottom: 10px;">
+                    <input matInput [(ngModel)]="confirmPassword"  required type="password" style="margin-bottom: 10px;">
                 </mat-form-field>
             </div>
             <div style="display: flex;flex-direction: column;align-items: center;">
-                <button mat-raised-button color="primary" style="width: 100%;margin-bottom: 10px;">Sign Up</button>
+                <button mat-raised-button color="primary" style="width: 100%;margin-bottom: 10px;" (click)="register()">Sign Up</button>
             </div>
         </div>
         </ng-template>
