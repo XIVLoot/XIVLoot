@@ -125,6 +125,13 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        [HttpGet("IsLoggedIn")]
+        [Authorize]
+        public IActionResult IsUserLoggedIn()
+        {
+            return Ok(true);
+        }
+
         [HttpGet("SetUsername/{newName}")]
         [Authorize]
         public async Task<IActionResult> Setusername(string newName){

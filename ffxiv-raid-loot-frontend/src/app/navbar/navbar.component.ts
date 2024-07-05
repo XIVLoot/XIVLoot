@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { catchError, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -28,7 +29,27 @@ export class NavbarComponent {
 
   constructor(private http : HttpService, private _snackBar: MatSnackBar, private _dialog : MatDialog){}
 
-  ngOnInit(){
+  async ngOnInit(){
+
+    this.isLoggedInDiscord = await this.http.CheckAuthDiscord();
+    if (this.isLoggedInDiscord){
+      // Retrieving discord info
+      try{
+        this.http.GetDiscordUserInfo().subscribe(res => {
+          this.discordInfo = res;
+          this.username = this.discordInfo.global_name;
+          this.getUserSavedStatic();
+          this.isLoggedInDefault = false;
+          this.isLoggedIn = true;
+        });
+      }
+      catch(error){
+        this.isLoggedIn = false;
+        console.log(error.message);
+        return;
+      }
+    }
+
     try{
       this.http.GetUsernameDefault()
       .subscribe(
@@ -47,33 +68,25 @@ export class NavbarComponent {
       this.isLoggedInDiscord = false;
     }
 
-    this.isLoggedInDiscord = localStorage.getItem('discord_access_token_xiv_loot') !== null;
 
-    if (this.isLoggedInDiscord){
-      // Retrieving discord info
-      try{
-        this.http.getDiscorduserInfo(localStorage.getItem('discord_access_token_xiv_loot')!).
-        subscribe((data) => {
-          this.discordInfo = data;
-          this.username = this.discordInfo.global_name;
-          this.getUserSavedStatic();
-        });
-      }
-      catch(error){
-        this.isLoggedIn = false;
-        console.log(error.message);
-      }
-    }
 
   }
 
   logout(){
     
-    this.isLoggedIn = false; // Update isLoggedIn status
-    this.isLoggedInDiscord = false;
-    localStorage.removeItem('discord_access_token_xiv_loot');
+    if(this.isLoggedInDiscord){
+      this.http.LogoutDiscord().pipe(catchError(error => {
+        if (error.error.text !== "Logged out successfully."){
+          return throwError(() => new Error('Failed to logout discord: ' + error.error.text));
+        }
+        this.isLoggedIn = false;this.isLoggedInDiscord=false;window.location.reload();
+      })).subscribe(res => {this.isLoggedIn = false;this.isLoggedInDiscord=false;window.location.reload();});
+      return;
+    }
+
     this.http.Logout().subscribe(res => {
       this.isLoggedInDefault=false
+      this.isLoggedIn = false; // Update isLoggedIn status
       window.location.reload();
   });
     
@@ -81,13 +94,13 @@ export class NavbarComponent {
 
   openLoginDialog(){
     this._dialog.open(LoginDialog, {height:'530px',width:'500px'}).afterClosed().subscribe(res => {
-      this.isLoggedInDefault = res;
-      this.ngOnInit();
-
-
+      this.isLoggedInDefault = res === 1;
+      this.isLoggedInDiscord = res === 2;
+      if (this.isLoggedInDefault || this.isLoggedInDiscord){
+        this.isLoggedIn = true;
+        window.location.reload();
+      }
     });
-    //localStorage.setItem('return_url', window.location.href);
-    //window.open(environment.site_url + "auth/discord/callback", "_blank");
   }
 
   get discordAvatarUrl(): string {
@@ -206,6 +219,12 @@ export class LoginDialog {
     });
   }
 
+  loginDiscord(){
+    localStorage.setItem('return_url', window.location.href);
+    window.open(environment.site_url + "auth/discord/callback", "_blank");
+    this.dialogRef.close(2); 
+  }
+
   async login(ShowSuccess : boolean){
     var check = await new Promise<boolean>(resolve => {this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {
       if (ShowSuccess){
@@ -232,7 +251,7 @@ export class LoginDialog {
       }
     });resolve(false);});
   });
-  this.dialogRef.close(check); 
+  this.dialogRef.close(check ? 1 : 0); 
   
 }
 }

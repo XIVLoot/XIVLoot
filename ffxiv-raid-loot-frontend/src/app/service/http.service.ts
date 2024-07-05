@@ -162,14 +162,14 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     );
   }
 
-  getDiscorduserInfo(accessToken: string) : Observable<any>{
+  /*getDiscorduserInfo(accessToken: string) : Observable<any>{
     const userUrl = 'https://discord.com/api/users/@me';
     return this.http.get(userUrl, {
       headers: { 'Authorization': `Bearer ${accessToken}` }
     }).pipe(
       catchError(error => throwError(() => new Error('Failed to get discord info : ' + error.message)))
     );
-  }
+  }*/
   SaveStaticToUserDiscord(user_discord_id : string, static_uuid : string){
     const url = `${this.api}User/AddStaticToUserSaved/${user_discord_id}/${static_uuid}`;
     return this.http.put(url, {}).pipe(
@@ -370,6 +370,48 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       return throwError(() => new Error('Failed to set username: ' + error.message));
     }));
   }
+
+  GetDiscordCookie(at : string){
+    var url = `${this.api}Auth/GetDiscordJWT/${at}`;
+    return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get discord cookie: ' + error.message));
+    }));
+  }
+
+  LogoutDiscord(){
+    var url = `${this.api}Auth/LogoutDiscord`;
+    return this.http.get(url, { withCredentials: true });
+  }
+
+  CheckAuthDiscord() : Promise<boolean>{
+    var url = `${this.api}Auth/IsLoggedInDiscord`;
+    return new Promise<boolean>(resolve => this.http.get(url, { withCredentials: true }).subscribe((res : any) => {
+      resolve(res);
+    }));
+  }
+
+  CheckAuthDefault() : Promise<boolean>{
+    var url = `${this.api}User/IsLoggedIn`;
+    return new Promise<boolean>(resolve => 
+      this.http.get(url, { withCredentials: true }).pipe(
+        catchError(error => {
+          resolve(false);
+          return throwError(() => new Error('Failed to check auth: ' + error.message));
+        })
+      ).subscribe((res : any) => {
+        resolve(res);
+      })
+    );
+  }
+
+  GetDiscordUserInfo(){
+    var url = `${this.api}Auth/GetDiscordUserInfo`;
+    return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get discord user info: ' + error.message));
+    }));
+  }
+  
+  
 
 }
 

@@ -151,17 +151,16 @@ export class StaticDetailComponent implements OnInit {
     });
   }
 
-  SaveStaticToUser(){
+  async SaveStaticToUser(){
 
-    try{this.http.GetUsernameDefault().subscribe(res => {
-      this.http.SaveStaticToUserDefault(this.staticDetail.uuid).subscribe(res => {
-        console.log(res);
-      });
-    });
-    return true;
-    } catch(error){
-
-    if (localStorage.getItem('discord_access_token_xiv_loot') === null){
+    var DiscordLoggedIn = await this.http.CheckAuthDiscord();
+    var DefaultLoggedIn;
+    try {
+      DefaultLoggedIn = await this.http.CheckAuthDefault();
+    } catch (error) {
+      DefaultLoggedIn = false;
+    }
+    if (!DefaultLoggedIn && !DiscordLoggedIn){
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data: {
@@ -172,9 +171,22 @@ export class StaticDetailComponent implements OnInit {
       });
       return false;
     } 
-    
-    this.http.getDiscorduserInfo(localStorage.getItem('discord_access_token_xiv_loot')!).subscribe(data => {
-      this.http.SaveStaticToUserDiscord(data['id'], this.staticDetail.uuid).subscribe(res => {
+    if (DiscordLoggedIn){
+      this.http.GetDiscordUserInfo().subscribe(data => {
+        this.http.SaveStaticToUserDiscord(data['id'], this.staticDetail.uuid).subscribe(res => {
+          console.log(res);
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 3500,
+            data: {
+              message: "Successfuly saved static!",
+              subMessage: "",
+              color : ""
+            }
+          });
+        });
+      });
+    } else if (DefaultLoggedIn){
+      this.http.SaveStaticToUserDefault(this.staticDetail.uuid).subscribe(res => {
         console.log(res);
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
@@ -185,8 +197,8 @@ export class StaticDetailComponent implements OnInit {
           }
         });
       });
-    });
-  }
+    }
+
   }
 
   onMouseEnter(event: any) {

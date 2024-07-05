@@ -1,0 +1,1 @@
+export const CLIENT_SECRET = "RuSobZZTbayD_4x6GcINGzb8DpFMd3mn";

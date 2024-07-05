@@ -24,10 +24,16 @@
                     <input matInput [(ngModel)]="loginPassword" required type="password" style="margin-bottom: 10px;">
                 </mat-form-field>
             </div>
-            <div style="display: flex;flex-direction: column;align-items: center;">
-                <button mat-raised-button color="primary" style="width: 100%;margin-bottom: 10px;"  (click)="login(true)">Login</button>
+            <div style="width: 100%;display: flex;flex-direction: column;align-items: center;">
+                <button mat-raised-button color="primary" style="width: 100%;margin-bottom: 10px;"  (click)="login(true)">                    
+                    <img src="assets/login_icon.svg" style="width: 20px;height: 20px; filter: brightness(0) invert(0);margin-right: 8px;">
+                    <span>Login</span>
+                </button>
                 <h3 style="color:white">Or</h3>
-                <button mat-raised-button style="width: 100%;background-color: rgba(0, 30, 255, 0.511);">Login with Discord</button>
+                <button mat-raised-button style="width: 100%;background-color: rgba(88, 101, 242, 0.9);display: flex;flex-direction: row;" (click)="loginDiscord()">
+                    <img src="assets/discord_icon.svg" style="width: 20px;height: 20px; filter: brightness(0) invert(0);margin-right: 8px;">
+                    <span>Login with Discord</span>
+                </button>
             </div>
         </div>
         </ng-container>
