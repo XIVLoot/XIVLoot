@@ -1,10 +1,11 @@
 ﻿using FFXIV_RaidLootAPI.Models;
 using FFXIV_RaidLootAPI.User;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FFXIV_RaidLootAPI.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<ApplicationUser>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -19,7 +20,7 @@ namespace FFXIV_RaidLootAPI.Data
 
         public DbSet<Raid> Raids { get; set; }
 
-        public DbSet<Users> Users { get; set; }
+        public DbSet<Users> User { get; set; }
 
         public DbSet<GearAcquisitionTimestamp> GearAcquisitionTimestamps {get;set;}
     }

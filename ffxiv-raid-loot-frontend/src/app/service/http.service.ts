@@ -4,14 +4,17 @@ import { Observable, catchError, map, throwError } from 'rxjs';
 import { Static } from '../models/static';
 import { DataService } from './data.service';
 import { environment } from '../../environments/environments';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
 
-constructor(public http: HttpClient, public data: DataService) { }
+constructor(public http: HttpClient, public data: DataService, private _snackBar : MatSnackBar) { }
 
-  private api = environment.api_url;
+  private api = environment.api_url + "api/";
+  private home = environment.api_url;
 
 
   getStatic(uuid: String): Observable<Static>{
@@ -159,19 +162,24 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
-  getDiscorduserInfo(accessToken: string) : Observable<any>{
+  /*getDiscorduserInfo(accessToken: string) : Observable<any>{
     const userUrl = 'https://discord.com/api/users/@me';
     return this.http.get(userUrl, {
       headers: { 'Authorization': `Bearer ${accessToken}` }
     }).pipe(
       catchError(error => throwError(() => new Error('Failed to get discord info : ' + error.message)))
     );
-  }
-  SaveStaticToUser(user_discord_id : string, static_uuid : string){
+  }*/
+  SaveStaticToUserDiscord(user_discord_id : string, static_uuid : string){
     const url = `${this.api}User/AddStaticToUserSaved/${user_discord_id}/${static_uuid}`;
     return this.http.put(url, {}).pipe(
       catchError(error => throwError(() => new Error('Failed to save static to user: ' + error.message)))
     );
+  }
+
+  SaveStaticToUserDefault(static_uuid : string){
+    const url = `${this.api}User/AddStaticToUserSaved/${static_uuid}`;
+    return this.http.put(url, {}, {withCredentials:true});
   }
 
   AddDicordUserToDB(user_discord_id : string){
@@ -181,16 +189,38 @@ constructor(public http: HttpClient, public data: DataService) { }
     );
   }
 
-  GetUserSavedStatic(user_discord_id : string){
+  GetUserSavedStaticDiscord(user_discord_id : string){
     const url = `${this.api}User/GetUserSavedStatic/${user_discord_id}`;
     return this.http.get(url).pipe(
       catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
     );
   }
 
-  RemoveUserSavedStatic(user_discord_id : string, uuid : string){
+  GetUserSavedStaticDefault(){
+    const url = `${this.api}User/GetUserSavedStatic`;
+    return this.http.get(url, {withCredentials:true}).pipe(
+      catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
+    );
+  }
+
+  GetUsernameDefault(){
+    const url = `${this.api}User/GetUsernameDefault`;
+    return this.http.get(url, {withCredentials:true, responseType: 'text'}).pipe(
+      catchError(error => throwError(() => new Error('Failed to get user saved static: ' + error.message)))
+    );
+  }
+
+
+  RemoveUserSavedStaticDiscord(user_discord_id : string, uuid : string){
     const url = `${this.api}User/RemoveStaticToUserSaved/${user_discord_id}/${uuid}`;
     return this.http.put(url, {}, { responseType: 'text' }).pipe(
+      catchError(error => throwError(() => new Error('Failed to remove user saved static: ' + error.message)))
+    );
+  }
+
+  RemoveUserSavedStaticDefault(uuid : string){
+    const url = `${this.api}User/RemoveStaticToUserSaved/${uuid}`;
+    return this.http.put(url, {}, {withCredentials:true }).pipe(
       catchError(error => throwError(() => new Error('Failed to remove user saved static: ' + error.message)))
     );
   }
@@ -222,6 +252,173 @@ constructor(public http: HttpClient, public data: DataService) { }
       catchError(error => throwError(() => new Error('Failed to get gear acq history: ' + error.message)))
     );
   }
+
+  DeleteGearAcqEvent(id : number){
+    const url = `${this.api}GearAcquisition/RemoveGearAcquisition/${id}`
+    return this.http.delete(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to delete gear acq history: ' + error.message)))
+    );
+  }
+
+  LoginDiscord(){
+    const url = `${this.api}Auth/signin-discord`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to login discord: ' + error.message)))
+    );
+  }
+
+  Register(email : string, password : string){
+    const url = `${this.home}register`;
+    const body = {
+      "email": email,
+      "password": password
+    }
+    return this.http.post(url, body).pipe(
+      catchError(error => {
+        if (error.error.errors !== undefined){
+          const firstKey = Object.keys(error.error.errors)[0];
+          var message = "Unknown error happened.";
+          var subMessage = firstKey;
+          if (firstKey === "DuplicateUserName"){
+            message = "Invalid email";
+            subMessage = `${email} is already taken.`;
+          }
+          else if (firstKey === "InvalidEmail"){
+            message = "Invalid email";
+            subMessage = `${email} is invalid.`;
+          }
+          else if (firstKey === "PasswordRequiresLower"){
+            message = "Invalid password";
+            subMessage = `The password must contain a lower capital letter.`;
+          }
+          else if (firstKey === "PasswordRequiresUpper"){
+            message = "Invalid password";
+            subMessage = `The password must contain an upper capital letter.`;
+          }
+          else if (firstKey === "PasswordRequiresNonAlphanumeric"){
+            message = "Invalid password";
+            subMessage = `The password must contain a special character.`;
+          }
+          else if (firstKey === "PasswordTooShort"){
+            message = "Invalid password";
+            subMessage = `The password must contain at least 6 characters.`;
+          }
+
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 7000,
+            data: {
+              message: message,
+              subMessage: subMessage,
+              color : "red"
+            }
+          });
+          
+        }
+        return throwError(() => new Error('Failed to register: ' + error.message));
+      })
+    );
+  }
+
+  getEmail(){
+    var url = `${this.api}User/GetUserEmail`;
+    return this.http.get(url, {withCredentials : true}).pipe();
+  }
+
+  Login(email : string, password : string){
+    const url = `${this.home}login?useCookies=true`;
+    const body = {
+      "email": email,
+      "password": password
+    }
+    return this.http.post(url, body, { withCredentials: true }).pipe(
+      catchError(error => {
+        if (error.error.details !== undefined){
+          const firstKey = Object.keys(error.error.details)[0];
+          var message = "Unknown error happened.";
+          var subMessage = firstKey;
+          if (firstKey === "DuplicateUserName"){
+            message = "Invalid email";
+            subMessage = `${email} is already taken.`;
+          }
+
+
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 7000,
+            data: {
+              message: message,
+              subMessage: subMessage,
+              color : "red"
+            }
+          });
+          
+        }
+        return throwError(() => new Error('Failed to register: ' + error.message));
+      })
+    );
+  }
+
+  Logout(){
+    var url = `${this.api}User/logout`
+    return this.http.get(url, {withCredentials: true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to register: ' + error.message));
+    }));
+  }
+
+  SetUsername(username : string){
+    var url = `${this.api}User/SetUsername/${username}`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to set username: ' + error.message));
+    }));
+  }
+
+  GetDiscordCookie(at : string){
+    var url = `${this.api}Auth/GetDiscordJWT/${at}`;
+    return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get discord cookie: ' + error.message));
+    }));
+  }
+
+  LogoutDiscord(){
+    var url = `${this.api}Auth/LogoutDiscord`;
+    return this.http.get(url, { withCredentials: true });
+  }
+
+  CheckAuthDiscord() : Promise<boolean>{
+    var url = `${this.api}Auth/IsLoggedInDiscord`;
+    return new Promise<boolean>(resolve => this.http.get(url, { withCredentials: true }).subscribe((res : any) => {
+      resolve(res);
+    }));
+  }
+
+  GetDiscordToken(body : any){
+    var url = `${this.api}Auth/token`;
+    return this.http.post(url, body).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get discord token: ' + JSON.stringify(error)))
+    }));
+  }
+
+  CheckAuthDefault() : Promise<boolean>{
+    var url = `${this.api}User/IsLoggedIn`;
+    return new Promise<boolean>(resolve => 
+      this.http.get(url, { withCredentials: true }).pipe(
+        catchError(error => {
+          resolve(false);
+          return throwError(() => new Error('Failed to check auth: ' + error.message));
+        })
+      ).subscribe((res : any) => {
+        resolve(res);
+      })
+    );
+  }
+
+  GetDiscordUserInfo(){
+    var url = `${this.api}Auth/GetDiscordUserInfo`;
+    return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get discord user info: ' + error.message));
+    }));
+  }
+  
+  
 
 }
 
