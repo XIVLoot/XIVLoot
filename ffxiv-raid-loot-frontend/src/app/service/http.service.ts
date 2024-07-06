@@ -390,6 +390,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
+  GetDiscordToken(body : any){
+    var url = `${this.api}Auth/token`;
+    return this.http.post(url, body).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get discord token: ' + JSON.stringify(error)))
+    }));
+  }
+
   CheckAuthDefault() : Promise<boolean>{
     var url = `${this.api}User/IsLoggedIn`;
     return new Promise<boolean>(resolve => 

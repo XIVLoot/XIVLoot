@@ -71,6 +71,21 @@ namespace FFXIV_RaidLootAPI.Controllers
         return BadRequest("No jwt_xivloot cookie found.");
     }
 
+    [HttpPost("token")]
+    public async Task<IActionResult> PostToken([FromBody] Dictionary<string, string> content)
+    {
+        Console.WriteLine("HERE CONTENT :  " + content.ToString());
+        using (var client = new HttpClient())
+        {   
+            Console.WriteLine("CONTENT :  " + content.ToString());
+            var formContent = new FormUrlEncodedContent(content);
+            var response = await client.PostAsync("https://discord.com/api/oauth2/token", formContent);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("RESPONSE :  " + responseContent);
+            return Content(responseContent, response.Content.Headers.ContentType.ToString());
+        }
+    }
+
     [HttpGet("GetDiscordUserInfo")]
     public async Task<IActionResult> GetDiscordUserInfo()
     {
