@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authentication;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -51,13 +51,19 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+    options.AddPolicy("AllowSpecificOrigins",
+        builder => builder.WithOrigins("http://localhost:4200", "https://xivloot.com", "172.64.80.1", "10.124.0.3")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
-});
 
+    //options.AddPolicy("AllowProdOrigin",
+    //    builder => builder.WithOrigins("https://xivloot.com")
+    //                      .AllowAnyHeader()
+    //                      .AllowAnyMethod()
+    //                      .AllowCredentials());
+});
+builder.Services.AddControllers();
 builder.Services.AddMvc();
 
 var app = builder.Build();
@@ -69,9 +75,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("AllowSpecificOrigins");
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
+
 
 using (var scope = app.Services.CreateScope())
 {
