@@ -52,7 +52,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.WithOrigins("http://localhost:4200", "https://xivloot.com")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
