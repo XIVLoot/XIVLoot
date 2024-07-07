@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { HttpService } from '../service/http.service';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../environments/environments';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
@@ -168,11 +168,31 @@ export class NavbarComponent {
     }
   }
 
+  openAcountInfo(){
+    this._dialog.open(ProfileDialog, {height:'530px',width:'500px', data:{username : this.username, isDiscord : this.isLoggedInDiscord}}).afterClosed().subscribe(res => {
+    });
+  }
+
 
 }
 
 @Component({
-  selector: 'import-etro',
+  selector: 'profile-dialog',
+  templateUrl: `profile.dialog.html`,
+  standalone: true,
+  imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule, FormsModule],
+})
+export class ProfileDialog {
+  constructor(private _snackBar: MatSnackBar, private http : HttpService, private dialogRef: MatDialogRef<ProfileDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: { username : string, email :string, isDiscord : boolean},
+  ) {}
+
+  
+
+}
+
+@Component({
+  selector: 'login-dialog',
   templateUrl: `login.dialog.html`,
   standalone: true,
   imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule, FormsModule],
@@ -224,6 +244,8 @@ export class LoginDialog {
     window.open(environment.site_url + "auth/discord/callback", "_blank");
     this.dialogRef.close(2); 
   }
+
+
 
   async login(ShowSuccess : boolean){
     var check = await new Promise<boolean>(resolve => {this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {

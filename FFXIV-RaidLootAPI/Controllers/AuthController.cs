@@ -8,11 +8,13 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Cors;
 
 namespace FFXIV_RaidLootAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigins")]
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -69,6 +71,21 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok("Logged out successfully.");
         }
         return BadRequest("No jwt_xivloot cookie found.");
+    }
+
+    [HttpPost("token")]
+    public async Task<IActionResult> PostToken([FromBody] Dictionary<string, string> content)
+    {
+        Console.WriteLine("HERE CONTENT :  " + content.ToString());
+        using (var client = new HttpClient())
+        {   
+            Console.WriteLine("CONTENT :  " + content.ToString());
+            var formContent = new FormUrlEncodedContent(content);
+            var response = await client.PostAsync("https://discord.com/api/oauth2/token", formContent);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("RESPONSE :  " + responseContent);
+            return Content(responseContent, response.Content.Headers.ContentType.ToString());
+        }
     }
 
     [HttpGet("GetDiscordUserInfo")]
@@ -132,7 +149,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict
+            SameSite = SameSiteMode.None
         });
 
         // Return the JWT in the response

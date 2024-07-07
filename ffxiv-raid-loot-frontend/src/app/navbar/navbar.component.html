@@ -14,6 +14,7 @@
       <img *ngIf="isLoggedIn; else defaultIcon" [src]="discordAvatarUrl" alt="User Avatar" style="border-radius: 50%; width: 30px; height: 30px;">
     </button>
     <mat-menu #userMenu="matMenu">
+      <button mat-menu-item (click)="openAcountInfo()">Profile</button>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </ng-container>

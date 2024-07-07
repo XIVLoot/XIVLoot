@@ -38,22 +38,21 @@ export class AuthComponent {
     if (code) {
       console.log('code:', code);
       const tokenUrl = 'https://discord.com/api/oauth2/token';
-      const body = new URLSearchParams();
-      body.set('client_id', this.client_id);
-      body.set('client_secret', this.client_secret); 
-      body.set('grant_type', 'authorization_code');
-      body.set('code', code);
-      body.set('redirect_uri', environment.site_url + 'auth/discord/callback');
-  
-      this.http.post(tokenUrl, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }).subscribe(response => {
-        console.log('Access Token:', response);
+      const body = {};
+      body['client_id'] = this.client_id;
+      body['client_secret'] = this.client_secret; 
+      body['grant_type'] = 'authorization_code';
+      body['code'] = code;
+      body['redirect_uri'] = environment.site_url + 'auth/discord/callback';
+      console.log("Doing request");
+      this.httpService.GetDiscordToken(body).subscribe(response => {
+        //console.log('Access Token:', response);
+        console.log("got a");
         // Store the access token securely
         //localStorage.setItem('discord_access_token_xiv_loot', response['access_token']);
 
         this.httpService.GetDiscordCookie(response['access_token']).subscribe(res => {
-          console.log(res);
+          console.log("Got token");
           var rurl = localStorage.getItem('return_url');
           localStorage.removeItem('return_url');
           window.location.href = rurl;
