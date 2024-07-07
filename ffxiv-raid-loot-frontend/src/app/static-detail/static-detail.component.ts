@@ -29,10 +29,14 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer } from '@angular/platform-browser';
 import { StaticEventsService } from '../service/static-events.service';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
 import { Player } from '../models/player';
+import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSettingToolTipC, pgsToolTip, lockLogicToolTip, lockOutOfGearEvenIfNotContestedToolTip,
+  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip
+} from '../tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface PlayerPGS {
   name: string;
@@ -46,6 +50,17 @@ interface PlayerPGS {
   styleUrls: ['./static-detail.component.css'], // Stylesheet for the component
 })
 export class StaticDetailComponent implements OnInit {
+
+  public gearAcquisitionToolTip = gearAcquisitionToolTip;
+  public pgsToolTip = pgsToolTip;
+  public lockLogicToolTip = lockLogicToolTip;
+  public lockOutOfGearEvenIfNotContestedToolTip = lockOutOfGearEvenIfNotContestedToolTip;
+  public lockPerFightToolTip = lockPerFightToolTip;
+  public lockPlayerForAugmentToolTip = lockPlayerForAugmentToolTip;
+  public pieceUntilLockToolTip = pieceUntilLockToolTip;
+  public numberWeekResetToolTip = numberWeekResetToolTip;
+
+
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
   public gridColumns = 3; // Default number of grid columns
@@ -145,7 +160,7 @@ export class StaticDetailComponent implements OnInit {
         data: {
           message: "Successfuly updated parameters.",
           subMessage: "",
-          color : ""
+          color : "green"
         }
       });
     });
@@ -165,8 +180,8 @@ export class StaticDetailComponent implements OnInit {
         duration: 3500,
         data: {
           message: "Login to save a static.",
-          subMessage: "",
-          color : ""
+          subMessage: " ",
+          color : "yellow"
         }
       });
       return false;
@@ -180,7 +195,7 @@ export class StaticDetailComponent implements OnInit {
             data: {
               message: "Successfuly saved static!",
               subMessage: "",
-              color : ""
+              color : "green"
             }
           });
         });
@@ -193,7 +208,7 @@ export class StaticDetailComponent implements OnInit {
           data: {
             message: "Successfuly saved static!",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       });
@@ -367,7 +382,7 @@ export class StaticDetailComponent implements OnInit {
           data : {
             message : "Copied to clipboard!", 
             subMessage : "(Send the link to your friends for them to access the static)",
-            color : ""
+            color : "green"
           }
         });
       })
@@ -381,7 +396,7 @@ export class StaticDetailComponent implements OnInit {
   openSettingPGS(){
     this.dialog.open(SettingPGS, {
       width: '500px',
-      height: '500px',
+      height: '430px',
       data: {uuid : this.staticDetail.uuid}
     }).afterClosed().subscribe(result => {
       console.log("after closed")
@@ -394,12 +409,10 @@ export class StaticDetailComponent implements OnInit {
 @Component({
   selector: 'SnackBar',
   template: `
-   <div [style.background-color]="data.color" style="width: 100%; height: 100%; border-radius:10px;padding:10px; position: relative;">
+   <div [style.background-color]="data.color" style="width: 120%; height: 100%; position: relative;box-shadow: 5px 4px 6px rgba(0, 0, 0, 0.7);border-radius:10px;">
       <h2>{{ data.message }}</h2>
       <p>{{ data.subMessage }}</p>
-      <button mat-button matSnackBarAction (click)="snackBarRef.dismissWithAction()" style="position: absolute; top: 10px; right: 10px;">
-      <mat-icon>close</mat-icon>
-    </button>
+      <mat-icon (click)="snackBarRef.dismissWithAction()" style="position:absolute;top:5px;right:5px;cursor:pointer;">close</mat-icon>
     </div>
 
   `,
@@ -421,6 +434,11 @@ export class StaticDetailComponent implements OnInit {
   p {
     text-align: center; 
   }
+  ::ng-deep .mdc-snackbar__label {
+    padding: 0px;
+    margin: 0px;
+    
+  }
 `]
 })
 export class PizzaPartyAnnotatedComponent {
@@ -436,7 +454,7 @@ export class PizzaPartyAnnotatedComponent {
   templateUrl: './setting-PGS.component.html',
   standalone: true,
   imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, MatSliderModule,
-    MatCardModule, FormsModule
+    MatCardModule, FormsModule, MatTooltipModule, MatIcon
   ]
 })
 export class SettingPGS {
@@ -444,15 +462,18 @@ export class SettingPGS {
     @Inject(MAT_DIALOG_DATA) public data: { uuid : string },
     private sanitizer: DomSanitizer, private _snackBar: MatSnackBar
   ) {}
-  disabled = false;
-  max = 100;
-  min = 0;
-  showTicks = false;
-  step = 1;
-  thumbLabel = false;
-  value_a : number = 0;
-  value_b : number = 0;
-  value_c : number = 0;
+  public pgsToolTipA : string = pgsSettingToolTipA;
+  public pgsToolTipB : string = pgsSettingToolTipB;
+  public pgsToolTipC : string = pgsSettingToolTipC;
+  public disabled = false;
+  public max = 100;
+  public min = 0;
+  public showTicks = false;
+  public step = 1;
+  public thumbLabel = false;
+  public value_a : number = 0;
+  public value_b : number = 0;
+  public value_c : number = 0;
 
 
   ngOnInit(){
@@ -463,15 +484,21 @@ export class SettingPGS {
     });
   }
 
+  UseRecommend(){
+    this.value_a = 35;
+    this.value_b = 25;
+    this.value_c = 40;
+  }
+
   SaveChange(){
     this.http.SetPGSParam(this.data.uuid, this.value_a/10, this.value_b/10, this.value_c/10).subscribe(data => {
       console.log(data);
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data : {
-          message : "Updated PGS settings", 
+          message : "Successfully updated PGS settings", 
           subMessage : "(Reload the page to see the changes)",
-          color : ""
+          color : "green"
         }
       });
       this.dialogRef.close()});

@@ -3,6 +3,7 @@ using Azure.Identity;
 using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigins")]
     public class PlayerController : ControllerBase
     {
         private readonly IDbContextFactory<DataContext> _context;

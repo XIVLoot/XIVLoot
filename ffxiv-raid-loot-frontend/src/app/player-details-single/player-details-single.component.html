@@ -1,3 +1,5 @@
+
+
 <div style="border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.16);display: flex;flex-direction: row;height: 500px;width:100%;max-width: 1250px;" [style.backgroundColor]="getBackgroundColor()">
 
 
@@ -21,12 +23,12 @@
       <img src="assets/job/{{player.job}}.png" style="margin-left:2%;">
       </div>
       
-      <div style="display: flex; justify-content: space-between;margin-top: 1%;height:7ch;">
-        <mat-form-field style="width:80%;height: 8ch;margin-top: 0px!important;">
+      <div style="display: flex; flex-direction: row; justify-content: space-between;margin-top: 1%;height:7ch;">
+        <mat-form-field style="width:70%;height: 8ch;margin-top: 0px!important;">
             <mat-label>BiS Etro uuid : </mat-label>
             <input matInput value="{{player.etroBiS}}"  id="etroField" #etroField [(ngModel)]="player.etroBiS">
         </mat-form-field>
-        <div style="display: flex; flex-direction: column; align-items: center;margin-left: 5%;">
+        <div style="display: flex; flex-direction: column; align-items: center;width: 15%;">
           <div style="margin-top: 5%;">
           <button mat-raised-button color="accent" style="width: 20%;height: 2.5ch;" (click)="EtroDialogOpen(player.id)">Import</button>
           </div>
@@ -34,10 +36,12 @@
           <a mat-raised-button href="{{ 'https://etro.gg/gearset/' + player.etroBiS }}" target="_blank" style="width: 20%;height: 2.5ch;margin-left: 2ch;" title="View the gearset in etro.gg">Etro.gg</a>
           </div>
         </div>
+        <mat-icon matTooltip="{{etroToolTip}}" style="cursor: pointer;color:white;margin-top: 3%;margin-right: 10px;">help_outline</mat-icon>
       </div>
   </div>
     <div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;margin-left: 1%;width: 49%;height: 100%;">
       <!--Display cost-->
+      
       <div style="display: flex;flex-direction: row;">
         <div style="width: 50%;">    
           <div style="margin: 0;margin-left: 5px;border-bottom: 3px solid rgba(0, 0, 0, 0.2);width: 80%;"><h3 style="margin: 0;">Needed components :</h3></div>    
@@ -49,14 +53,21 @@
           <div style="margin: 0;margin-left: 5px;border-bottom: 3px solid rgba(0, 0, 0, 0.2);width: 80%;"><h3 style="margin: 0;">Gearset info :</h3></div>   
           <div style="margin-bottom: 5%;margin-top: 5%;"><p style="margin: 2px;">Current item level : {{player.CurrentAverageItemLevel}}</p></div>
           <div style="margin-bottom: 5%;"><p style="margin: 2px;">BiS item level : {{player.BisAverageItemLevel}}</p></div>
-          <div style="margin-bottom: 5%;display: flex;flex-direction: row;align-items: center;"><p style="margin: 2px;">PGS :</p><div [style.backgroundColor]="player.GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;"></div><p style="margin: 2px;">({{player.playerGearScore | number : '1.0-3'}})</p></div>
+          <div style="margin-bottom: 5%;display: flex;flex-direction: row;align-items: center;">
+            <p style="margin: 2px;">PGS :</p>
+            <div [style.backgroundColor]="player.GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;">
+            </div>
+            <p style="margin: 2px;">({{player.playerGearScore | number : '1.0-3'}})</p>
+            <mat-icon matTooltip="{{pgsOnPlayerToolTip}}" style="cursor: pointer;color:white;margin-left: 10px;">help_outline</mat-icon>
+          </div>
         </div>
       </div>
 </div>
 </div>
 
-<div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;height: 75.5%;width: 100%;display: flex;flex-direction: row;">
-  <div style="width: 48%;margin-left: 1%;margin-right: 1%;align-items: center;">
+<div style="background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;height: 75.5%;width: 100%;display: flex;flex-direction: row;position: relative;">
+  <mat-icon matTooltip="{{gearSelectionToolTip}}" style="cursor: pointer; color: white; position: absolute; top: 15px; right: 15px;">help_outline</mat-icon>
+  <div style="width: 48%;margin-left: 1%;margin-right: 1%;align-items: center; background-color: rgba(0, 0, 0, 0.1);border-radius: 10px;margin:10px;border:1px solid rgba(0, 0, 0, 0.2)">
     <div style="display: flex;
     align-items: center;
     height: 15%;
@@ -65,12 +76,12 @@
     border-bottom: 3px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 5%;
     margin-left: 9%;">
-      <p style="padding-left: 9%;">Current</p>
+      <p style="padding-left: 15%;">Current</p>
       <h3 style="padding-left: 20%;">Gear</h3>
       <p style="padding-left: 23%;">BiS</p>
     </div>
 
-      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curWeaponGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -90,7 +101,7 @@
         </div>
     </div>
 
-        <div style="display: flex;align-items: center;height:6ch;">
+        <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curHeadGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -110,7 +121,7 @@
     </div>
     </div>
 
-      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curBodyGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -130,7 +141,7 @@
     </div>
     </div>
 
-      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curHandsGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -150,7 +161,7 @@
     </div>
     </div>
 
-      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curLegsGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -170,7 +181,7 @@
     </div>
     </div>
 
-      <div style="display: flex;align-items: center;height:6ch;">
+      <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curFeetGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -190,7 +201,7 @@
     </div>
     </div>
   </div>
-  <div style="width: 48%;margin-left: 1%;margin-right: 1%;">
+  <div style="width: 48%;margin-left: 1%;margin-right: 1%;align-items: center; background-color: rgba(0, 0, 0, 0.1);border-radius: 10px;margin:10px;border:1px solid rgba(0, 0, 0, 0.2)">
     <div style="display: flex;
     align-items: center;
     height: 15%;
@@ -199,11 +210,11 @@
     border-bottom: 3px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 5%;
     margin-left: 9%;">
-      <p style="padding-left: 9%;">Current</p>
+      <p style="padding-left: 15%;">Current</p>
       <h3 style="padding-left: 10%;">Accessories</h3>
       <p style="padding-left: 13%;">BiS</p>
     </div>
-    <div style="display: flex;align-items: center;height:6ch;">
+    <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curEarringsGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -223,7 +234,7 @@
       </div>
     </div>
 
-        <div style="display: flex;align-items: center;height:6ch;">
+        <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curNecklaceGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -243,7 +254,7 @@
     </div>
     </div>
 
-        <div style="display: flex;align-items: center;height:6ch;">
+        <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curBraceletsGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -263,7 +274,7 @@
     </div>
     </div>
 
-        <div style="display: flex;align-items: center;height:6ch;">
+        <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curRightRingGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -283,7 +294,7 @@
     </div>
     </div>
 
-        <div style="display: flex;align-items: center;height:6ch;">
+        <div style="display: flex;align-items: center;height:6ch;margin-left:20px;">
       <div style="width: 25px;height: 25px;margin-bottom:20px">
         <img [src]="getImageSource(player.curLeftRingGear)"  style="width: 100%; height: 100%;">
       </div>
@@ -311,8 +322,10 @@
 
 <div style="height: 100%;width: 29.5%;display: flex;flex-direction: column;;background-color: rgba(0, 0, 0, 0.16);border-radius: 10px;margin-left: 0.5%;">
   <div style="height: 10%;text-align: center;">
-    <h3 style="margin: 0;color: white;">Lock status</h3>
-    <p style="margin: 0;color: rgba(255, 255, 255, 0.7);">(Click on a fight to remove the lock)</p>
+    <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; text-align: center;">
+    <h3 style="margin: 0; color: white;">Lock status</h3>
+    <mat-icon matTooltip="{{lockOnPlayerToolTip}}" style="cursor: pointer; color: white; margin-left: 10px;">help_outline</mat-icon>
+  </div>    <p style="margin: 0;color: rgba(255, 255, 255, 0.7);">(Click on a fight to remove the lock)</p>
   </div>
   <div style="width: 100%;height: 90%; display: flex;flex-direction: column;padding-left: 0.5%;">
 

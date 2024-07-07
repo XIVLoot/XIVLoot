@@ -118,9 +118,9 @@ export class GearAcqHistorySingleComponent {
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data : {
-            message : "Successfuly removed history.", 
+            message : "Successfully removed history.", 
             subMessage : "",
-            color : ""
+            color : "Green"
           }
         });
       });

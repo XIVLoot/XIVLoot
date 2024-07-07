@@ -273,7 +273,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       "email": email,
       "password": password
     }
-    return this.http.post(url, body).pipe(
+    return this.http.post(url, body, {withCredentials:true}).pipe(
       catchError(error => {
         if (error.error.errors !== undefined){
           const firstKey = Object.keys(error.error.errors)[0];

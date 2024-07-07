@@ -1,10 +1,16 @@
-<div style="border-radius: 10px;padding: 10px;">
+<div style="padding: 8px;">
 <h2 mat-dialog-title>Modify your PGS settings.</h2>
+<div style="border-radius: 10px;padding: 0px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2)">
+
 <mat-card-content>
     <div>
         <div>
-        <label id="example-name-label">Value of parameter a (Only looks at rDPS): </label>
-        <label>{{slider_a.value}}</label>
+        <label style="color:white">
+            <mat-icon matTooltip="{{pgsToolTipA}}" style="cursor: pointer;">help_outline</mat-icon>
+            <span > PGS Parameter A : </span>
+            
+        </label>
+        <label style="color:white">{{slider_a.value}}</label>
         </div>
         <mat-slider
             style="width:300px;background-color:rgba(0, 0, 0, 0.3);border-radius: 10px;margin:8px"
@@ -20,8 +26,12 @@
 
     <div>
         <div>
-        <label id="example-name-label">Value of parameter b (Only looks at item level): </label>
-        <label>{{value_b}}</label>
+            <label  style="color:white">
+                <mat-icon matTooltip="{{pgsToolTipB}}" style="cursor: pointer;">help_outline</mat-icon>
+                <span> PGS Parameter B : </span> 
+                
+            </label>
+        <label style="color:white">{{value_b}}</label>
         </div>
         <mat-slider
             style="width:300px;background-color:rgba(0, 0, 0, 0.3);border-radius: 10px;margin:8px"
@@ -38,8 +48,12 @@
 
     <div>
         <div>
-        <label id="example-name-label">Value of parameter c (Favors aDPS player in comp): </label>
-        <label>{{value_c}}</label>
+            <label style="color:white">
+                <mat-icon matTooltip="{{pgsToolTipC}}" style="cursor: pointer;">help_outline</mat-icon>
+                <span> PGS Parameter C : </span>
+                
+            </label>
+        <label style="color:white">{{value_c}}</label>
         </div>
         <mat-slider
             style="width:300px;background-color:rgba(0, 0, 0, 0.3);border-radius: 10px;margin:8px"
@@ -55,7 +69,10 @@
     </div>
 
   </mat-card-content>
+
+</div>
 <mat-dialog-actions style="display: flex; justify-content: space-between;">
     <button mat-button mat-dialog-close style="background-color: rgba(0, 0, 0, 0.156);" (click)="SaveChange()">Save and Exit</button>
+    <button mat-button style="background-color: rgba(0, 0, 0, 0.156);" (click)="UseRecommend()">Use recommended settings</button>
 </mat-dialog-actions>
 </div>

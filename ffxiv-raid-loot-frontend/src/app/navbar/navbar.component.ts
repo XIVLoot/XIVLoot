@@ -119,9 +119,9 @@ export class NavbarComponent {
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data: {
-          message: "Successfuly removed static.",
+          message: "Successfully removed static.",
           subMessage: "",
-          color : ""
+          color : "green"
         }
         });
       });
@@ -132,9 +132,9 @@ export class NavbarComponent {
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data: {
-            message: "Successfuly removed static.",
+            message: "Successfully removed static.",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       });
@@ -226,9 +226,9 @@ export class LoginDialog {
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data: {
-          message: "Successfuly registered.",
+          message: "Successfully registered.",
           subMessage: "",
-          color : ""
+          color : "green"
         }
       });
       this.http.Login(this.registerEmail, this.registerPassword).subscribe((res : any) => {
@@ -253,9 +253,9 @@ export class LoginDialog {
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data: {
-            message: "Successfuly logged in.",
+            message: "Successfully logged in.",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       }else {
@@ -267,9 +267,9 @@ export class LoginDialog {
     }, (error : any) => {this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "Error while logging in.",
-        subMessage: "",
-        color : ""
+        message: "Error while trying to logging in.",
+        subMessage: "(Reach out of this persists)",
+        color : "red"
       }
     });resolve(false);});
   });

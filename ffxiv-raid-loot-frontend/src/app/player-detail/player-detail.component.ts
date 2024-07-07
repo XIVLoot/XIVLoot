@@ -314,7 +314,7 @@ export class EtroDialog {
           duration: 8000,
           data: {
             message: "Error while trying to import from etro.",
-            subMessage: "(Please reach out if this continues)",
+            subMessage: "(Please reach out if this persists)",
             color : "red"
           }
         });
@@ -326,7 +326,7 @@ export class EtroDialog {
           data: {
             message: "Successfuly imported gearset from etro.gg",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       this.dialogRef.close("Yes");

@@ -19,6 +19,11 @@ export class PlayerDetailsSingleComponent {
 
   public GetGroupColorNoAlpha : string;
 
+  public etroToolTip = etroToolTip;
+  public pgsOnPlayerToolTip = pgsOnPlayerToolTip;
+  public lockOnPlayerToolTip = lockOnPlayerToolTip;
+  public gearSelectionToolTip = gearSelectionToolTip;
+
   constructor(public http: HttpService, private route: ActivatedRoute, public dialog: MatDialog,
               private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService
   ) { } // Constructor with dependency injection
@@ -579,6 +584,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { catchError, of } from 'rxjs';
 import { StaticEventsService } from '../service/static-events.service';
+import { etroToolTip, gearSelectionToolTip, lockOnPlayerToolTip, pgsOnPlayerToolTip } from '../tooltip';
 
 @Component({
   selector: 'import-etro',
@@ -605,7 +611,7 @@ export class EtroDialog {
           duration: 8000,
           data: {
             message: "Error while trying to import from etro.",
-            subMessage: "(Please reach out if this continues)",
+            subMessage: "(Make sure the UUID is correct)",
             color : "red"
           }
         });
@@ -617,7 +623,7 @@ export class EtroDialog {
           data: {
             message: "Successfuly imported gearset from etro.gg",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       this.dialogRef.close("Yes");

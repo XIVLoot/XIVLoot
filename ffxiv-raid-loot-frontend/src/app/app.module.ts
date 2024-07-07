@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -86,7 +87,8 @@ import { GearAcqHistorySingleComponent } from './gear-acq-history-single/gear-ac
     MatDialogClose, 
     MatDialogTitle, 
     MatDialogContent,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTooltipModule
   ],
   providers: [
     provideAnimationsAsync()
