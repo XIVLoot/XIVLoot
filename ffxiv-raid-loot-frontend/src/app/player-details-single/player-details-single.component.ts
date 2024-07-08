@@ -409,7 +409,7 @@ export class PlayerDetailsSingleComponent {
 
   getImageSource(gear): string {
     if (gear.gearName == "No Equipment" || (gear === null))
-      return 'assets/no_gear.png';
+      return 'assets/no_gear.webp';
     switch (gear.gearStage) {
       case 'Preparation':
         return 'assets/crafted_gear_icon.webp';

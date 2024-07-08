@@ -1,59 +1,67 @@
-<!-- homepage.component.html -->
+<div style="max-width: 1350px;">
 
-
-
-<div class="hero">
-  <h1>Manage Your Raid Loot with Ease Using XIVLoot.com</h1>
-  <p>Track, Assign, and Optimize Loot Distribution to Match your Own Playstyle.</p>
-
+<div style="width: 60%;margin-left: 20%;margin-bottom: 20px;">
+<mat-accordion style="width: 30%;margin-bottom:20px;" multi>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Create Static
+        </mat-panel-title>
+        <mat-panel-description>
+          Click here to get started!
+          <mat-icon>account_circle</mat-icon>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+  
+      <mat-form-field style="width: 100%;">
+        <mat-label>Static Name</mat-label>
+        <input matInput [(ngModel)]="staticName" placeholder="Enter static here" style="font-size: 20px;">
+  
+      </mat-form-field>
+      <mat-action-row>
+        <button mat-button (click)="AddStatic(staticName)">Create Static</button>
+      </mat-action-row>
+      </mat-expansion-panel>
+  </mat-accordion>
 </div>
-
-<div class="features" style="border-radius: 10px;border:3px solid rgba(0, 0, 0, 0.4);">
-<div class="feature_row">
-  <div class="feature" style="width: 50%;">
-      <h3>Loot Tracking</h3>
-      <p>XIVLoot.com offers a gear acquisition history to know exactly when someone received a new piece of gear.</p>
-      <img src="assets/about/gear_acq.png" >
-  </div>
-  <div class="feature" style="width: 50%;">
-    <h3>Loot Distribution Score</h3>
-    <p>XIVLoot.com offers a metric called PGS (Player gear score) to recommend gear distribution to the players. Every static can customize the 
-        parameters of how this score is computed to fit your own playstyle and intent in gear progression.
-    </p>
-    <img src="assets/about/pgs.png">
-  </div>
-</div>
-<div class="feature_row">
-    <div class="feature" style="width: 50%;">
-        <h3>Gear locking</h3>
-        <p>XIVLoot.com offers a way to lock players out of gear to follow your static's gear distribution rules. Manage your own rules
-            and see when someone can and cannot receive gear.
-        </p>
-        <img src="assets/about/lock.png" style="height: 350px;width: 262px;">
+  <div style="width: 98%;margin-left: 1%;height: 500px;max-width: 1350px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);display: flex;flex-direction: column;">
+  <div style="height: 70%;margin: 1%;display: flex;flex-direction: row;">
+    <div style="width: 46%;margin: 1%;padding:1%; background-color: rgba(0, 0, 0, 0.4);border-radius: 10px;border:2px solid rgba(255,255,255,0.7)">
+      <h1 style="text-align: center;">News</h1>
+      <div style="width: 95%;margin-left: 2.5%;border-bottom: 2px solid black;margin-bottom: 10px;"></div>
+      <div>
+        <h2>XIVLoot v1.0.0</h2>
+        <div>
+          <p>Changelog : </p>
+          <ul>
+            <li>Added ability to lock player</li>
+            <li>Added PGS</li>
+            <li>Added ability to select individual players</li>
+            <li>Added a recording and display of gear acquisition</li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="feature" style="width: 50%;">
-      <h3>Progression information</h3>
-      <p>XIVLoot.com offers an easy way to edit a player's current and best in slot gearset all the while showing you important information
-         like the remaining cost of your gearset. You can also painlessly import your best in slot using etro.gg.
+    <div style="width: 46%;margin: 1%;padding:1%; background-color: rgba(0, 0, 0, 0.4);border-radius: 10px;border:2px solid rgba(255,255,255,0.7)">
+      <h1 style="text-align: center;">Welcome to XIVLoot.com!</h1>
+      <div style="width: 95%;margin-left: 2.5%;border-bottom: 2px solid black;margin-bottom: 10px;"></div>
+      <p>
+        XIVLoot.com is a website that makes easier the management of gear distribution during raid progression.
+        This website was made by raiders who wanted to steer away from the old habit of using spreadsheets while not
+        making the experience worst. XIVLoot offers similar functionalities to the other existing methods of gear tracking
+        but also offers more! Read the "About" sections for more details
       </p>
-      <img src="assets/about/edit.png" style="height: 350px;">
+  
+      <p>
+        The website is still in development, so if you enconter any bug or if you have any recommendations feel free to visit the discord server!
+      </p>
+      
     </div>
+  </div>
+  
+  <div style="height: 49%;">
+  
+  </div>
+  </div>
+  
 </div>
-<div class="feature_row">
-    <div class="feature" style="width: 100%;">
-        <h3>Using with other people</h3>
-        <p>XIVLoot.com is easy to use with other people. Simply share the static's link with your friends and send it to them. You can also save the 
-            static for easy access once you come back on the site.
-        </p>
-        <img src="assets/about/save.png" style="height: 142px;width: 885px;">
-    </div>
-</div>
-</div>
-<div class="hero" style="background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;border:3px solid white;margin-top: 50px;">
-    <p>To get started simply click on the "Create a Static" option to the left, input a name and click "Create static".</p>
-</div>
-<div style="height: 500px;"></div>
-
-
-
-

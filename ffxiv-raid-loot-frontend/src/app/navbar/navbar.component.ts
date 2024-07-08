@@ -93,7 +93,7 @@ export class NavbarComponent {
   }
 
   openLoginDialog(){
-    this._dialog.open(LoginDialog, {height:'530px',width:'500px'}).afterClosed().subscribe(res => {
+    this._dialog.open(LoginDialog, {height:'640px',width:'500px'}).afterClosed().subscribe(res => {
       this.isLoggedInDefault = res === 1;
       this.isLoggedInDiscord = res === 2;
       if (this.isLoggedInDefault || this.isLoggedInDiscord){

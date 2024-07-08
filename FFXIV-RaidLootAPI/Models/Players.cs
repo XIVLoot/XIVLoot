@@ -403,7 +403,7 @@ namespace FFXIV_RaidLootAPI.Models
         */
         int oldCurGearId = 0;
 
-                switch (GearToChange){
+        switch (GearToChange){
             case GearType.Weapon:
                 if (UseBis)
                     BisWeaponGearId = NewGearId;
@@ -498,18 +498,20 @@ namespace FFXIV_RaidLootAPI.Models
 
         
 
-
+            Gear? newGear = await context.Gears.FindAsync(NewGearId);
+            if (newGear is null)
+                return;
         if (CheckLockPlayer && !UseBis){
             Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
-            Gear? newGear = await context.Gears.FindAsync(NewGearId);
             
-            if (oldGear is null || newGear is null)
+            
+            if (oldGear is null)
                 return;
             await this.update_lock_status(oldGear, newGear, context, turn);
         
-            if (!UseBis)
-                await this.add_gear_acquisition_timestamp(newGear, turn, context);
         }
+        if (!UseBis)
+                await this.add_gear_acquisition_timestamp(newGear, turn, context);
         }
 
         public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, Turn turn, DataContext context){

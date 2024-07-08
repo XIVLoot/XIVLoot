@@ -167,7 +167,7 @@ export class PlayerDetailComponent {
 
   getImageSource(gear): string {
     if (gear.gearName == "No Equipment" || (gear === null))
-      return 'assets/no_gear.png';
+      return 'assets/no_gear.webp';
     switch (gear.gearStage) {
       case 'Preparation':
         return 'assets/crafted_gear_icon.webp';
@@ -177,6 +177,8 @@ export class PlayerDetailComponent {
         return 'assets/raid_icon.webp';
       case 'Upgraded_Tomes':
           return 'assets/tomestone_icon_upgraded.png';
+      default:
+        return 'assets/no_gear.webp';
     }
   }
 

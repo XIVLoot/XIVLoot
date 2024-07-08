@@ -1,23 +1,63 @@
-<mat-accordion class="example-headers-align" multi>
+<mat-accordion style="width: 30%;margin-bottom:20px;" multi>
   <mat-expansion-panel>
     <mat-expansion-panel-header>
       <mat-panel-title>
-        New Static
+        Create Static
       </mat-panel-title>
       <mat-panel-description>
-        Type the name of your static
+        Click here to get started!
         <mat-icon>account_circle</mat-icon>
       </mat-panel-description>
     </mat-expansion-panel-header>
 
     <mat-form-field style="width: 100%;">
       <mat-label>Static Name</mat-label>
-      <input matInput [(ngModel)]="staticName" style="font-size: 20px;">
+      <input matInput [(ngModel)]="staticName" placeholder="Enter static here" style="font-size: 20px;">
 
     </mat-form-field>
     <mat-action-row>
       <button mat-button (click)="AddStatic(staticName)">Create Static</button>
     </mat-action-row>
+    </mat-expansion-panel>
+</mat-accordion>
 
-    <button (click)="greenSnackbar()">Green snakcbar</button>
-    <button (click)="redSnackbar()">Red snakcbar</button>
+<div style="width: 98%;margin-left: 1%;height: 500px;max-width: 1350px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);display: flex;flex-direction: column;">
+<div style="height: 70%;margin: 1%;display: flex;flex-direction: row;">
+  <div style="width: 46%;margin: 1%;padding:1%; background-color: rgba(0, 0, 0, 0.4);border-radius: 10px;border:2px solid rgba(255,255,255,0.7)">
+    <h1 style="text-align: center;">News</h1>
+    <div style="width: 95%;margin-left: 2.5%;border-bottom: 2px solid black;margin-bottom: 10px;"></div>
+    <div>
+      <h2>XIVLoot v1.0.0</h2>
+      <div>
+        <p>Changelog : </p>
+        <ul>
+          <li>Added ability to lock player</li>
+          <li>Added PGS</li>
+          <li>Added ability to select individual players</li>
+          <li>Added a recording and display of gear acquisition</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="width: 46%;margin: 1%;padding:1%; background-color: rgba(0, 0, 0, 0.4);border-radius: 10px;border:2px solid rgba(255,255,255,0.7)">
+    <h1 style="text-align: center;">Welcome to XIVLoot.com!</h1>
+    <div style="width: 95%;margin-left: 2.5%;border-bottom: 2px solid black;margin-bottom: 10px;"></div>
+    <p>
+      XIVLoot.com is a website that makes easier the management of gear distribution during raid progression.
+      This website was made by raiders who wanted to steer away from the old habit of using spreadsheets while not
+      making the experience worst. XIVLoot offers similar functionalities to the other existing methods of gear tracking
+      but also offers more! Read the "About" sections for more details
+    </p>
+
+    <p>
+      The website is still in development, so if you enconter any bug or if you have any recommendations feel free to visit the discord server!
+    </p>
+    
+  </div>
+</div>
+
+<div style="height: 49%;">
+
+</div>
+</div>
+

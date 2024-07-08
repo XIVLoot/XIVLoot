@@ -1,4 +1,5 @@
-export const gearAcquisitionToolTip = "This section shows the history of gear acquisition. Click on a gear coffer to remove the event if it is erroneous.";
+export const gearAcquisitionToolTip = `This section shows the history of gear acquisition. Click on a gear coffer to remove the event if it is erroneous.
+                                       This will only show raid gear or augment items and ignores preperation type gears (crafted, etc.) and non-augment tome gear.`;
 export const pgsToolTip = `This section shows the suggested priority of which player should receive gear according to your own settings. 
                            The different grouping of colors is based on the PGS of each player. Players in the left most column have the highest
                            gear receiving priority while the players in the right most column have the lowest priority. There are four possible grouping colors :

@@ -1,0 +1,151 @@
+/* homepage.component.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+  header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+  }
+  header img {
+    height: 50px;
+  }
+  nav ul {
+    list-style: none;
+    padding: 0;
+  }
+  nav ul li {
+    display: inline;
+    margin: 0 10px;
+  }
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  .hero {
+    
+    background-size: cover;
+    color: white;
+    padding: 50px 0;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 3em;
+  }
+  .hero p {
+    font-size: 1.5em;
+  }
+  .hero .cta {
+    margin: 20px 0;
+  }
+  .hero .cta a {
+    background-color: #ff4500;
+    color: rgb(36, 36, 36);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  .features {
+    background-color: rgb(32, 31, 31);
+    padding: 50px 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+  }
+  .features .feature {
+    display: inline-block;
+    width: 50%;
+    margin: 20px;
+  }
+  .features .feature img {
+    width: 100%;
+  }
+  .features .feature h3 {
+    font-size: 1.5em;
+  }
+  .features .feature p {
+    font-size: 1em;
+    color: #fff7f7;
+  }
+  .how-it-works {
+    background-color: #161515;
+    padding: 50px 0;
+    text-align: center;
+  }
+  .how-it-works h2 {
+    font-size: 2em;
+  }
+  .how-it-works .step {
+    display: inline-block;
+    width: 22%;
+    margin: 20px;
+  }
+  .how-it-works .step h3 {
+    font-size: 1.2em;
+  }
+  .how-it-works .step p {
+    font-size: 1em;
+    color: #ffffff;
+  }
+  .testimonials {
+    background-color: rgb(46, 46, 46);
+    padding: 50px 0;
+    text-align: center;
+  }
+  .testimonials .testimonial {
+    display: inline-block;
+    width: 45%;
+    margin: 20px;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  .call-to-action {
+    background-color: #333;
+    color: white;
+    padding: 50px 0;
+    text-align: center;
+  }
+  .call-to-action h2 {
+    font-size: 2em;
+  }
+  .call-to-action .cta a {
+    background-color: #ff4500;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 10px;
+  }
+  footer {
+    background-color: #222;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+  }
+  footer ul {
+    list-style: none;
+    padding: 0;
+  }
+  footer ul li {
+    display: inline;
+    margin: 0 10px;
+  }
+  footer ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  .feature_row{
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .feature_row img{
+    border-radius: 10px;
+    border:3px solid white;
+  }
