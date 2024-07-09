@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { HttpService } from '../service/http.service';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from '../../environments/environments';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
@@ -18,6 +18,11 @@ import { catchError, throwError } from 'rxjs';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+
+  public hasStatic : boolean = false;
+  public curUUID : string = "";
+  public staticName : string = "";
+
   public title = 'Loot Management';
   public isLoggedIn = false;
   public isLoggedInDiscord = false;
@@ -69,7 +74,20 @@ export class NavbarComponent {
     }
 
 
+    if (this.containsUUID(window.location.href.split('?')[0])){
+      this.hasStatic = true;
+      this.curUUID = window.location.href.split(environment.site_url)[1].split('?')[0];
+      console.log("Has static : " + this.curUUID)
+      this.http.getStaticName(this.curUUID).subscribe(res => this.staticName = "Edit : " + res);
+    }
 
+
+  }
+
+  // Method to check if URL contains a UUID
+  containsUUID(url: string): boolean {
+    const uuidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
+    return uuidRegex.test(url);
   }
 
   logout(){
@@ -93,7 +111,7 @@ export class NavbarComponent {
   }
 
   openLoginDialog(){
-    this._dialog.open(LoginDialog, {height:'530px',width:'500px'}).afterClosed().subscribe(res => {
+    this._dialog.open(LoginDialog, {height:'640px',width:'500px'}).afterClosed().subscribe(res => {
       this.isLoggedInDefault = res === 1;
       this.isLoggedInDiscord = res === 2;
       if (this.isLoggedInDefault || this.isLoggedInDiscord){
@@ -119,9 +137,9 @@ export class NavbarComponent {
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data: {
-          message: "Successfuly removed static.",
+          message: "Successfully removed static.",
           subMessage: "",
-          color : ""
+          color : "green"
         }
         });
       });
@@ -132,9 +150,9 @@ export class NavbarComponent {
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data: {
-            message: "Successfuly removed static.",
+            message: "Successfully removed static.",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       });
@@ -168,11 +186,31 @@ export class NavbarComponent {
     }
   }
 
+  openAcountInfo(){
+    this._dialog.open(ProfileDialog, {height:'530px',width:'500px', data:{username : this.username, isDiscord : this.isLoggedInDiscord}}).afterClosed().subscribe(res => {
+    });
+  }
+
 
 }
 
 @Component({
-  selector: 'import-etro',
+  selector: 'profile-dialog',
+  templateUrl: `profile.dialog.html`,
+  standalone: true,
+  imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule, FormsModule],
+})
+export class ProfileDialog {
+  constructor(private _snackBar: MatSnackBar, private http : HttpService, private dialogRef: MatDialogRef<ProfileDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: { username : string, email :string, isDiscord : boolean},
+  ) {}
+
+  
+
+}
+
+@Component({
+  selector: 'login-dialog',
   templateUrl: `login.dialog.html`,
   standalone: true,
   imports: [MatInputModule, MatFormFieldModule, MatButton, CommonModule, FormsModule],
@@ -206,9 +244,9 @@ export class LoginDialog {
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data: {
-          message: "Successfuly registered.",
+          message: "Successfully registered.",
           subMessage: "",
-          color : ""
+          color : "green"
         }
       });
       this.http.Login(this.registerEmail, this.registerPassword).subscribe((res : any) => {
@@ -225,15 +263,17 @@ export class LoginDialog {
     this.dialogRef.close(2); 
   }
 
+
+
   async login(ShowSuccess : boolean){
     var check = await new Promise<boolean>(resolve => {this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {
       if (ShowSuccess){
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data: {
-            message: "Successfuly logged in.",
+            message: "Successfully logged in.",
             subMessage: "",
-            color : ""
+            color : "green"
           }
         });
       }else {
@@ -245,9 +285,9 @@ export class LoginDialog {
     }, (error : any) => {this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "Error while logging in.",
-        subMessage: "",
-        color : ""
+        message: "Error while trying to logging in.",
+        subMessage: "(Reach out of this persists)",
+        color : "red"
       }
     });resolve(false);});
   });

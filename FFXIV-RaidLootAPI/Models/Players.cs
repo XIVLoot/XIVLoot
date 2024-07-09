@@ -42,6 +42,7 @@ namespace FFXIV_RaidLootAPI.Models
         */
 
         public string Name { get; set; } = "Enter the name here";
+        public bool IsClaimed {get;set;} = false;
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
@@ -403,7 +404,7 @@ namespace FFXIV_RaidLootAPI.Models
         */
         int oldCurGearId = 0;
 
-                switch (GearToChange){
+        switch (GearToChange){
             case GearType.Weapon:
                 if (UseBis)
                     BisWeaponGearId = NewGearId;
@@ -498,18 +499,20 @@ namespace FFXIV_RaidLootAPI.Models
 
         
 
-
+            Gear? newGear = await context.Gears.FindAsync(NewGearId);
+            if (newGear is null)
+                return;
         if (CheckLockPlayer && !UseBis){
             Gear? oldGear = await context.Gears.FindAsync(oldCurGearId);
-            Gear? newGear = await context.Gears.FindAsync(NewGearId);
             
-            if (oldGear is null || newGear is null)
+            
+            if (oldGear is null)
                 return;
             await this.update_lock_status(oldGear, newGear, context, turn);
         
-            if (!UseBis)
-                await this.add_gear_acquisition_timestamp(newGear, turn, context);
         }
+        if (!UseBis)
+                await this.add_gear_acquisition_timestamp(newGear, turn, context);
         }
 
         public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, Turn turn, DataContext context){
@@ -588,7 +591,8 @@ namespace FFXIV_RaidLootAPI.Models
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
                 PlayerGearScore=PlayerGearScore,
                 Cost=Cost,
-                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
+                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate},
+                IsClaimed=IsClaimed
             };
         }
 
@@ -613,7 +617,8 @@ namespace FFXIV_RaidLootAPI.Models
                 AverageItemLevelBis=AverageItemLevelBis,
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
                 Cost=Cost,
-                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
+                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate},
+                IsClaimed=IsClaimed
             };
         }   
         public void remove_lock(Turn turn){

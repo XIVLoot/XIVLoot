@@ -14,6 +14,7 @@
       <img *ngIf="isLoggedIn; else defaultIcon" [src]="discordAvatarUrl" alt="User Avatar" style="border-radius: 50%; width: 30px; height: 30px;">
     </button>
     <mat-menu #userMenu="matMenu">
+      <button mat-menu-item (click)="openAcountInfo()">Profile</button>
       <button mat-menu-item (click)="logout()">Logout</button>
     </mat-menu>
   </ng-container>
@@ -25,11 +26,14 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav mode="side" opened="true" class="sidenav" [style.width]="'175px'">
     <mat-nav-list style="text-align: center;">
-      <a mat-list-item routerLink="/static" class="active rounded-button">
-        Create a static
-      </a>
       <a mat-list-item routerLink="/" class="active rounded-button">
         Home
+      </a>
+      <a mat-list-item routerLink="/about" class="active rounded-button">
+        About
+      </a>
+      <a  *ngIf="hasStatic" mat-list-item routerLink="/{{curUUID}}" class="active rounded-button">
+        {{staticName}}
       </a>
 
 

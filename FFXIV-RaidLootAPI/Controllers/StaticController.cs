@@ -1,6 +1,7 @@
 using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigins")]
     public class StaticController : ControllerBase
     {
         private readonly IDbContextFactory<DataContext> _context;

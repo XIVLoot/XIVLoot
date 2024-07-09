@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FFXIV_RaidLootAPI.DTO;
 using System.Text.Json;
+using Microsoft.AspNetCore.Cors;
 
 namespace FFXIV_RaidLootAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigins")]
     public class GearController : ControllerBase
     {
         private readonly IDbContextFactory<DataContext> _context;

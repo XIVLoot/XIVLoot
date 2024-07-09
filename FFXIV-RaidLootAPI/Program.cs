@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Authentication;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -51,36 +51,59 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
+    options.AddPolicy("AllowSpecificOrigins",
+        builder => builder.WithOrigins("http://localhost:4200","https://localhost:7203", "https://xivloot.com", "172.64.80.1", "10.124.0.3")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
-});
 
+    //options.AddPolicy("AllowProdOrigin",
+    //    builder => builder.WithOrigins("https://xivloot.com")
+    //                      .AllowAnyHeader()
+    //                      .AllowAnyMethod()
+    //                      .AllowCredentials());
+});
+builder.Services.AddControllers();
 builder.Services.AddMvc();
 
 var app = builder.Build();
-
+app.UseDeveloperExceptionPage();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+} else{
+    app.UseHsts();
 }
-
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
+app.UseRouting();
+app.UseCors("AllowSpecificOrigins"); 
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
     dataContext.Database.Migrate();
 }
+app.Use(async (context, next) =>
+{   
+    Console.WriteLine($"Request URL: {context.Request.Path}");
+    context.Response.OnStarting(() =>
+    {
+        var headers = context.Response.Headers;
+        Console.WriteLine("CORS Headers:");
+        foreach (var header in headers)
+        {
+            Console.WriteLine($"{header.Key}: {header.Value}");
+        }
+        return Task.CompletedTask;
+    });
+    await next();
+});
 
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapIdentityApi<ApplicationUser>();
 app.MapControllers();

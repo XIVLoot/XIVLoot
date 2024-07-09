@@ -1,14 +1,16 @@
+<h2 style="color:red">ANYONE WITH THE LINK CAN CLAIM PLAYERS OR MODIFY SOME OF THE STATIC'S SETTINGS.</h2>
+<h2 style="color:red">CLAIM PLAYERS FAST AND BE CAREFUL WITH WHOM YOU SHARE THE LINK.</h2>
 <div style="display: flex; justify-content: center; align-items: center;">
 <div style="max-width: 1350px;">
   <!-- Container for static detail header -->
   <div>
-    <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding-top: 10px;padding-left: 10px;border: 5px solid rgba(0, 0, 0, 0.4);">
+    <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding-top: 10px;padding-left: 10px;border: 3px solid rgba(0, 0, 0, 0.4);">
     <mat-form-field style="width:40ch;height: 10ch;margin-bottom: 0px;">
       <mat-label>Static name :</mat-label>
         <input matInput value="{{staticDetail.name}}" (change)="onChangeStaticName($event)" style="font-size: 30px;">
     </mat-form-field>
-    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;" (click)="copyToClipboard()">Share static</button>
-    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;" (click)="SaveStaticToUser()">Save static</button>
+    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;padding-right: 20px;" (click)="copyToClipboard()">Share static<img src="assets/share.svg" style="width: 20px;height: 20px; position: absolute; bottom: 0;"></button>
+    <button mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;padding-right: 20px;" (click)="SaveStaticToUser()">Save static<img src="assets/save.svg" style="width: 20px;height: 20px; position: absolute; bottom: 0;"></button>
     </div>
 
     <mat-accordion>
@@ -19,8 +21,11 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
   
-      <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 10px;border: 5px solid rgba(0, 0, 0, 0.4)">
-        <h3 style="color:white">Group gear order priority (left to right) : </h3>
+      <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 10px;border: 3px solid rgba(0, 0, 0, 0.4)">
+        <h3 style="color:white">
+          Group gear order priority :  
+          <mat-icon matTooltip="{{pgsToolTip}}" style="cursor: pointer;">help_outline</mat-icon>
+        </h3>
         <div style="display: flex; justify-content: space-between;">
           <div *ngFor="let group of groupList" [style.border]="GetGroupBorderColor(group.nGroup)" [style.backgroundColor]="GetGroupColor(group.nGroup)" style="width:240px;border-radius: 10px;padding: 5px;">
             <p *ngFor="let player of group.group" style="color: white;">{{player.name}}</p>
@@ -39,31 +44,32 @@
     </mat-expansion-panel-header>
 
     <div style="margin: 0;background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border:3px solid rgba(0, 0, 0, 0.4);">
-        <div style="display: flex;flex-direction: column;">
+        <div style="display: flex;flex-direction: column;margin-bottom: 0;">
           <div style="border-bottom: 3px solid black;">
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_PLAYERS']" (ngModelChange)="CheckChange()">Activate Lock logic : {{staticDetail.LockParam['BOOL_LOCK_PLAYERS']}}</mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_PLAYERS']" (ngModelChange)="CheckChange()">Activate Lock logic <mat-icon matTooltip="{{lockLogicToolTip}}" style="cursor: pointer;">help_outline</mat-icon></mat-slide-toggle>
           </div>
           <div style="display: flex;flex-direction: row;">
           <div style="display: flex;flex-direction: column;">
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock a player out of gear even if it is not contested : {{staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']}}</mat-slide-toggle>
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_FOR_1_FIGHT']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock per fight : {{staticDetail.LockParam['BOOL_FOR_1_FIGHT']}}</mat-slide-toggle>
-          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock a player for augment item : {{staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']}}</mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_LOCK_IF_NOT_CONTESTED']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock a player out of gear even if it is not contested <mat-icon matTooltip="{{lockOutOfGearEvenIfNotContestedToolTip}}" style="cursor: pointer;">help_outline</mat-icon></mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['BOOL_FOR_1_FIGHT']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock per fight <mat-icon matTooltip="{{lockPerFightToolTip}}" style="cursor: pointer;">help_outline</mat-icon></mat-slide-toggle>
+          <mat-slide-toggle class="param-toggle" [(ngModel)]="staticDetail.LockParam['LOCK_IF_TOME_AUGMENT']" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">Lock a player for augment item <mat-icon matTooltip="{{lockPlayerForAugmentToolTip}}" style="cursor: pointer;">help_outline</mat-icon></mat-slide-toggle>
         </div>
-        <div style="display: flex;flex-direction: row;">
-          <div style="display: flex;flex-direction: column;margin: 0; margin-right: 5%;">
-            <span>{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}</span>
-            <mat-form-field style="width:180px;">
+        <div style="display: flex;flex-direction: column;">
+          <div style="display: flex;flex-direction: row;margin: 0; margin-right: 5%;">
+            <mat-form-field style="width:210px;">
               <mat-label># Piece until lock</mat-label>
               <input  matInput type="number" min="1" [(ngModel)]="staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']" value="{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">
-              </mat-form-field>
+            </mat-form-field>
+            <mat-icon matTooltip="{{pieceUntilLockToolTip}}" style="cursor: pointer; align-self: center;color:white;margin-left: 10px;margin-bottom: 20px;">help_outline</mat-icon>
           </div>
-          <div style="display: flex;flex-direction: column;margin: 0;">
-            <span>{{staticDetail.LockParam['RESET_TIME_IN_WEEK']}}</span>
-            <mat-form-field style="width:180px;">
+          <div style="display: flex;flex-direction: row;margin: 0; align-items: center;">
+            <mat-form-field style="width:200px;">
               <mat-label># Week Reset</mat-label>
               <input matInput  min="1" type="number" [(ngModel)]="staticDetail.LockParam['RESET_TIME_IN_WEEK']" value="{{staticDetail.LockParam['RESET_TIME_IN_WEEK']}}" (ngModelChange)="CheckChange()" [disabled]="!staticDetail.LockParam['BOOL_LOCK_PLAYERS']">
-              </mat-form-field>
+            </mat-form-field>
+            <mat-icon matTooltip="{{numberWeekResetToolTip}}" style="cursor: pointer; align-self: center;color:white;margin-left: 10px;margin-bottom: 20px;">help_outline</mat-icon> 
           </div>
+          
         </div>
         </div>
         </div>
@@ -110,16 +116,28 @@
   </div>
   <div  style="width: 100%;margin: 0;border-top:3px solid rgba(0, 0, 0, 0.5);padding-top:1%;padding-bottom:1%;border-bottom:3px solid rgba(0, 0, 0, 0.5);">
     
-    <div *ngIf="!SelectedPlayer && !ShowAllPlayer" style="margin: 0;padding:10px;width: 100%;max-width:1250px;height: 500px;display: flex;justify-content: center;align-items: center;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;">
+    <div *ngIf="!SelectedPlayer && !ShowAllPlayer" style="margin: 0;padding:10px;width: 100%;max-width:1250px;height: 500px;display: flex;background-color: rgba(0, 0, 0, 0.5);border-radius: 10px;justify-content: center; align-items: center;">
     <h2 style="color: white;">SELECT A PLAYER ABOVE TO EDIT OR SHOW ALL PLAYERS.</h2>
     </div>
-    <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;"><app-player-details-single *ngIf="player.id == SelectedPlayer || ShowAllPlayer" [player]="player"></app-player-details-single></div>
+    <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;">
+      <div *ngIf="player.id == SelectedPlayer || ShowAllPlayer" >
+        <div style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:200px;">
+          <button mat-raised-button *ngIf="!staticDetail.userOwn[player.id]" (click)="ClaimPlayer(player)" style="margin-bottom: 10px;" [disabled]="player.IsClaimed" [style.backgroundColor]="player.IsClaimed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.5)'">Claim Player</button>
+          <button mat-raised-button *ngIf="staticDetail.userOwn[player.id]" (click)="UnclaimPlayer(player)" style="margin-bottom: 10px;background-color: rgba(255, 0, 0, 0.5);" >Unclaim player</button>
+          <mat-icon matTooltip="{{staticDetail.userOwn[player.id] ? unclaimPlayerToolTip : player.IsClaimed ? alreadyClaimedToolTip : claimPlayerToolTip }}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
+          </div>
+      <app-player-details-single  [player]="player"></app-player-details-single>
+
+      </div>
+    </div>
   </div>
   </div>
-  <div style="background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border:5px solid rgba(0, 0, 0, 0.4)">
+  <div style="background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border:3px solid rgba(0, 0, 0, 0.4)">
     <div style="display: flex;flex-direction: row;align-items: center;justify-content: space-between;">
-      <h2>Gear acquisition history</h2>
-      <h4>(Only showing weeks where gear was acquired)</h4>
+      <h2>Gear acquisition history
+        <mat-icon matTooltip="{{gearAcquisitionToolTip}}" style="cursor: pointer;">help_outline</mat-icon>
+      </h2>
+      <h4>(Click on a gear coffer to remove the event if it is erroneous)</h4>
       <div style="display: flex;flex-direction: row;border-radius: 10px;padding: 5px;">
         <mat-form-field>
           <mat-label>Number of weeks to display.</mat-label>

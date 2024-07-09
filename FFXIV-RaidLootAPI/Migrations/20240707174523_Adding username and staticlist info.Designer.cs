@@ -4,6 +4,7 @@ using FFXIV_RaidLootAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FFXIV_RaidLootAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240707174523_Adding username and staticlist info")]
+    partial class Addingusernameandstaticlistinfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,10 +76,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("user_claimed_playerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("user_displayed_name")
                         .IsRequired()
@@ -244,9 +243,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.Property<int>("GearScore")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsClaimed")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Job")
                         .HasColumnType("int");
 
@@ -335,10 +331,6 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("user_claimed_playerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("user_discord_id")
                         .IsRequired()

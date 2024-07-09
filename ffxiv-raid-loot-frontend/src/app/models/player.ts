@@ -50,6 +50,7 @@ export class Player {
   public LeftRingChoice : Gear[] = [];
   public PGSGroupNumber : number = 0;
   public PGSGroupColor : string = 'rgba(255, 247, 0, 1)';
+  public IsClaimed : boolean;
   constructor(
   ){}
 
@@ -60,6 +61,7 @@ export class Player {
   public static CreatePlayerFromDict(Dict) : Player{
     let p = new Player();
     p.id = Dict["id"];
+    p.IsClaimed = Dict["isClaimed"];
     p.job = Dict["job"];
     p.LockedList = Dict["lockedList"].map(dateStr => new Date(dateStr));
     p.name = Dict["name"];

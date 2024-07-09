@@ -8,23 +8,32 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.EntityFrameworkCore;
+using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.User;
+using System.Text.Json;
 
 namespace FFXIV_RaidLootAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigins")]
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IDbContextFactory<DataContext> _context;
         private readonly string _jwtKey;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IDbContextFactory<DataContext> context,IConfiguration configuration)
         {
             _configuration = configuration;
+            _context = context;
             _jwtKey = _configuration["JwtSettings:Key"]!;
         }
 
     [HttpPost("ReadJwt")]
+    [EnableCors("AllowSpecificOrigins")]
     public IActionResult ReadJwt([FromBody] string token)
     {
         try
@@ -55,12 +64,14 @@ namespace FFXIV_RaidLootAPI.Controllers
     }
 
     [HttpGet("IsLoggedInDiscord")]
+    [EnableCors("AllowSpecificOrigins")]
     public IActionResult IsJwtXivlootPresent()
     {
         return Ok(HttpContext.Request.Cookies.ContainsKey("jwt_xivloot"));
     }
 
     [HttpGet("LogoutDiscord")]
+    [EnableCors("AllowSpecificOrigins")]
     public IActionResult LogoutDiscord()
     {
         if (HttpContext.Request.Cookies.ContainsKey("jwt_xivloot"))
@@ -72,6 +83,7 @@ namespace FFXIV_RaidLootAPI.Controllers
     }
 
     [HttpPost("token")]
+    [EnableCors("AllowSpecificOrigins")]
     public async Task<IActionResult> PostToken([FromBody] Dictionary<string, string> content)
     {
         Console.WriteLine("HERE CONTENT :  " + content.ToString());
@@ -87,6 +99,7 @@ namespace FFXIV_RaidLootAPI.Controllers
     }
 
     [HttpGet("GetDiscordUserInfo")]
+    [EnableCors("AllowSpecificOrigins")]
     public async Task<IActionResult> GetDiscordUserInfo()
     {
         // Retrieve the JWT from the cookie
@@ -131,11 +144,30 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
 
             var responseString = await response.Content.ReadAsStringAsync();
+            Dictionary<string, object> responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseString)!;
+            Console.WriteLine("Adding discord user");
+            Console.WriteLine(responseData.ToString());
+            // Access the 'id' value from the dictionary
+            string discordId = responseData["id"].ToString()!;
+            using (var context = _context.CreateDbContext())
+            {
+
+                Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                if (user is null){
+                    await context.User.AddAsync(new Users{
+                        user_discord_id=discordId,
+                        user_saved_static = string.Empty,
+                        user_claimed_playerId=string.Empty,
+                    });
+                    await context.SaveChangesAsync();
+                }
+            }
             return Ok(responseString);
         }
     }
 
     [HttpGet("GetDiscordJWT/{at}")]
+    [EnableCors("AllowSpecificOrigins")]
     public async Task<IActionResult> GetDiscordJWT(string at)
     {
         // Generate JWT using the provided access token
@@ -147,7 +179,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict
+            SameSite = SameSiteMode.None
         });
 
         // Return the JWT in the response

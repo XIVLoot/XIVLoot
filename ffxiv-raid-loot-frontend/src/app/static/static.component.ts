@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { Static } from '../models/static';
 import { environment } from '../../environments/environments';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 
 // Component decorator with metadata for StaticComponent
 @Component({
@@ -15,7 +17,7 @@ import { environment } from '../../environments/environments';
 
 export class StaticComponent {
   // Constructor with HttpClient and DataService injected
-  constructor(public http: HttpService, public data: DataService, public router: Router){}
+  constructor(public http: HttpService, public data: DataService, public router: Router, private _snackBar: MatSnackBar){}
   staticName: string = ''; // Property to store the name of a static
 
   // Lifecycle hook that is called after Angular has initialized all data-bound properties
@@ -40,6 +42,28 @@ export class StaticComponent {
         console.log(response); // Logging the response to the console
         this.router.navigate(['/' + response]);
       });
+  }
+
+  redSnackbar(){
+    this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 80000,
+      data: {
+        message: "Error while trying to import from etro.",
+        subMessage: "(Make sure the UUID is correct)",
+        color : "red"
+      }
+    });
+  }
+
+  greenSnackbar(){
+    this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 80000,
+      data: {
+        message: "Successssssssssssssssssssssssssssssssssssss",
+        subMessage: "(Please celebrate)",
+        color : "green"
+      }
+    });
   }
 
 }
