@@ -1,5 +1,5 @@
-<h2 style="color:red">ANYONE WITH THE LINK TO THIS STATIC CAN MODIFY ALL ITS INFORMATION/SETTINGS. BE CAREFUL WHOM YOU SHARE IT WITH.</h2>
-<h2 style="color:red">WE WILL ADD AUTHENTIFICATION FEATURES IN TIME.</h2>
+<h2 style="color:red">ANYONE WITH THE LINK CAN CLAIM PLAYERS OR MODIFY SOME OF THE STATIC'S SETTINGS.</h2>
+<h2 style="color:red">CLAIM PLAYERS FAST AND BE CAREFUL WITH WHOM YOU SHARE THE LINK.</h2>
 <div style="display: flex; justify-content: center; align-items: center;">
 <div style="max-width: 1350px;">
   <!-- Container for static detail header -->
@@ -121,13 +121,13 @@
     </div>
     <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;">
       <div *ngIf="player.id == SelectedPlayer || ShowAllPlayer" >
-
+        <div style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:200px;">
+          <button mat-raised-button *ngIf="!staticDetail.userOwn[player.id]" (click)="ClaimPlayer(player)" style="margin-bottom: 10px;" [disabled]="player.IsClaimed" [style.backgroundColor]="player.IsClaimed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.5)'">Claim Player</button>
+          <button mat-raised-button *ngIf="staticDetail.userOwn[player.id]" (click)="UnclaimPlayer(player)" style="margin-bottom: 10px;background-color: rgba(255, 0, 0, 0.5);" >Unclaim player</button>
+          <mat-icon matTooltip="{{staticDetail.userOwn[player.id] ? unclaimPlayerToolTip : player.IsClaimed ? alreadyClaimedToolTip : claimPlayerToolTip }}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
+          </div>
       <app-player-details-single  [player]="player"></app-player-details-single>
-      <div style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-top: 10px;padding: 5px;width:200px;">
-        <button mat-raised-button *ngIf="!staticDetail.userOwn[player.id]" (click)="ClaimPlayer(player)" style="margin-bottom: 10px;background-color:rgba(0, 0, 255, 0.5);" [disabled]="player.IsClaimed">Claim Player</button>
-        <button mat-raised-button *ngIf="staticDetail.userOwn[player.id]" (click)="UnclaimPlayer(player)" style="margin-bottom: 10px;background-color: rgba(255, 0, 0, 0.5);" >Unclaim player</button>
-        <mat-icon matTooltip="{{staticDetail.userOwn[player.id] ? unclaimPlayerToolTip : player.IsClaimed ? alreadyClaimedToolTip : claimPlayerToolTip }}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
-        </div>
+
       </div>
     </div>
   </div>

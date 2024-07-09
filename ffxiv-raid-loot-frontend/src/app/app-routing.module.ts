@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'about', component: AbAuthComponent },
-  { path: 'static', component: StaticComponent},
+  //{ path: 'static', component: StaticComponent},
   { path: ':uuid', component: StaticDetailComponent },
   { path : 'auth/discord/callback', component: AuthComponent}
 ];

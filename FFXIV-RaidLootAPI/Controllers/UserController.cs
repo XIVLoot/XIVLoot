@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using FFXIV_RaidLootAPI.Data;
+using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
 using FFXIV_RaidLootAPI.User;
 using Microsoft.AspNetCore.Authentication;
@@ -322,6 +323,61 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        [HttpGet("GetAllClaimedPlayerDefault")]
+        public async Task<ActionResult<List<ClaimedPlayerInfoDTO>>> GetAllClaimedPlayerDefault()
+        {
+            using (var context = _context.CreateDbContext())
+            {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = userIdClaim?.Value;
+
+            ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+                return NotFound();
+
+            List<ClaimedPlayerInfoDTO> rList = new List<ClaimedPlayerInfoDTO>();
+
+            foreach (string pId in user.getAllClaimedPlayerId()){
+                if (pId == ";" || pId == "")
+                    continue;
+                Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id ==  int.Parse(pId));
+
+                if (!(player is null)){
+                    Static? dBStatic = await context.Statics.FirstOrDefaultAsync(s => s.Id == player.staticId);
+                    if (!(dBStatic is null)){
+
+                        Dictionary<GearType, Gear?> CurrentGearSetDict = player.get_gearset_as_dict(false, context);
+                        Dictionary<GearType, Gear?> BisGearSetDict = player.get_gearset_as_dict(true, context);
+
+                        List<CostDTO> Costs = new List<CostDTO>();
+
+                        foreach(KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                            if((pair.Value is null) || BisGearSetDict[pair.Key] is null)
+                                continue;
+                            Costs.Add(pair.Value.GetCost(BisGearSetDict[pair.Key]!));
+                        }
+
+                        CostDTO Cost = CostDTO.SumCost(Costs);
+
+                        rList.Add(new ClaimedPlayerInfoDTO(){
+                            Name=player.Name,
+                            Job = player.Job.ToString(),
+                            pId = player.Id,
+                            StaticName=dBStatic.Name,
+                            StaticUUID=dBStatic.UUID,
+                            CurrentAverageItemLevel=player.get_avg_item_level(GearDict:CurrentGearSetDict),
+                            BisAverageItemLevel=player.get_avg_item_level(GearDict:BisGearSetDict),
+                            Cost=Cost
+                        });
+                    }
+                }
+            }
+
+            return Ok(rList);
+            }
+        }
+
         [HttpPut("ClaimPlayerDiscord/{discordId}/{playerId}")]
         public async Task<IActionResult> ClaimPlayerDiscord(string discordId,int playerId)
         {
@@ -363,6 +419,59 @@ namespace FFXIV_RaidLootAPI.Controllers
             user.removePlayerClaim(playerId.ToString());
             await context.SaveChangesAsync();
             return Ok();
+            }
+        }
+
+        [HttpGet("GetAllClaimedPlayerDiscord/{discordId}")]
+        public async Task<ActionResult<List<ClaimedPlayerInfoDTO>>> GetAllClaimedPlayerDiscord(string discordId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+            Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+            if (user is null)
+                return NotFound("");
+
+            List<ClaimedPlayerInfoDTO> rList = new List<ClaimedPlayerInfoDTO>();
+
+            foreach (string pId in user.getAllClaimedPlayerId()){
+                if (pId == ";" || pId == "")
+                    continue;
+                int playerId = int.Parse(pId);
+                
+                Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id ==  playerId);
+
+                if (!(player is null)){
+                    Static? dBStatic = await context.Statics.FirstOrDefaultAsync(s => s.Id == player.staticId);
+                    if (!(dBStatic is null)){
+
+                        Dictionary<GearType, Gear?> CurrentGearSetDict = player.get_gearset_as_dict(false, context);
+                        Dictionary<GearType, Gear?> BisGearSetDict = player.get_gearset_as_dict(true, context);
+
+                        List<CostDTO> Costs = new List<CostDTO>();
+
+                        foreach(KeyValuePair<GearType, Gear?> pair in CurrentGearSetDict){
+                            if((pair.Value is null) || BisGearSetDict[pair.Key] is null)
+                                continue;
+                            Costs.Add(pair.Value.GetCost(BisGearSetDict[pair.Key]!));
+                        }
+
+                        CostDTO Cost = CostDTO.SumCost(Costs);
+
+                        rList.Add(new ClaimedPlayerInfoDTO(){
+                            Name=player.Name,
+                            Job = player.Job.ToString(),
+                            pId = player.Id,
+                            StaticName=dBStatic.Name,
+                            StaticUUID=dBStatic.UUID,
+                            CurrentAverageItemLevel=player.get_avg_item_level(GearDict:CurrentGearSetDict),
+                            BisAverageItemLevel=player.get_avg_item_level(GearDict:BisGearSetDict),
+                            Cost=Cost
+                        });
+                    }
+                }
+            }
+
+            return Ok(rList);
             }
         }
 

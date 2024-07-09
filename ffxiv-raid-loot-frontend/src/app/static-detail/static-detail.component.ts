@@ -100,14 +100,6 @@ export class StaticDetailComponent implements OnInit {
       DefaultLoggedIn = false;
     }
     if (!DefaultLoggedIn && !DiscordLoggedIn){
-      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-        duration: 3500,
-        data: {
-          message: "Login to claim the player",
-          subMessage: " ",
-          color : "yellow"
-        }
-      });
       return false;
     }
     
@@ -205,14 +197,6 @@ export class StaticDetailComponent implements OnInit {
       DefaultLoggedIn = false;
     }
     if (!DefaultLoggedIn && !DiscordLoggedIn){
-      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-        duration: 3500,
-        data: {
-          message: "Login to claim the player",
-          subMessage: " ",
-          color : "yellow"
-        }
-      });
       return new Promise<boolean>(resolve => resolve(false));
     }
     
@@ -266,6 +250,12 @@ export class StaticDetailComponent implements OnInit {
           this.CheckClaimPlayer(player.id).then((result: boolean) => {
             this.staticDetail.userOwn[player.id] = result;
         });;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const pId = urlParams.get('pId');
+        if (pId) {
+            this.SelectedPlayer = parseInt(pId);
         }
 
 

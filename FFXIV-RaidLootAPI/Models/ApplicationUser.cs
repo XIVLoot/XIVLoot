@@ -22,5 +22,9 @@ namespace FFXIV_RaidLootAPI.Models
             uuidList.Remove(playerId);
             user_claimed_playerId = String.Join(";", uuidList);
         }
+
+        public List<string> getAllClaimedPlayerId(){
+            return user_claimed_playerId.Split(";").ToList();
+        }
     }
 }

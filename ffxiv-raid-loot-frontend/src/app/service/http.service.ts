@@ -74,9 +74,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       "id": playerId,
       "newName": NewName
     }
-    return this.http.put(url, body).pipe(
-      catchError(error => throwError(() => new Error('Failed to change player name: ' + error.message)))
-    );
+    return this.http.put(url, body, {withCredentials:true});
   }
 
   changePlayerJob(playerId : number, NewJob : number) : Observable<any>{
@@ -91,9 +89,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       "newJob": NewJob,
       "newLock": true
     }
-    return this.http.put(url, body).pipe(
-      catchError(error => throwError(() => new Error('Failed to change player job: ' + error.message)))
-    );
+    return this.http.put(url, body, {withCredentials:true})
   }
   ChangeStaticName(uuid : string, newName : string) : Observable<any>{
     const url = `${this.api}Static`; // Adjust the endpoint as necessary
@@ -118,17 +114,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       "newJob": 0,
       "newLock": true
     }
-    return this.http.put(url, body).pipe(
-      map(response => 
-        response as any),
-        catchError(error => throwError(() => new Error('Failed to change player etro: ' + error.message)))
-    );
+    return this.http.put(url, body, {withCredentials:true});
   }
 
   resetPlayerJobDependantValues(playerId : number) : Observable<any>{
     const url = `${this.api}Player/ResetJobDependantValues/${playerId}`; // Adjust the endpoint as necessary
 
-    return this.http.get(url).pipe(
+    return this.http.get(url, {withCredentials:true}).pipe(
       catchError(error => throwError(() => new Error('Failed to reset player job dependant values: ' + error.message)))
     );
   }
@@ -241,7 +233,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
 
   RemoveLock(playerId : number, turn : number){
     const url = `${this.api}Player/RemovePlayerLock/${turn}`;
-    return this.http.put(url, {"id" : playerId}).pipe(
+    return this.http.put(url, {"id" : playerId}, {withCredentials:true}).pipe(
       catchError(error => throwError(() => new Error('Failed to remove lock: ' + error.message)))
     );
   }
@@ -453,6 +445,20 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     var url = `${this.api}User/IsPlayerClaimedByUserDefault/${playerId}`;
     return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
       return throwError(() => new Error('Failed to check claim user : ' + error.message));
+    }));
+  }
+
+  GetAllClaimedPlayerDiscord(discord_id : string){
+    var url = `${this.api}User/GetAllClaimedPlayerDiscord/${discord_id}`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get all claimed player : ' + error.message));
+    }));
+  }
+
+  GetAllClaimedPlayerDefault(){
+    var url = `${this.api}User/GetAllClaimedPlayerDefault`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get all claimed player : ' + error.message));
     }));
   }
   

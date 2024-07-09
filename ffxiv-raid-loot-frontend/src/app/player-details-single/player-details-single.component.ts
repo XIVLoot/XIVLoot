@@ -19,6 +19,8 @@ export class PlayerDetailsSingleComponent {
 
   public GetGroupColorNoAlpha : string;
 
+  public oldJob : string = "";
+
   public etroToolTip = etroToolTip;
   public pgsOnPlayerToolTip = pgsOnPlayerToolTip;
   public lockOnPlayerToolTip = lockOnPlayerToolTip;
@@ -31,6 +33,18 @@ export class PlayerDetailsSingleComponent {
 
   ngOnInit(){
     this.player.GetGroupColorNoAlpha();
+    this.oldJob = this.player.job;
+  }
+
+  unauthorized(){
+    this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 3500,
+      data: {
+        message: "You have not claimed this player. Only its owner can modify it.",
+        subMessage: "The changes will be reverted",
+        color : "red"
+      }
+    });
   }
 
   async onChangeGear(GearType : string, bis : boolean, event: Event){
@@ -319,14 +333,7 @@ export class PlayerDetailsSingleComponent {
 
       await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock).pipe(catchError((error, s) => {
         console.log(error);
-        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-          duration: 3500,
-          data: {
-            message: "You have not claimed this player. Only its owner can modify it.",
-            subMessage: "The changes will be reverted",
-            color : "red"
-          }
-        });
+        this.unauthorized();
         // Reverting change
         selectElement.value = oldGear.gearName;
         switch(GearType){
@@ -565,21 +572,33 @@ export class PlayerDetailsSingleComponent {
   onChangeName(event : Event){
     const selectElement = event.target as HTMLSelectElement;
     const value = selectElement.value;
-    this.http.changePlayerName(this.player.id, value).subscribe((data) => {
+    this.http.changePlayerName(this.player.id, value).pipe(catchError(error => {
+      selectElement.value = this.player.name;
+      this.unauthorized();
+      return throwError(() => new Error('Failed to change player name: ' + error.message))
+    }))
+    .subscribe((data) => {
       this.player.name = value;
     });
   }
   onChangeJob(event : Event){
     const selectElement = event.target as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex+1;
-    this.http.changePlayerJob(this.player.id, selectedIndex).subscribe((data) => {
+    this.http.changePlayerJob(this.player.id, selectedIndex).pipe(catchError(error => {
+      this.player.job = this.oldJob;
+      this.unauthorized();
+      return throwError(() => new Error('Failed to change player job: ' + error.message))
+    }))
+    .subscribe((data) => {
+      // Reset Job dependant values for the player.
+      this.oldJob = this.player.job;
+      this.http.resetPlayerJobDependantValues(this.player.id).subscribe((data) => {
+        console.log(data);
+        this.RegetPlayerInfo();
+    });
     });
 
-    // Reset Job dependant values for the player.
-    this.http.resetPlayerJobDependantValues(this.player.id).subscribe((data) => {
-      console.log(data);
-      this.RegetPlayerInfo();
-    });
+
 
   }
 
@@ -607,6 +626,7 @@ export class PlayerDetailsSingleComponent {
       newPlayer.staticRef = this.player.staticRef;
       newPlayer.staticId = this.player.staticId;
       var index = this.player.staticRef.players.findIndex(player => player.id == this.player.id);
+      this.player.job = newPlayer.job;
       this.player.staticRef.players[index] = newPlayer;
       this.player.GetGroupColorNoAlpha();
       this.RecomputePGSWholeStatic();
@@ -646,7 +666,11 @@ export class PlayerDetailsSingleComponent {
       console.log("after closed")
       console.log(result)
       if (result === "Yes"){
-        this.http.RemoveLock(this.player.id, turn).subscribe((data) => {
+        this.http.RemoveLock(this.player.id, turn).pipe(catchError(error => {
+          this.unauthorized();
+          return throwError(() => new Error('Failed to remove lock : ' + error.message))
+        }))
+        .subscribe((data) => {
           console.log(data);
           this.RegetPlayerInfoSoft();
         });
@@ -688,7 +712,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
-import { catchError, of } from 'rxjs';
+import { catchError, of, throwError } from 'rxjs';
 import { StaticEventsService } from '../service/static-events.service';
 import { etroToolTip, gearSelectionToolTip, lockOnPlayerToolTip, pgsOnPlayerToolTip } from '../tooltip';
 
@@ -709,19 +733,34 @@ export class EtroDialog {
   return this.sanitizer.bypassSecurityTrustResourceUrl(unsafeUrl);
   }
 
+  unauthorized(){
+    this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 3500,
+      data: {
+        message: "You have not claimed this player. Only its owner can modify it.",
+        subMessage: "The changes will be reverted",
+        color : "red"
+      }
+    });
+  }
+
   ImportEtro(playerId : number, newEtro : string){
     this.isLoading = true;
     this.http.changePlayerEtro(playerId, newEtro).pipe(
       catchError(err => {
-        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-          duration: 8000,
-          data: {
-            message: "Error while trying to import from etro.",
-            subMessage: "(Make sure the UUID is correct)",
-            color : "red"
-          }
-        });
-        return of(null); // Handle the error locally and return a null observable
+        if (err.status === 401) {
+          this.unauthorized();
+        } else{
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 8000,
+            data: {
+              message: "Error while trying to import from etro.",
+              subMessage: "(Make sure the UUID is correct)",
+              color : "red"
+            }
+          });
+        }
+        return throwError(() => new Error('Failed to import etro : ' + err.message))
       })
     ).subscribe((data) => {
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {

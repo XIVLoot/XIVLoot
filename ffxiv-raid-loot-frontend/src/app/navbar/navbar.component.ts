@@ -74,10 +74,9 @@ export class NavbarComponent {
     }
 
 
-    if (this.containsUUID(window.location.href)){
-      
+    if (this.containsUUID(window.location.href.split('?')[0])){
       this.hasStatic = true;
-      this.curUUID = window.location.href.split(environment.site_url)[1];
+      this.curUUID = window.location.href.split(environment.site_url)[1].split('?')[0];
       console.log("Has static : " + this.curUUID)
       this.http.getStaticName(this.curUUID).subscribe(res => this.staticName = "Edit : " + res);
     }
