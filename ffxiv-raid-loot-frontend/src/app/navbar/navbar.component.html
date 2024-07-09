@@ -32,6 +32,9 @@
       <a mat-list-item routerLink="/about" class="active rounded-button">
         About
       </a>
+      <a  *ngIf="hasStatic" mat-list-item routerLink="/{{curUUID}}" class="active rounded-button">
+        {{staticName}}
+      </a>
 
 
       <ng-container *ngIf="isLoggedIn">

@@ -32,3 +32,6 @@ export const lockOnPlayerToolTip = `This section shows all fights the player is 
 export const gearSelectionToolTip = `This section allows you to see and edit your current and best in slot gear set. The section is seperated in two parts : one for gear piece (aka left side) and one for accessories (aka right side).
                                      In both those sections, the left column represents your current gearset while the right column represents the best in slot gearset of the player.`;
                                     
+export const claimPlayerToolTip = `Claim this player to be the sole user with the ability to modify it. You will also be able to see all your claimed players on the homescreen. You must be logged in to claim a player.`;
+export const unclaimPlayerToolTip = `Unclaiming this player will let anyone else modify it. You will loose the ability to see the player on the homescreen.`;
+export const alreadyClaimedToolTip = `Someone else has already claimed the player. You therefore cannot modify it. If you think this is an error please reach out.`;

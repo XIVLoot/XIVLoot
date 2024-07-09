@@ -216,7 +216,6 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
 
         [HttpPut("AddStaticToUserSaved/{static_uuid}")]
-        [Authorize]
         public async Task<IActionResult> AddStaticToUserSaved(string static_uuid)
         {
             using (var context = _context.CreateDbContext())
@@ -237,6 +236,131 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
 
             user.user_saved_static += static_uuid + ";";
+            await context.SaveChangesAsync();
+            return Ok();
+            }
+        }
+
+        [HttpGet("IsPlayerClaimedByUserDiscord/{discord_id}/{playerId}")]
+        public async Task<IActionResult> IsPlayerClaimedByUserDiscord(string discord_id, string playerId){
+            using (var context = _context.CreateDbContext())
+            {
+                Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discord_id);
+                if (user is null)
+                    return NotFound();
+                
+                return Ok(user.UserClaimedPlayer(playerId));
+            }
+        }
+
+        [HttpGet("IsPlayerClaimedByUserDefault/{playerId}")]
+        public async Task<IActionResult> IsPlayerClaimedByUserDefault(string playerId){
+            using (var context = _context.CreateDbContext())
+            {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = userIdClaim?.Value;
+
+            ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+                return NotFound("User not found");
+                
+                return Ok(user.UserClaimedPlayer(playerId));
+            }
+        }
+
+        [HttpPut("ClaimPlayerDefault/{playerId}")]
+        public async Task<IActionResult> ClaimPlayerDefault(int playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = userIdClaim?.Value;
+
+            ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+                return NotFound("User not found");
+            //Console.WriteLine("CLAIMING DEFAULT FOUND USER: ");
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+            if (player is null || player.IsClaimed)
+                return NotFound("");
+
+            //Console.WriteLine("CLAIMING DEFAULT FOUND PLAYER: ");
+
+            player.IsClaimed = true;
+            user.user_claimed_playerId += playerId.ToString()+";";
+            Console.WriteLine("ADDED :" + user.user_claimed_playerId);
+            await context.SaveChangesAsync();
+            return Ok();
+            }
+        }
+
+        [HttpPut("UnclaimPlayerDefault/{playerId}")]
+        public async Task<IActionResult> UnclaimPlayerDefault(int playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+            var userId = userIdClaim?.Value;
+
+            ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user is null)
+                return NotFound("User not found");
+            //Console.WriteLine("CLAIMING DEFAULT FOUND USER: ");
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+            if (player is null)
+                return NotFound("Player not found.");
+
+            //Console.WriteLine("CLAIMING DEFAULT FOUND PLAYER: ");
+
+            player.IsClaimed = false;
+            user.removePlayerClaim(playerId.ToString());
+            await context.SaveChangesAsync();
+            return Ok();
+            }
+        }
+
+        [HttpPut("ClaimPlayerDiscord/{discordId}/{playerId}")]
+        public async Task<IActionResult> ClaimPlayerDiscord(string discordId,int playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+
+            Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+            if (user is null)
+                return NotFound("");
+
+
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+            if (player is null || player.IsClaimed)
+                return NotFound("");
+            player.IsClaimed = true;
+            user.user_claimed_playerId += playerId.ToString()+";";
+            Console.WriteLine(user.user_claimed_playerId);
+            await context.SaveChangesAsync();
+            return Ok();
+            }
+        }
+
+        [HttpPut("UnclaimPlayerDiscord/{discordId}/{playerId}")]
+        public async Task<IActionResult> UnclaimPlayerDiscord(string discordId,int playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+
+            Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+            if (user is null)
+                return NotFound("");
+
+
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
+            if (player is null)
+                return NotFound("");
+
+            player.IsClaimed = false;
+            user.removePlayerClaim(playerId.ToString());
             await context.SaveChangesAsync();
             return Ok();
             }

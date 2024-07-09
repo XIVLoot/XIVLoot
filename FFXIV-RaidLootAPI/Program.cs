@@ -89,7 +89,8 @@ using (var scope = app.Services.CreateScope())
     dataContext.Database.Migrate();
 }
 app.Use(async (context, next) =>
-{
+{   
+    Console.WriteLine($"Request URL: {context.Request.Path}");
     context.Response.OnStarting(() =>
     {
         var headers = context.Response.Headers;

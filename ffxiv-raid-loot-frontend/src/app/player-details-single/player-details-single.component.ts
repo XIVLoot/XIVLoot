@@ -25,7 +25,8 @@ export class PlayerDetailsSingleComponent {
   public gearSelectionToolTip = gearSelectionToolTip;
 
   constructor(public http: HttpService, private route: ActivatedRoute, public dialog: MatDialog,
-              private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService
+              private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService,
+              private _snackBar: MatSnackBar
   ) { } // Constructor with dependency injection
 
   ngOnInit(){
@@ -35,6 +36,7 @@ export class PlayerDetailsSingleComponent {
   async onChangeGear(GearType : string, bis : boolean, event: Event){
     const selectElement = event.target as HTMLSelectElement;
     const selectedIndex = selectElement.selectedIndex;
+    var oldGear;
     if (selectedIndex == 0){
       // Reverting change
       switch (GearType){
@@ -231,80 +233,174 @@ export class PlayerDetailsSingleComponent {
     });
 
     if (check){
-      switch (GearType){
+      switch (GearType) {
         case "Weapon":
-          if(bis)
+          oldGear = (bis ? this.player.bisWeaponGear : this.player.curWeaponGear);
+          if (bis)
             this.player.bisWeaponGear = NewGear;
           else
             this.player.curWeaponGear = NewGear;
           break;
         case "Head":
-          if(bis)
+          oldGear = (bis ? this.player.bisHeadGear : this.player.curHeadGear);
+          if (bis)
             this.player.bisHeadGear = NewGear;
           else
             this.player.curHeadGear = NewGear;
           break;
         case "Hands":
-          if(bis)
+          oldGear = (bis ? this.player.bisHandsGear : this.player.curHandsGear);
+          if (bis)
             this.player.bisHandsGear = NewGear;
           else
             this.player.curHandsGear = NewGear;
           break;
         case "Body":
-          if(bis)
+          oldGear = (bis ? this.player.bisBodyGear : this.player.curBodyGear);
+          if (bis)
             this.player.bisBodyGear = NewGear;
           else
             this.player.curBodyGear = NewGear;
           break;
         case "Legs":
-          if(bis)
+          oldGear = (bis ? this.player.bisLegsGear : this.player.curLegsGear);
+          if (bis)
             this.player.bisLegsGear = NewGear;
           else
             this.player.curLegsGear = NewGear;
           break;
         case "Feet":
-          if(bis)
+          oldGear = (bis ? this.player.bisFeetGear : this.player.curFeetGear);
+          if (bis)
             this.player.bisFeetGear = NewGear;
           else
             this.player.curFeetGear = NewGear;
           break;
         case "Necklace":
-          if(bis)
+          oldGear = (bis ? this.player.bisNecklaceGear : this.player.curNecklaceGear);
+          if (bis)
             this.player.bisNecklaceGear = NewGear;
           else
             this.player.curNecklaceGear = NewGear;
           break;
         case "Earrings":
-          if(bis)
+          oldGear = (bis ? this.player.bisEarringsGear : this.player.curEarringsGear);
+          if (bis)
             this.player.bisEarringsGear = NewGear;
           else
             this.player.curEarringsGear = NewGear;
           break;
         case "Bracelets":
-          if(bis)
+          oldGear = (bis ? this.player.bisBraceletsGear : this.player.curBraceletsGear);
+          if (bis)
             this.player.bisBraceletsGear = NewGear;
           else
             this.player.curBraceletsGear = NewGear;
           break;
         case "RightRing":
-          if(bis)
+          oldGear = (bis ? this.player.bisRightRingGear : this.player.curRightRingGear);
+          if (bis)
             this.player.bisRightRingGear = NewGear;
           else
             this.player.curRightRingGear = NewGear;
           break;
         case "LeftRing":
-          if(bis)
+          oldGear = (bis ? this.player.bisLeftRingGear : this.player.curLeftRingGear);
+          if (bis)
             this.player.bisLeftRingGear = NewGear;
           else
             this.player.curLeftRingGear = NewGear;
           break;
       }
-
       var CheckPlayerLock = this.player.staticRef.LockParam["BOOL_LOCK_PLAYERS"];
       if (CheckPlayerLock && !this.player.staticRef.LockParam["LOCK_IF_TOME_AUGMENT"] && NewGear.gearStage === "Upgraded_Tomes")
         CheckPlayerLock=false;
 
-      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock).subscribe((data) => {
+
+      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock).pipe(catchError((error, s) => {
+        console.log(error);
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "You have not claimed this player. Only its owner can modify it.",
+            subMessage: "The changes will be reverted",
+            color : "red"
+          }
+        });
+        // Reverting change
+        selectElement.value = oldGear.gearName;
+        switch(GearType){
+          case "Weapon":
+          if (bis)
+            this.player.bisWeaponGear = oldGear;
+          else
+            this.player.curWeaponGear = oldGear;
+          break;
+        case "Head":
+          if (bis)
+            this.player.bisHeadGear = oldGear;
+          else
+            this.player.curHeadGear = oldGear;
+          break;
+        case "Hands":
+          if (bis)
+            this.player.bisHandsGear = oldGear;
+          else
+            this.player.curHandsGear = oldGear;
+          break;
+        case "Body":
+          if (bis)
+            this.player.bisBodyGear = oldGear;
+          else
+            this.player.curBodyGear = oldGear;
+          break;
+        case "Legs":
+          if (bis)
+            this.player.bisLegsGear = oldGear;
+          else
+            this.player.curLegsGear = oldGear;
+          break;
+        case "Feet":
+          if (bis)
+            this.player.bisFeetGear = oldGear;
+          else
+            this.player.curFeetGear = oldGear;
+          break;
+        case "Necklace":
+          if (bis)
+            this.player.bisNecklaceGear = oldGear;
+          else
+            this.player.curNecklaceGear = oldGear;
+          break;
+        case "Earrings":
+          if (bis)
+            this.player.bisEarringsGear = oldGear;
+          else
+            this.player.curEarringsGear = oldGear;
+          break;
+        case "Bracelets":
+          if (bis)
+            this.player.bisBraceletsGear = oldGear;
+          else
+            this.player.curBraceletsGear = oldGear;
+          break;
+        case "RightRing":
+          if (bis)
+            this.player.bisRightRingGear = oldGear;
+          else
+            this.player.curRightRingGear = oldGear;
+          break;
+        case "LeftRing":
+          if (bis)
+            this.player.bisLeftRingGear = oldGear;
+          else
+            this.player.curLeftRingGear = oldGear;
+          break;
+        }
+        this.cdr.detectChanges();
+        return of(null);
+      }))
+      .subscribe((data) => {
         console.log(data);
         this.RegetPlayerInfoSoft();
       });
@@ -312,74 +408,76 @@ export class PlayerDetailsSingleComponent {
     }
     else{
       // Reverting change
-      switch (GearType){
+      selectElement.value = oldGear.gearName;
+      switch(GearType){
         case "Weapon":
-          if(bis)
-            selectElement.value = this.player.bisWeaponGear.gearName;
-          else
-            selectElement.value = this.player.curWeaponGear.gearName;
-          break;
-        case "Head":
-          if(bis)
-            selectElement.value = this.player.bisHeadGear.gearName;
-          else
-            selectElement.value = this.player.curHeadGear.gearName;
-          break;
-        case "Hands":
-          if(bis)
-            selectElement.value = this.player.bisHandsGear.gearName;
-          else
-            selectElement.value = this.player.curHandsGear.gearName;
-          break;
-        case "Body":
-          if(bis)
-            selectElement.value = this.player.bisBodyGear.gearName;
-          else
-            selectElement.value = this.player.curBodyGear.gearName;
-          break;
-        case "Legs":
-          if(bis)
-            selectElement.value = this.player.bisLegsGear.gearName;
-          else
-            selectElement.value = this.player.curLegsGear.gearName;
-          break;
-        case "Feet":
-          if(bis)
-            selectElement.value = this.player.bisFeetGear.gearName;
-          else
-            selectElement.value = this.player.curFeetGear.gearName;
-          break;
-        case "Necklace":
-          if(bis)
-            selectElement.value = this.player.bisNecklaceGear.gearName;
-          else
-            selectElement.value = this.player.curNecklaceGear.gearName;
-          break;
-        case "Earrings":
-          if(bis)
-            selectElement.value = this.player.bisEarringsGear.gearName;
-          else
-            selectElement.value = this.player.curEarringsGear.gearName;
-          break;
-        case "Bracelets":
-          if(bis)
-            selectElement.value = this.player.bisBraceletsGear.gearName;
-          else
-            selectElement.value = this.player.curBraceletsGear.gearName;
-          break;
-        case "RightRing":
-          if(bis)
-            selectElement.value = this.player.bisRightRingGear.gearName;
-          else
-            selectElement.value = this.player.curRightRingGear.gearName;
-          break;
-        case "LeftRing":
-          if(bis)
-            selectElement.value = this.player.bisLeftRingGear.gearName;
-          else
-            selectElement.value = this.player.curLeftRingGear.gearName;
-          break;
+        if (bis)
+          this.player.bisWeaponGear = oldGear;
+        else
+          this.player.curWeaponGear = oldGear;
+        break;
+      case "Head":
+        if (bis)
+          this.player.bisHeadGear = oldGear;
+        else
+          this.player.curHeadGear = oldGear;
+        break;
+      case "Hands":
+        if (bis)
+          this.player.bisHandsGear = oldGear;
+        else
+          this.player.curHandsGear = oldGear;
+        break;
+      case "Body":
+        if (bis)
+          this.player.bisBodyGear = oldGear;
+        else
+          this.player.curBodyGear = oldGear;
+        break;
+      case "Legs":
+        if (bis)
+          this.player.bisLegsGear = oldGear;
+        else
+          this.player.curLegsGear = oldGear;
+        break;
+      case "Feet":
+        if (bis)
+          this.player.bisFeetGear = oldGear;
+        else
+          this.player.curFeetGear = oldGear;
+        break;
+      case "Necklace":
+        if (bis)
+          this.player.bisNecklaceGear = oldGear;
+        else
+          this.player.curNecklaceGear = oldGear;
+        break;
+      case "Earrings":
+        if (bis)
+          this.player.bisEarringsGear = oldGear;
+        else
+          this.player.curEarringsGear = oldGear;
+        break;
+      case "Bracelets":
+        if (bis)
+          this.player.bisBraceletsGear = oldGear;
+        else
+          this.player.curBraceletsGear = oldGear;
+        break;
+      case "RightRing":
+        if (bis)
+          this.player.bisRightRingGear = oldGear;
+        else
+          this.player.curRightRingGear = oldGear;
+        break;
+      case "LeftRing":
+        if (bis)
+          this.player.bisLeftRingGear = oldGear;
+        else
+          this.player.curLeftRingGear = oldGear;
+        break;
       }
+      this.cdr.detectChanges();
       return false;
     }
   }
@@ -527,6 +625,7 @@ export class PlayerDetailsSingleComponent {
       this.player.ShineCost = data["cost"]["shineCost"];
       this.player.TwineCost = data["cost"]["twineCost"];
       this.player.TomestoneCost = data["cost"]["tomeCost"];
+      this.player.IsClaimed = data["isClaimed"];
       var index = this.player.staticRef.players.findIndex(player => player.id == this.player.id);
       this.player.staticRef.players[index] = this.player;
       this.RecomputePGSWholeStatic();
@@ -565,6 +664,13 @@ export class PlayerDetailsSingleComponent {
   }
   onMouseLeave(event: any) {
     event.target.style.filter = '';
+  }
+
+  onEtroBiSChange(){
+    // Check to only put uuid
+    if (this.player.etroBiS.includes("etro.gg/gearset/")) {
+      this.player.etroBiS = this.player.etroBiS.split("etro.gg/gearset/")[1];
+  }
   }
 
 }

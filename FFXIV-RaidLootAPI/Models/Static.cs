@@ -16,12 +16,12 @@ namespace FFXIV_RaidLootAPI.Models
         public decimal GearScoreB {get;set;} = 0.0m;
         public decimal GearScoreC {get;set;} = 0.0m;
 
-        public string LOCK_PARAM {get;set;} = "FALSE;TRUE;1;FALSE;1;FALSE;FALSE;1;1;1"; // Default values.
+        public string LOCK_PARAM {get;set;} = "FALSE;FALSE;1;TRUE;1;FALSE;FALSE;1;1;1"; // Default values.
         /*
         - BOOL_LOCK_PLAYERS; (FALSE)
         - BOOL_LOCK_IF_NOT_CONTESTED; (TRUE)
         - RESET_TIME_IN_WEEK; (1)
-        - BOOL_FOR_1_FIGHT; (FALSE)
+        - BOOL_FOR_1_FIGHT; (TRUE)
         - INT_NUMBER_OF_PIECES_UNTIL_LOCK; (1)
         - LOCK_IF_TOME_AUGMENT; (FALSE)
         - BOOL_IF_ROLE_CHANGES_NUMBER_PIECES; (FALSE)

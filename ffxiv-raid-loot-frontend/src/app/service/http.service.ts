@@ -63,7 +63,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       "turn": Turn,
       "CheckLockPlayer": CheckLockPlayer
     }
-    return this.http.put(url, body).pipe(
+    return this.http.put(url, body, {withCredentials:true}).pipe(
       catchError(error => throwError(() => new Error('Failed to change player gear: ' + error.message)))
     );
   }
@@ -366,7 +366,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
 
   SetUsername(username : string){
     var url = `${this.api}User/SetUsername/${username}`;
-    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+    return this.http.get(url, {withCredentials: true}).pipe(catchError(error => {
       return throwError(() => new Error('Failed to set username: ' + error.message));
     }));
   }
@@ -415,6 +415,44 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     var url = `${this.api}Auth/GetDiscordUserInfo`;
     return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
       return throwError(() => new Error('Failed to get discord user info: ' + error.message));
+    }));
+  }
+
+  ClaimPlayerDiscord(discordId : string, playerId : number){
+    var url = `${this.api}User/ClaimPlayerDiscord/${discordId}/${playerId}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe();
+  }
+
+  UnclaimPlayerDiscord(discordId : string, playerId : number){
+    var url = `${this.api}User/UnclaimPlayerDiscord/${discordId}/${playerId}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe();
+  }
+
+  ClaimPlayerDefault(playerId : number){
+    var url = `${this.api}User/ClaimPlayerDefault/${playerId}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to unclaim user : ' + error.message));
+    }));
+  }
+
+  UnclaimPlayerDefault(playerId : number){
+    var url = `${this.api}User/UnclaimPlayerDefault/${playerId}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to unclaim user : ' + error.message));
+    }));
+  }
+  
+  IsPlayerClaimedByUserDiscord(discord_id : string, playerId : string){
+    var url = `${this.api}User/IsPlayerClaimedByUserDiscord/${discord_id}/${playerId}`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to check claim user : ' + error.message));
+    }));
+  }
+
+  IsPlayerClaimedByUserDefault(playerId : string){
+    var url = `${this.api}User/IsPlayerClaimedByUserDefault/${playerId}`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to check claim user : ' + error.message));
     }));
   }
   

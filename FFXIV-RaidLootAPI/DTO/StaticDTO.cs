@@ -9,6 +9,7 @@ public class StaticDTO
     public class PlayerInfoDTO
     {
         public int Id { get; set; }
+        public bool IsClaimed {get;set;}
         public string Name { get; set; } = "No name";
         public string Job {get; set; } = string.Empty;
         public string EtroBiS {get;set;} = string.Empty;
@@ -29,6 +30,7 @@ public class StaticDTO
         public int AverageItemLevelCurrent {get;set;}
         public int AverageItemLevelBis {get;set;}
         public CostDTO Cost {get;set;} = new CostDTO();
+        public bool IsClaimed {get;set;}
     }
 
     public int Id { get; set; }

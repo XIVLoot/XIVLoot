@@ -18,6 +18,11 @@ import { catchError, throwError } from 'rxjs';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+
+  public hasStatic : boolean = false;
+  public curUUID : string = "";
+  public staticName : string = "";
+
   public title = 'Loot Management';
   public isLoggedIn = false;
   public isLoggedInDiscord = false;
@@ -69,7 +74,21 @@ export class NavbarComponent {
     }
 
 
+    if (this.containsUUID(window.location.href)){
+      
+      this.hasStatic = true;
+      this.curUUID = window.location.href.split(environment.site_url)[1];
+      console.log("Has static : " + this.curUUID)
+      this.http.getStaticName(this.curUUID).subscribe(res => this.staticName = "Edit : " + res);
+    }
 
+
+  }
+
+  // Method to check if URL contains a UUID
+  containsUUID(url: string): boolean {
+    const uuidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
+    return uuidRegex.test(url);
   }
 
   logout(){

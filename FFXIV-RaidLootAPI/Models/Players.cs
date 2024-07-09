@@ -42,6 +42,7 @@ namespace FFXIV_RaidLootAPI.Models
         */
 
         public string Name { get; set; } = "Enter the name here";
+        public bool IsClaimed {get;set;} = false;
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
@@ -590,7 +591,8 @@ namespace FFXIV_RaidLootAPI.Models
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
                 PlayerGearScore=PlayerGearScore,
                 Cost=Cost,
-                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
+                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate},
+                IsClaimed=IsClaimed
             };
         }
 
@@ -615,7 +617,8 @@ namespace FFXIV_RaidLootAPI.Models
                 AverageItemLevelBis=AverageItemLevelBis,
                 AverageItemLevelCurrent=AverageItemLevelCurrent,
                 Cost=Cost,
-                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate}
+                LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate},
+                IsClaimed=IsClaimed
             };
         }   
         public void remove_lock(Turn turn){

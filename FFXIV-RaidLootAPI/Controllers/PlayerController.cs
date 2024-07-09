@@ -1,13 +1,19 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using Azure.Identity;
 using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
+using FFXIV_RaidLootAPI.User;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 
 
 namespace FFXIV_RaidLootAPI.Controllers
@@ -18,6 +24,8 @@ namespace FFXIV_RaidLootAPI.Controllers
     public class PlayerController : ControllerBase
     {
         private readonly IDbContextFactory<DataContext> _context;
+        private readonly IConfiguration _configuration;
+        private readonly string _jwtKey;
         private static readonly List<string> ETRO_GEAR_NAME = new List<string> 
         {           
             "weapon",
@@ -34,9 +42,80 @@ namespace FFXIV_RaidLootAPI.Controllers
             "fingerR"
                     };
 
-        public PlayerController(IDbContextFactory<DataContext> context)
+        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
+            Console.WriteLine("Checking authorization");
+            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
+                Console.WriteLine("Discord : " + jwt.ToString());
+                // Logged in discord
+                // Decode the JWT to get the access_token
+                var handler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_jwtKey);
+
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                SecurityToken validatedToken;
+                var principal = handler.ValidateToken(jwt, tokenValidationParameters, out validatedToken);
+
+                var accessToken = principal.Claims.FirstOrDefault(c => c.Type == "access_token")?.Value;
+
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    return false;
+                }
+
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    var response = await client.GetAsync("https://discord.com/api/users/@me");
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error fetching user info: " + errorContent);
+                        throw new HttpRequestException($"Error fetching user info: {response.StatusCode}, Content: {errorContent}");
+                    }
+
+                        // Deserialize the response content into a dictionary
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        Dictionary<string, object> responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseBody)!;
+
+                        // Access the 'id' value from the dictionary
+                        string discordId = responseData["id"].ToString()!;
+
+                        Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                        if (user is null)
+                            return false;
+                        return user.UserClaimedPlayer(playerId);
+                }
+            } 
+            else if (!(User is null)){
+                Console.WriteLine("DEFAUTL CONNECTED");
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = userIdClaim?.Value;
+
+                ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user is null)
+                    return false;
+
+                return user.UserClaimedPlayer(playerId);
+            }
+
+            return false;
+        }
+
+        public PlayerController(IDbContextFactory<DataContext> context,IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
+            _jwtKey = _configuration["JwtSettings:Key"];
         }
         // GET
 
@@ -47,6 +126,12 @@ namespace FFXIV_RaidLootAPI.Controllers
                 Players? player = await context.Players.FindAsync(Id);
                 if (player is null)
                     return NotFound("Player is not found.");
+                if (player.IsClaimed)
+                {   
+                    bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                    if(!isAuthorized)
+                        return Unauthorized("Not Authorized");
+                };
                 player.ResetJobDependantValues();
                 await context.SaveChangesAsync();
                 return Ok();
@@ -126,7 +211,14 @@ namespace FFXIV_RaidLootAPI.Controllers
             {
                 Players? player = await context.Players.FindAsync(dto.Id);
                 if (player is null)
-                    return NotFound("Player not found.");
+                    return NotFound();
+
+                if (player.IsClaimed)
+                {   
+                    bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                    if(!isAuthorized)
+                        return Unauthorized("Not Authorized");
+                };
                 player.ResetJobDependantValues();
                 await context.SaveChangesAsync();
                 return Ok();
@@ -138,9 +230,21 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
         using (var context = _context.CreateDbContext())
         {
+
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
+
+            Console.WriteLine("Playeris FOUND");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+             
+
             Console.WriteLine("Turn : " + dto.turn.ToString() + " CheckLock : " + dto.CheckLockPlayer.ToString());
             await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, dto.turn, dto.CheckLockPlayer, context);
 
@@ -148,6 +252,8 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok();
         }
         }
+
+
 
         [HttpPut("RemovePlayerLock/{turn}")]
         public async Task<ActionResult> RemovePlayerLock(PlayerDTO dto, Turn turn)
@@ -157,6 +263,14 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+
             player.remove_lock(turn);
 
             await context.SaveChangesAsync();
@@ -172,6 +286,14 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+
             if (dto.UseBis)
                 player.EtroBiS = dto.NewEtro;
 
@@ -307,6 +429,14 @@ namespace FFXIV_RaidLootAPI.Controllers
             Players? player = await context.Players.FindAsync(dto.Id);
             if (player is null)
                 return NotFound("Player not found");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+
             player.Name = dto.NewName;
             context.SaveChanges();
             return Ok();
@@ -321,6 +451,14 @@ namespace FFXIV_RaidLootAPI.Controllers
                 Players? player = await context.Players.FindAsync(dto.Id);
                 if (player is null)
                     return NotFound("Player not found");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+
                 player.Job = dto.NewJob;
                 context.SaveChanges();
                 return Ok();

@@ -34,7 +34,10 @@ import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
 import { Player } from '../models/player';
 import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSettingToolTipC, pgsToolTip, lockLogicToolTip, lockOutOfGearEvenIfNotContestedToolTip,
-  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip
+  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,
+  claimPlayerToolTip,
+  unclaimPlayerToolTip,
+  alreadyClaimedToolTip
 } from '../tooltip';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -59,7 +62,9 @@ export class StaticDetailComponent implements OnInit {
   public lockPlayerForAugmentToolTip = lockPlayerForAugmentToolTip;
   public pieceUntilLockToolTip = pieceUntilLockToolTip;
   public numberWeekResetToolTip = numberWeekResetToolTip;
-
+  public claimPlayerToolTip = claimPlayerToolTip;
+  public unclaimPlayerToolTip = unclaimPlayerToolTip;
+  public alreadyClaimedToolTip = alreadyClaimedToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
@@ -75,6 +80,7 @@ export class StaticDetailComponent implements OnInit {
   public GearAcqHistory : Object = {};
   public HistoryGear : any = [];
   public IsLoading : boolean = true;
+  public userOwns : any = {};
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog, private cdr: ChangeDetectorRef
@@ -84,7 +90,148 @@ export class StaticDetailComponent implements OnInit {
     });
    } // Constructor with dependency injection
 
-  ngOnInit(): void {
+   async UnclaimPlayer(player : Player){
+    var id = player.id;
+    var DiscordLoggedIn = await this.http.CheckAuthDiscord();
+    var DefaultLoggedIn;
+    try {
+      DefaultLoggedIn = await this.http.CheckAuthDefault();
+    } catch (error) {
+      DefaultLoggedIn = false;
+    }
+    if (!DefaultLoggedIn && !DiscordLoggedIn){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Login to claim the player",
+          subMessage: " ",
+          color : "yellow"
+        }
+      });
+      return false;
+    }
+    
+    if(DiscordLoggedIn){
+      this.http.GetDiscordUserInfo().subscribe(data => {
+        this.http.UnclaimPlayerDiscord(data["id"], id).subscribe(res => {
+          player.IsClaimed = false;
+          player.staticRef.userOwn[id] = false;
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 3500,
+            data : {
+              message : "Successfully unclaimed the player", 
+              subMessage : "",
+              color : "Green"
+            }
+          });
+        });
+      });
+    } else if (DefaultLoggedIn){
+      this.http.UnclaimPlayerDefault(id).subscribe(res => {
+        player.IsClaimed = false;
+        player.staticRef.userOwn[id] = false;
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data : {
+            message : "Successfully unclaimed the player", 
+            subMessage : "",
+            color : "Green"
+          }
+        });
+      });
+    }
+
+   }
+
+   async ClaimPlayer(player : Player){
+    var id = player.id;
+    var DiscordLoggedIn = await this.http.CheckAuthDiscord();
+    var DefaultLoggedIn;
+    try {
+      DefaultLoggedIn = await this.http.CheckAuthDefault();
+    } catch (error) {
+      DefaultLoggedIn = false;
+    }
+    if (!DefaultLoggedIn && !DiscordLoggedIn){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Login to claim the player",
+          subMessage: " ",
+          color : "yellow"
+        }
+      });
+      return false;
+    }
+    
+    if(DiscordLoggedIn){
+      this.http.GetDiscordUserInfo().subscribe(data => {
+        this.http.ClaimPlayerDiscord(data["id"], id).subscribe(res => {
+          player.IsClaimed = true;
+          player.staticRef.userOwn[id] = true;
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 3500,
+            data : {
+              message : "Successfully claimed the player", 
+              subMessage : "",
+              color : "Green"
+            }
+          });
+        });
+      });
+    } else if (DefaultLoggedIn){
+      this.http.ClaimPlayerDefault(id).subscribe(res => {
+        player.IsClaimed = true;
+        player.staticRef.userOwn[id] = true;
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data : {
+            message : "Successfully claimed the player", 
+            subMessage : "",
+            color : "Green"
+          }
+        });
+      });
+    }
+
+   }
+
+   async CheckClaimPlayer(id : number){
+    var DiscordLoggedIn = await this.http.CheckAuthDiscord();
+    var DefaultLoggedIn;
+    try {
+      DefaultLoggedIn = await this.http.CheckAuthDefault();
+    } catch (error) {
+      DefaultLoggedIn = false;
+    }
+    if (!DefaultLoggedIn && !DiscordLoggedIn){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "Login to claim the player",
+          subMessage: " ",
+          color : "yellow"
+        }
+      });
+      return new Promise<boolean>(resolve => resolve(false));
+    }
+    
+    if(DiscordLoggedIn){
+      return new Promise<boolean>(resolve => {
+        this.http.GetDiscordUserInfo().subscribe(data => {
+          this.http.IsPlayerClaimedByUserDiscord(data["id"], id.toString()).subscribe(res => resolve(!!res)) // Boolean casting??
+        });
+      });
+
+    } else if (DefaultLoggedIn){
+      return new Promise<boolean>(resolve => {
+        this.http.IsPlayerClaimedByUserDefault(id.toString()).subscribe(res => resolve(!!res));
+      });
+    }
+    return new Promise<boolean>(resolve => resolve(false));
+   }
+
+  async ngOnInit() {
     this.test = true;
     this.staticDetail = new Static(0, "", "", [], {});
 
@@ -102,18 +249,26 @@ export class StaticDetailComponent implements OnInit {
     console.log("Trying details");
     // Fetch static details from the server using the uuid
     this.http.getStatic(this.uuid).subscribe(details => {
-      console.log("Received details");
+      //console.log("Received details");
       this.staticDetail = details; // Assign the fetched details to staticDetail
       this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
-      console.log(this.staticDetail); // Log the static details to the console
+      //console.log(this.staticDetail); // Log the static details to the console
       this.groupList = this.ComputeNumberPGSGroup();
-      this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(data => {
+      this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
         this.GearAcqHistory = data["info"];
         const keys = Object.keys(this.GearAcqHistory);
 
         for (let x = keys.length-1;x>=0;x--){
           this.HistoryGear.push(keys[x]);
         }
+        this.staticDetail.userOwn = {};
+        for(let player of this.staticDetail.players){
+          this.CheckClaimPlayer(player.id).then((result: boolean) => {
+            this.staticDetail.userOwn[player.id] = result;
+        });;
+        }
+
+
         this.IsLoading = false;
         this.dialog.closeAll();
         this.cdr.detectChanges();

@@ -14,6 +14,7 @@ export class Static {
   "HEALER_NUMBER": 0};
 
   public test : boolean;
+  public userOwn : any = {};
   constructor(
     public id: number,
     public name: string,
@@ -25,6 +26,7 @@ export class Static {
     this.name = name;
     this.id = id;
     this.test = false;
+    this.userOwn = {};
     for (let key in lockParam){
       if (key.includes("BOOL") || key == "LOCK_IF_TOME_AUGMENT"){
         this.LockParam[key] = lockParam[key] == 0 ? false : true;

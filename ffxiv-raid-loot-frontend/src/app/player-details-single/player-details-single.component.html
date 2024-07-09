@@ -26,7 +26,7 @@
       <div style="display: flex; flex-direction: row; justify-content: space-between;margin-top: 1%;height:7ch;">
         <mat-form-field style="width:70%;height: 8ch;margin-top: 0px!important;">
             <mat-label>BiS Etro uuid : </mat-label>
-            <input matInput value="{{player.etroBiS}}"  id="etroField" #etroField [(ngModel)]="player.etroBiS">
+            <input matInput value="{{player.etroBiS}}"  id="etroField" #etroField [(ngModel)]="player.etroBiS" (ngModelChange)="onEtroBiSChange()">
         </mat-form-field>
         <div style="display: flex; flex-direction: column; align-items: center;width: 15%;">
           <div style="margin-top: 5%;">
