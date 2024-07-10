@@ -38,7 +38,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             Users? checkUser = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == user_discord_id);
 
             if (!(checkUser is null)){
-                Console.WriteLine("User already exists");
+                //Console.WriteLine("User already exists");
                 return Ok(new Users(){
                 user_discord_id=user_discord_id,
                 user_saved_static=checkUser.user_saved_static
@@ -163,7 +163,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
             var userId = userIdClaim?.Value;
 
-            Console.WriteLine("HEYYYYYYYY  : " + userId.ToString());
+            //Console.WriteLine("HEYYYYYYYY  : " + userId.ToString());
 
             ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
@@ -282,16 +282,16 @@ namespace FFXIV_RaidLootAPI.Controllers
             ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
                 return NotFound("User not found");
-            //Console.WriteLine("CLAIMING DEFAULT FOUND USER: ");
+            ////Console.WriteLine("CLAIMING DEFAULT FOUND USER: ");
             Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
             if (player is null || player.IsClaimed)
                 return NotFound("");
 
-            //Console.WriteLine("CLAIMING DEFAULT FOUND PLAYER: ");
+            ////Console.WriteLine("CLAIMING DEFAULT FOUND PLAYER: ");
 
             player.IsClaimed = true;
             user.user_claimed_playerId += playerId.ToString()+";";
-            Console.WriteLine("ADDED :" + user.user_claimed_playerId);
+            //Console.WriteLine("ADDED :" + user.user_claimed_playerId);
             await context.SaveChangesAsync();
             return Ok();
             }
@@ -309,12 +309,12 @@ namespace FFXIV_RaidLootAPI.Controllers
             ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user is null)
                 return NotFound("User not found");
-            //Console.WriteLine("CLAIMING DEFAULT FOUND USER: ");
+            ////Console.WriteLine("CLAIMING DEFAULT FOUND USER: ");
             Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == playerId);
             if (player is null)
                 return NotFound("Player not found.");
 
-            //Console.WriteLine("CLAIMING DEFAULT FOUND PLAYER: ");
+            ////Console.WriteLine("CLAIMING DEFAULT FOUND PLAYER: ");
 
             player.IsClaimed = false;
             user.removePlayerClaim(playerId.ToString());
@@ -394,7 +394,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 return NotFound("");
             player.IsClaimed = true;
             user.user_claimed_playerId += playerId.ToString()+";";
-            Console.WriteLine(user.user_claimed_playerId);
+            //Console.WriteLine(user.user_claimed_playerId);
             await context.SaveChangesAsync();
             return Ok();
             }

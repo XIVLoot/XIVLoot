@@ -12,6 +12,7 @@ namespace FFXIV_RaidLootAPI.Models
         public int GearId {get;set;}
         public int PlayerId {get;set;}
         public Turn turn {get;set;}
+        public bool isAcquiredFromBook {get;set;}
 
         public static Dictionary<GearType, Gear?> ComputeGearAtTimestamp(int PlayerId, DateOnly Timestamp, DataContext context){
             List<GearAcquisitionTimestamp> listValid = context.GearAcquisitionTimestamps.Where(p => p.PlayerId == PlayerId && p.Timestamp <= Timestamp).
@@ -65,7 +66,8 @@ namespace FFXIV_RaidLootAPI.Models
                             PlayerId = p.PlayerId,
                             IsAugment = gear.GearStage == GearStage.Upgraded_Tomes,
                             turn = p.turn,
-                            Id=p.Id
+                            Id=p.Id,
+                            isAcquiredFromBook=p.isAcquiredFromBook
                         });
                     }
                     else{

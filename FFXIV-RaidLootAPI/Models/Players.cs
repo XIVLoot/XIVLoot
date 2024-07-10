@@ -168,7 +168,7 @@ namespace FFXIV_RaidLootAPI.Models
 
             decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
                             c * NRaidBuff * JobGroupMultiplier[Job];
-            Console.WriteLine($"PlayerILevel: {PlayerILevel} PlayerId : {Id}");
+            //Console.WriteLine($"PlayerILevel: {PlayerILevel} PlayerId : {Id}");
             return score;
         }
 
@@ -241,17 +241,19 @@ namespace FFXIV_RaidLootAPI.Models
         }
 
         public void set_lock_player(Dictionary<string, int> param, Turn turn){
-            Console.WriteLine("Setting : " + turn.ToString());
+            //Console.WriteLine("Setting : " + turn.ToString());
             int RESET_TIME_IN_WEEK = param["RESET_TIME_IN_WEEK"];
             if (param["BOOL_FOR_1_FIGHT"] == 0)
             {
                 turn = Turn.turn_5; // Lock out of all if so.
-                Console.WriteLine("Setting to turn_5");
+                //Console.WriteLine("Setting to turn_5");
             }
-            Console.WriteLine("Passed changing");
+            //Console.WriteLine("Passed changing");
             DateTime now = DateTime.Now;
             int daysUntilNextTuesday = ((int)DayOfWeek.Tuesday - (int)now.DayOfWeek + 7) % 7;
-            Console.WriteLine("Days until next tuesday : " + daysUntilNextTuesday.ToString());
+            if (daysUntilNextTuesday == 0)
+                daysUntilNextTuesday = 7; // On a tuesday we want to lock for the next week.
+            //Console.WriteLine("Days until next tuesday : " + daysUntilNextTuesday.ToString());
             DateTime nextTuesday = now.AddDays(daysUntilNextTuesday + 7 * RESET_TIME_IN_WEEK);
             nextTuesday = nextTuesday.Date.AddHours(4);
             switch(turn){
@@ -276,7 +278,7 @@ namespace FFXIV_RaidLootAPI.Models
                     Turn4LockedUntilDate = Turn4LockedUntilDate > nextTuesday ? Turn4LockedUntilDate : nextTuesday;
                     break;
             }
-            Console.WriteLine("Updating lock status until : " + nextTuesday.ToString());
+            //Console.WriteLine("Updating lock status until : " + nextTuesday.ToString());
             return;
         }
 
@@ -352,7 +354,7 @@ namespace FFXIV_RaidLootAPI.Models
         }
 
         public async Task update_lock_status(Gear OldGear, Gear NewGear, DataContext context, Turn turn){
-            Console.WriteLine("Updating lock status");
+            //Console.WriteLine("Updating lock status");
             Static? s = await context.Statics.FindAsync(staticId);
             if (s is null)
                 return;
@@ -382,13 +384,13 @@ namespace FFXIV_RaidLootAPI.Models
 
             // Case 3 - Went from anything to raid
             if (OldGear.GearStage != GearStage.Raid && NewGear.GearStage == GearStage.Raid){
-                Console.WriteLine("Raid update");
+                //Console.WriteLine("Raid update");
                 // If (lock if not contested) is false and we are not contested, do nothing.
                     if (param["BOOL_LOCK_IF_NOT_CONTESTED"] == 0 && !(await check_if_contested(NewGear, s, context))){
-                        Console.WriteLine("Not doing aything");
+                        //Console.WriteLine("Not doing aything");
                         return;
                     }
-                    Console.WriteLine("Locking");
+                    //Console.WriteLine("Locking");
                     set_lock_player(param,turn);
                     return;
             }
@@ -396,7 +398,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
     
-        public async Task change_gear_piece(GearType GearToChange, bool UseBis, int NewGearId, Turn turn,bool CheckLockPlayer, DataContext context)
+        public async Task change_gear_piece(GearType GearToChange, bool UseBis, int NewGearId, Turn turn,bool CheckLockPlayer, bool IsFromBook, DataContext context)
         {/*Updates the id of the specified gear piece for the player..
         GearToChange -> Value of the GearType to change.
         UseBis -> If true changes the value for Bis. Else for current.
@@ -512,17 +514,18 @@ namespace FFXIV_RaidLootAPI.Models
         
         }
         if (!UseBis)
-                await this.add_gear_acquisition_timestamp(newGear, turn, context);
+                await this.add_gear_acquisition_timestamp(newGear, turn, IsFromBook, context);
         }
 
-        public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, Turn turn, DataContext context){
+        public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, Turn turn, bool IsFromBook, DataContext context){
             if (newGear is null || newGear.GearStage == GearStage.Preparation || newGear.GearStage == GearStage.Tomes)
                 return false;
             GearAcquisitionTimestamp newTimestamp = new GearAcquisitionTimestamp(){
                 GearId = newGear.Id,
                 PlayerId = Id,
                 Timestamp = DateOnly.FromDateTime(DateTime.Now),
-                turn = turn
+                turn = turn,
+                isAcquiredFromBook=IsFromBook
             };
             await context.GearAcquisitionTimestamps.AddAsync(newTimestamp);
             await context.SaveChangesAsync();

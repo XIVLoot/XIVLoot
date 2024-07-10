@@ -12,7 +12,7 @@
                 <div *ngFor="let e of ListOfTurnInfo[turn] | keyvalue" style="display: flex;flex-direction: column;">
                     <p>{{e.key}} received : </p>
                     <div style="flex-direction: row;display: flex;">
-                        <img *ngFor="let v of ListOfTurnInfo[turn][e.key]" (mouseenter)="mouseOver($event)" (mouseleave)="mouseLeave($event)"  (click)="DeleteGearAcqEvent(turn,v, e.key,v.Id)" [src]="GetIcon(v)" style="width: 35px;height: 35px;margin: 3px;" title="{{v.gearType}}">
+                        <img *ngFor="let v of ListOfTurnInfo[turn][e.key]" (mouseenter)="mouseOver($event)" (mouseleave)="mouseLeave($event)"  (click)="DeleteGearAcqEvent(turn,v, e.key,v.Id)" [src]="GetIcon(v)" style="width: 35px;height: 35px;margin: 3px;" title="{{v.gearType + (v.IsBook ? ' (book)' : '')}}">
                     </div>
                 </div>
             </ng-container>

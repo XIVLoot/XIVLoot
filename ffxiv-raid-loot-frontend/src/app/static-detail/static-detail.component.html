@@ -84,7 +84,7 @@
         <div style="display: flex; flex-direction: column; height: 100%; width: 100%; margin: 0;">  
         <div style="height: 30%;width: 100%;margin: 0;">  
             <div style="display: flex; justify-content: flex-start; margin: 5px; position: relative; top: 0; left: 0;">
-              <p style="margin-right: 10px;">{{player.name}}</p>
+              <p style="margin-right: 5px;">{{player.name.slice(0, 18)}}</p>
               <img [src]="getJobIcon(player.job)" style="width: 20px;height: 20px;">
             </div>
             <div style="position: absolute; top: 0; right: 0;margin: 5px;">
@@ -110,9 +110,13 @@
     </mat-grid-list>
   </div>
   <div>
-    <div>
-      <mat-slide-toggle class="param-toggle" [(ngModel)]="ShowAllPlayer" (ngModelChange)="CheckChange()">Show all players</mat-slide-toggle>
+    <div style="display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 5px;align-items: center;">
+      <mat-slide-toggle class="param-toggle" style="margin:0;"  [(ngModel)]="ShowAllPlayer">Show all players</mat-slide-toggle>
+      <div style="height: 20px;border-right: 3px solid black;margin:0;margin-left: 10px;margin-right: 10px;"></div>
+      <mat-slide-toggle class="param-toggle" style="margin:0;" [(ngModel)]="staticDetail.useBookForGearAcq">Use books for gear acquisition</mat-slide-toggle>
+      <mat-icon  matTooltip="{{useBookForGearAcqToolTip}}" style="cursor: pointer;color:white;margin: 0;margin-left: 5px;">help_outline</mat-icon>
     </div>
+    <h2 *ngIf="staticDetail.useBookForGearAcq" style="text-align: center;color: red;">BOOKS ARE USED FOR GEAR ACQUISITION. MAKE SURE TO REVERT IT ONCE DONE.</h2>
   </div>
   <div  style="width: 100%;margin: 0;border-top:3px solid rgba(0, 0, 0, 0.5);padding-top:1%;padding-bottom:1%;border-bottom:3px solid rgba(0, 0, 0, 0.5);">
     
@@ -121,11 +125,14 @@
     </div>
     <div *ngFor="let player of staticDetail.players" style="margin: 0;margin-bottom: 10px;">
       <div *ngIf="player.id == SelectedPlayer || ShowAllPlayer" >
-        <div style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:200px;">
+        <div style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:210px;">
+          <mat-icon style="color:white;margin-right: 5px;margin-top: 3%;" *ngIf="!player.IsClaimed">lock_open</mat-icon>
+          <mat-icon style="color:white;margin-right: 5px;margin-top: 3%;" *ngIf="player.IsClaimed">lock_outline</mat-icon>
           <button mat-raised-button *ngIf="!staticDetail.userOwn[player.id]" (click)="ClaimPlayer(player)" style="margin-bottom: 10px;" [disabled]="player.IsClaimed" [style.backgroundColor]="player.IsClaimed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.5)'">Claim Player</button>
           <button mat-raised-button *ngIf="staticDetail.userOwn[player.id]" (click)="UnclaimPlayer(player)" style="margin-bottom: 10px;background-color: rgba(255, 0, 0, 0.5);" >Unclaim player</button>
           <mat-icon matTooltip="{{staticDetail.userOwn[player.id] ? unclaimPlayerToolTip : player.IsClaimed ? alreadyClaimedToolTip : claimPlayerToolTip }}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
-          </div>
+
+        </div>
       <app-player-details-single  [player]="player"></app-player-details-single>
 
       </div>

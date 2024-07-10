@@ -53,7 +53,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     );
   }
 
-  changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean, Turn : number, CheckLockPlayer : boolean) : Observable<any>{
+  changePlayerGear(playerId : number, GearType : number, GearId : number, useBis : boolean, Turn : number, CheckLockPlayer : boolean, IsFromBook:boolean) : Observable<any>{
     const url = `${this.api}Player/GearToChange`; // Adjust the endpoint as necessary
     const body = {
       "id": playerId,
@@ -61,7 +61,8 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       "gearToChange": GearType,
       "newGearId": GearId,
       "turn": Turn,
-      "CheckLockPlayer": CheckLockPlayer
+      "CheckLockPlayer": CheckLockPlayer,
+      "IsFromBook":IsFromBook
     }
     return this.http.put(url, body, {withCredentials:true}).pipe(
       catchError(error => throwError(() => new Error('Failed to change player gear: ' + error.message)))

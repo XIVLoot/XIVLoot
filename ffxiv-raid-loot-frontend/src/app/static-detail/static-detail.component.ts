@@ -37,7 +37,7 @@ import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSett
   lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,
   claimPlayerToolTip,
   unclaimPlayerToolTip,
-  alreadyClaimedToolTip
+  alreadyClaimedToolTip, UseBookForGearAcqToolTip
 } from '../tooltip';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -65,6 +65,7 @@ export class StaticDetailComponent implements OnInit {
   public claimPlayerToolTip = claimPlayerToolTip;
   public unclaimPlayerToolTip = unclaimPlayerToolTip;
   public alreadyClaimedToolTip = alreadyClaimedToolTip;
+  public useBookForGearAcqToolTip = UseBookForGearAcqToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static

@@ -90,14 +90,14 @@ using (var scope = app.Services.CreateScope())
 }
 app.Use(async (context, next) =>
 {   
-    Console.WriteLine($"Request URL: {context.Request.Path}");
+    //Console.WriteLine($"Request URL: {context.Request.Path}");
     context.Response.OnStarting(() =>
     {
         var headers = context.Response.Headers;
-        Console.WriteLine("CORS Headers:");
+        //Console.WriteLine("CORS Headers:");
         foreach (var header in headers)
         {
-            Console.WriteLine($"{header.Key}: {header.Value}");
+            //Console.WriteLine($"{header.Key}: {header.Value}");
         }
         return Task.CompletedTask;
     });

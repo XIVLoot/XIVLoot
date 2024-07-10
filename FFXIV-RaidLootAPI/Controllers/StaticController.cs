@@ -133,7 +133,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 }
 
                 List<DateOnly> PossibleStartDate = response.Keys.ToList();
-                //Console.WriteLine(PossibleStartDate.ToString() + " -- ARRAY");
+                ////Console.WriteLine(PossibleStartDate.ToString() + " -- ARRAY");
 
                 foreach (KeyValuePair<DateOnly, List<GearAcquisitionDTO.GearAcqInfo>> pair in info){
                     DateOnly KeyDate = DateOnly.FromDateTime(DateTime.Now);

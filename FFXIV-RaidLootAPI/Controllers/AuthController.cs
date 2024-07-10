@@ -58,7 +58,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Exception during JWT reading: " + ex.Message);
+            //Console.WriteLine("Exception during JWT reading: " + ex.Message);
             return StatusCode(StatusCodes.Status500InternalServerError, "Error reading JWT token.");
         }
     }
@@ -86,14 +86,14 @@ namespace FFXIV_RaidLootAPI.Controllers
     [EnableCors("AllowSpecificOrigins")]
     public async Task<IActionResult> PostToken([FromBody] Dictionary<string, string> content)
     {
-        Console.WriteLine("HERE CONTENT :  " + content.ToString());
+        //Console.WriteLine("HERE CONTENT :  " + content.ToString());
         using (var client = new HttpClient())
         {   
-            Console.WriteLine("CONTENT :  " + content.ToString());
+            //Console.WriteLine("CONTENT :  " + content.ToString());
             var formContent = new FormUrlEncodedContent(content);
             var response = await client.PostAsync("https://discord.com/api/oauth2/token", formContent);
             var responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("RESPONSE :  " + responseContent);
+            //Console.WriteLine("RESPONSE :  " + responseContent);
             return Content(responseContent, response.Content.Headers.ContentType.ToString());
         }
     }
@@ -139,14 +139,14 @@ namespace FFXIV_RaidLootAPI.Controllers
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Error fetching user info: " + errorContent);
+                //Console.WriteLine("Error fetching user info: " + errorContent);
                 throw new HttpRequestException($"Error fetching user info: {response.StatusCode}, Content: {errorContent}");
             }
 
             var responseString = await response.Content.ReadAsStringAsync();
             Dictionary<string, object> responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseString)!;
-            Console.WriteLine("Adding discord user");
-            Console.WriteLine(responseData.ToString());
+            //Console.WriteLine("Adding discord user");
+            //Console.WriteLine(responseData.ToString());
             // Access the 'id' value from the dictionary
             string discordId = responseData["id"].ToString()!;
             using (var context = _context.CreateDbContext())
@@ -172,7 +172,7 @@ namespace FFXIV_RaidLootAPI.Controllers
     {
         // Generate JWT using the provided access token
         string jwt = GenerateJwtToken(at);
-        Console.WriteLine("Generated JWT: " + jwt);
+        //Console.WriteLine("Generated JWT: " + jwt);
 
         // Set the JWT as a cookie
         HttpContext.Response.Cookies.Append("jwt_xivloot", jwt, new CookieOptions

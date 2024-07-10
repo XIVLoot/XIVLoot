@@ -88,7 +88,7 @@ namespace FFXIV_RaidLootAPI.Models
                 decimal PlayerGearScore = player.ComputePlayerGearScore(ScoreParam[0], ScoreParam[1], ScoreParam[2], GroupAvgLevel, NumberRaidBuffs, context);
                 PlayerGearScoreList.Add(new Tuple<int, decimal>(player.Id, PlayerGearScore));
             }
-            Console.WriteLine(string.Join(", ", PlayerGearScoreList.Select(x => $"Player ID: {x.Item1}, Gear Score: {x.Item2}")));
+            //Console.WriteLine(string.Join(", ", PlayerGearScoreList.Select(x => $"Player ID: {x.Item1}, Gear Score: {x.Item2}")));
             return PlayerGearScoreList;
             
         }

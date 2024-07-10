@@ -43,9 +43,9 @@ namespace FFXIV_RaidLootAPI.Controllers
                     };
 
         async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
-            Console.WriteLine("Checking authorization");
+            //Console.WriteLine("Checking authorization");
             if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
-                Console.WriteLine("Discord : " + jwt.ToString());
+                //Console.WriteLine("Discord : " + jwt.ToString());
                 // Logged in discord
                 // Decode the JWT to get the access_token
                 var handler = new JwtSecurityTokenHandler();
@@ -78,7 +78,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                     if (!response.IsSuccessStatusCode)
                     {
                         var errorContent = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine("Error fetching user info: " + errorContent);
+                        //Console.WriteLine("Error fetching user info: " + errorContent);
                         throw new HttpRequestException($"Error fetching user info: {response.StatusCode}, Content: {errorContent}");
                     }
 
@@ -96,7 +96,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 }
             } 
             else if (!(User is null)){
-                Console.WriteLine("DEFAUTL CONNECTED");
+                //Console.WriteLine("DEFAUTL CONNECTED");
                 var claimsIdentity = User.Identity as ClaimsIdentity;
                 var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
                 var userId = userIdClaim?.Value;
@@ -235,7 +235,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             if (player is null)
                 return NotFound("Player not found");
 
-            Console.WriteLine("Playeris FOUND");
+            //Console.WriteLine("Playeris FOUND");
 
             if (player.IsClaimed)
             {   
@@ -245,8 +245,12 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
              
 
-            Console.WriteLine("Turn : " + dto.turn.ToString() + " CheckLock : " + dto.CheckLockPlayer.ToString());
-            await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, dto.turn, dto.CheckLockPlayer, context);
+            ////Console.WriteLine("Turn : " + dto.turn.ToString() + " CheckLock : " + dto.CheckLockPlayer.ToString());
+
+            if (dto.IsFromBook)
+                dto.CheckLockPlayer=false;
+
+            await player.change_gear_piece(dto.GearToChange, dto.UseBis, dto.NewGearId, dto.turn, dto.CheckLockPlayer, dto.IsFromBook, context);
 
             await context.SaveChangesAsync();
             return Ok();
@@ -331,7 +335,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                     }
                     catch (HttpRequestException e)
                     {
-                        Console.WriteLine("Request error: " + e.Message);
+                        //Console.WriteLine("Request error: " + e.Message);
                         return NotFound("Could not find etro gearset.");
                     }
 

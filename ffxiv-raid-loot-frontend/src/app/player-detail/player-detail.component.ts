@@ -157,7 +157,7 @@ export class PlayerDetailComponent {
     }
 
 
-    await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, true).subscribe((data) => {
+    await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, true, false).subscribe((data) => {
       console.log(data);
       this.RegetPlayerInfo();
     });

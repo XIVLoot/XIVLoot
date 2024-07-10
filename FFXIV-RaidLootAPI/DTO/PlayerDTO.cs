@@ -15,6 +15,7 @@ public class PlayerDTO
     public string NewName {get;set;} = string.Empty;
     public Job NewJob {get;set;}
     public bool CheckLockPlayer {get;set;}
+    public bool IsFromBook {get;set;}
 
 
 }

@@ -35,3 +35,6 @@ export const gearSelectionToolTip = `This section allows you to see and edit you
 export const claimPlayerToolTip = `Claim this player to be the sole user with the ability to modify it. You will also be able to see all your claimed players on the homescreen. You must be logged in to claim a player.`;
 export const unclaimPlayerToolTip = `Unclaiming this player will let anyone else modify it. You will loose the ability to see the player on the homescreen.`;
 export const alreadyClaimedToolTip = `Someone else has already claimed the player. You therefore cannot modify it. If you think this is an error please reach out.`;
+
+export const UseBookForGearAcqToolTip = `This options allows to specify to the program if any gear acquisitioned was through books. If a gear is gained through book (rather than through raid) the player will not be locked (if such would have been the case) and the gear acquisition
+                                         history will display that the specific gear coffer (or augment item) was obtained through the use of books.`;

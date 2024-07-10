@@ -1,6 +1,7 @@
 import { Player } from './player';
 export class Static {
   public players : Player[] = [];
+  public useBookForGearAcq : boolean = false;
   public LockParam = {    
   "BOOL_LOCK_PLAYERS": false,
   "BOOL_LOCK_IF_NOT_CONTESTED": false,

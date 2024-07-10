@@ -331,7 +331,7 @@ export class PlayerDetailsSingleComponent {
         CheckPlayerLock=false;
 
 
-      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock).pipe(catchError((error, s) => {
+      await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock, this.player.staticRef.useBookForGearAcq).pipe(catchError((error, s) => {
         console.log(error);
         this.unauthorized();
         // Reverting change

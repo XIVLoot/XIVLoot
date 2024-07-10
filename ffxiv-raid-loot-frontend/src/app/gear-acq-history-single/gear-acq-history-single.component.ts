@@ -50,13 +50,17 @@ export class GearAcqHistorySingleComponent {
         this.ListOfTurnInfo[v.turn][playerName].push({
           gearType : v.gearType,
           isAugment : v.isAugment,
-          Id : v.id
+          Id : v.id,
+          IsBook : v.isAcquiredFromBook,
+          turn : v.turn
         });
       } else {
         this.ListOfTurnInfo[v.turn][playerName] = [{
           gearType : v.gearType,
           isAugment : v.isAugment,
-          Id : v.id
+          Id : v.id,
+          IsBook : v.isAcquiredFromBook,
+          turn : v.turn
         }];
       }
     }
@@ -75,12 +79,12 @@ export class GearAcqHistorySingleComponent {
         case "Hands":
         case "Legs":
         case "Feet":
-          return "assets/twine_icon.png";
+          return (v.IsBook ? "assets/twine_icon_book.png" : "assets/twine_icon.png");
         default:
-          return "assets/shine_icon.png";
+          return (v.IsBook ? "assets/shine_icon_book.png" : "assets/shine_icon.png");
       }
     }
-    return "assets/gear_icon/"+v.gearType+"_chest.png";
+    return (v.IsBook ? "assets/gear_icon/"+v.gearType+"_chest_book_"+v.turn+".png" : "assets/gear_icon/"+v.gearType+"_chest.png");
   }
 
   mouseOver(event : any){

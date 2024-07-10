@@ -45,10 +45,10 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                             if (responseData is null || responseData.ContainsKey("detail"))
                             {
-                                Console.WriteLine(i.ToString() + " : " + responseData["detail"].ToString());
+                                //Console.WriteLine(i.ToString() + " : " + responseData["detail"].ToString());
                                 continue;
                             }
-                            Console.WriteLine("Valid id : " + i.ToString());
+                            //Console.WriteLine("Valid id : " + i.ToString());
 
                             
 
@@ -85,7 +85,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         }
                         catch (HttpRequestException e)
                         {
-                            Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
+                            //Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
                             return Ok("Could not find etro gearset.");
                         }
                 }
