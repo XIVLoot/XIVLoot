@@ -50,7 +50,7 @@ export class NavbarComponent {
       }
       catch(error){
         this.isLoggedIn = false;
-        console.log(error.message);
+        ////console.log(error.message);
         return;
       }
     }
@@ -77,7 +77,7 @@ export class NavbarComponent {
     if (this.containsUUID(window.location.href.split('?')[0])){
       this.hasStatic = true;
       this.curUUID = window.location.href.split(environment.site_url)[1].split('?')[0];
-      console.log("Has static : " + this.curUUID)
+      ////console.log("Has static : " + this.curUUID)
       this.http.getStaticName(this.curUUID).subscribe(res => this.staticName = "Edit : " + res);
     }
 
@@ -132,7 +132,7 @@ export class NavbarComponent {
   removeStatic(uuid : string){
     if (this.isLoggedInDiscord){
       this.http.RemoveUserSavedStaticDiscord(this.discordInfo["id"], uuid).subscribe((res : string) => {
-        console.log(res);
+        ////console.log(res);
       this.userSavedStatic = this.userSavedStatic.filter((s) => s.url !== uuid);
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
@@ -145,7 +145,7 @@ export class NavbarComponent {
       });
     } else if (this.isLoggedInDefault){
       this.http.RemoveUserSavedStaticDefault(uuid).subscribe((res : string) => {
-        console.log(res);
+        ////console.log(res);
         this.userSavedStatic = this.userSavedStatic.filter((s) => s.url !== uuid);
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
@@ -278,7 +278,7 @@ export class LoginDialog {
         });
       }else {
         this.http.SetUsername(this.registerUsername).subscribe((res : any) => {
-        console.log(res);
+        ////console.log(res);
       });
 }
       resolve(true);

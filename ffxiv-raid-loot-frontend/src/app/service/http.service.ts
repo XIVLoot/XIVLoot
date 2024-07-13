@@ -21,8 +21,8 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     return this.http.get(this.api + 'Static/' + uuid)
       .pipe(
         map(response => {
-          console.log("Get Static Answer");
-          console.log(response);
+          //console.log("Get Static Answer");
+          //console.log(response);
           let currentStatic = new Static(response['id'], response['name'], response['uuid'], response['playersInfoList'], response['lockParam']);
           return currentStatic;
         }),

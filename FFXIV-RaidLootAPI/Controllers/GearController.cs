@@ -45,10 +45,10 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                             if (responseData is null || responseData.ContainsKey("detail"))
                             {
-                                //Console.WriteLine(i.ToString() + " : " + responseData["detail"].ToString());
+                                Console.WriteLine(i.ToString() + " : " + responseData?["detail"].ToString());
                                 continue;
                             }
-                            //Console.WriteLine("Valid id : " + i.ToString());
+                            Console.WriteLine("Valid id : " + i.ToString());
 
                             
 
@@ -56,7 +56,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                             string GearName = responseData["name"].ToString();
                             string JobName = responseData["jobName"].ToString();
                             string IconPath = responseData["iconPath"].ToString();
-                            if (int.Parse(GearILevel) < 640 || GearName.Contains("Shield"))
+                            if (int.Parse(GearILevel) < 690 || GearName.Contains("Shield"))
                                 continue;
                             bool IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
 
@@ -85,7 +85,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         }
                         catch (HttpRequestException e)
                         {
-                            //Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
+                            Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
                             return Ok("Could not find etro gearset.");
                         }
                 }

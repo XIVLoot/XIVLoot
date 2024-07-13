@@ -16,14 +16,14 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly string CRAFTED_GEAR = "Crafted";
         private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
-            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret"}},
-            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket", "Coat"}},
+            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret","Hood", "Chapeau", }},
+            {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket", "Coat", "Tunic", "Tabard"}},
             {"Hands",new List<string> {"Armlet","Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
-            {"Legs",new List<string> {"Bottom","Hose", "Breeches", "Trousers", "Longkilt", "Poleyns"}},
-            {"Feet",new List<string> {"Shoe","Sollerets", "Sabatons", "Longboots", "Sandals", "Boots"}},
+            {"Legs",new List<string> {"Bottom","Hose", "Breeches", "Trousers", "Longkilt", "Poleyns", "Brayettes", "Kecks"}},
+            {"Feet",new List<string> {"Shoe","Sollerets", "Sabatons", "Longboots", "Sandals", "Boots", "Thighboots"}},
             {"Earrings",new List<string> {"Earring"}},
             {"Necklace",new List<string> {"Necklace", "Choker"}},
-            {"Bracelets",new List<string> {"Bracelet", "Wristband"}},
+            {"Bracelets",new List<string> {"Bracelet", "Wristband", "Bangles"}},
             {"Ring",new List<string> {"Ring"}}
         };
 
@@ -52,13 +52,13 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.BlackMage,"BLM"},
             {Job.RedMage,"RDM"},
             {Job.Summoner,"SMN"},
-            {Job.Pictomancer,"PIC"}, // TODO CHECK THAT
+            {Job.Pictomancer,"PCT"}, 
             {Job.Samurai,"SAM"},
             {Job.Monk,"MNK"},
             {Job.Reaper,"RPR"},
             {Job.Dragoon,"DRG"},
             {Job.Ninja,"NIN"},
-            {Job.Viper,"VIP"}, // CHECK THAT
+            {Job.Viper,"VPR"},
             {Job.Bard, "BRD"},
             {Job.Dancer, "DNC"},
             {Job.Machinist, "MCH"}
@@ -122,7 +122,6 @@ namespace FFXIV_RaidLootAPI.Models
             bool IsRing;
             foreach (KeyValuePair<string, List<string>> pair in GEAR_TYPE_NAME)
             {   
-
                 foreach (string PossibleName in pair.Value)
                 {
                     if (name.IndexOf(PossibleName, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -139,6 +138,8 @@ namespace FFXIV_RaidLootAPI.Models
                 }
                 if (FoundMatch) break;
             }
+            if (!FoundMatch)
+                Console.WriteLine("Gear type not found for : " + name);
             GearCategory category = GearCategory.Weapon;
             FoundMatch = false;
             foreach (KeyValuePair<GearCategory, List<string>> pair in GEAR_CATEGORY_NAME)

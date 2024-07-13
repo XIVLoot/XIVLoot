@@ -96,7 +96,7 @@ export class HomeComponent {
       .subscribe(response => {
         // Subscribing to the observable to handle the response
         this.data.static = response; // Storing the response in DataService
-        console.log(response); // Logging the response to the console
+        ////console.log(response); // Logging the response to the console
         this.router.navigate(['/' + response]);
       });
   }

@@ -107,8 +107,8 @@ export class GearAcqHistorySingleComponent {
             no_option: "No"
           }
         }).afterClosed().subscribe(result => {
-          console.log("after closed");
-          console.log(result);
+          ////console.log("after closed");
+          ////console.log(result);
           resolve(result === "Yes"); // Resolve the promise with true if the result is "Yes"
         });
     });

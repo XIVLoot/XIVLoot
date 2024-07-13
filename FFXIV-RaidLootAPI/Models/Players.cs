@@ -657,6 +657,7 @@ namespace FFXIV_RaidLootAPI.Models
     BlackMage = 1,
     Summoner = 2,
     RedMage = 3,
+    Pictomancer = 20,
     WhiteMage = 4,
     Astrologian = 5,
     Sage = 6,
@@ -666,6 +667,7 @@ namespace FFXIV_RaidLootAPI.Models
     Reaper = 10,
     Monk = 11,
     Dragoon = 12,
+    Viper = 21,
     Gunbreaker = 13,
     DarkKnight = 14,
     Paladin = 15,
@@ -673,7 +675,6 @@ namespace FFXIV_RaidLootAPI.Models
     Machinist = 17,
     Bard = 18,
     Dancer = 19,
-    Pictomancer = 20,
-    Viper = 21
+    
     }
 }

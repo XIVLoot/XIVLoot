@@ -231,13 +231,13 @@ export class StaticDetailComponent implements OnInit {
       data : {uuid : this.uuid}
     });
 
-    console.log("Trying details");
+    //console.log("Trying details");
     // Fetch static details from the server using the uuid
     this.http.getStatic(this.uuid).subscribe(details => {
-      //console.log("Received details");
+      ////console.log("Received details");
       this.staticDetail = details; // Assign the fetched details to staticDetail
       this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
-      //console.log(this.staticDetail); // Log the static details to the console
+      ////console.log(this.staticDetail); // Log the static details to the console
       this.groupList = this.ComputeNumberPGSGroup();
       this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
         this.GearAcqHistory = data["info"];
@@ -298,7 +298,7 @@ export class StaticDetailComponent implements OnInit {
 
   SaveLockParam(){
     this.http.updateStaticLockParam(this.staticDetail.uuid, this.staticDetail.LockParam).subscribe(res => {
-      console.log(res);
+      //console.log(res);
       this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
       this.LockParamChangeCheck=false;
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
@@ -335,7 +335,7 @@ export class StaticDetailComponent implements OnInit {
     if (DiscordLoggedIn){
       this.http.GetDiscordUserInfo().subscribe(data => {
         this.http.SaveStaticToUserDiscord(data['id'], this.staticDetail.uuid).subscribe(res => {
-          console.log(res);
+          //console.log(res);
           this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
             duration: 3500,
             data: {
@@ -348,7 +348,7 @@ export class StaticDetailComponent implements OnInit {
       });
     } else if (DefaultLoggedIn){
       this.http.SaveStaticToUserDefault(this.staticDetail.uuid).subscribe(res => {
-        console.log(res);
+        //console.log(res);
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data: {
@@ -371,7 +371,7 @@ export class StaticDetailComponent implements OnInit {
   }
 
   selectPlayer(player : Player){
-    console.log("Selected : " + player.name);
+    //console.log("Selected : " + player.name);
     this.SelectedPlayer = player.id;
   }
 
@@ -412,7 +412,7 @@ export class StaticDetailComponent implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     const newValue = selectElement.value;
     this.http.ChangeStaticName(this.staticDetail.uuid, newValue).subscribe(res => {
-      console.log(res);
+      //console.log(res);
     });
   }
 
@@ -522,7 +522,7 @@ export class StaticDetailComponent implements OnInit {
     navigator.clipboard.writeText(valueToCopy)
       .then(() => {
         // Handle successful copying here, e.g., show a message
-        console.log('UUID copied to clipboard!');
+        //console.log('UUID copied to clipboard!');
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 3500,
           data : {
@@ -545,8 +545,8 @@ export class StaticDetailComponent implements OnInit {
       height: '430px',
       data: {uuid : this.staticDetail.uuid}
     }).afterClosed().subscribe(result => {
-      console.log("after closed")
-      console.log(result)
+      //console.log("after closed")
+      //console.log(result)
     });
   }
 
@@ -638,7 +638,7 @@ export class SettingPGS {
 
   SaveChange(){
     this.http.SetPGSParam(this.data.uuid, this.value_a/10, this.value_b/10, this.value_c/10).subscribe(data => {
-      console.log(data);
+      //console.log(data);
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 3500,
         data : {

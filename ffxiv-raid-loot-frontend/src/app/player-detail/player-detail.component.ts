@@ -158,7 +158,7 @@ export class PlayerDetailComponent {
 
 
     await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, true, false).subscribe((data) => {
-      console.log(data);
+      ////console.log(data);
       this.RegetPlayerInfo();
     });
     
@@ -218,8 +218,8 @@ export class PlayerDetailComponent {
       height: '500px',
       data: {playerId, newEtro}
     }).afterClosed().subscribe(result => {
-      console.log("after closed")
-      console.log(result)
+      ////console.log("after closed")
+      ////console.log(result)
       if (result === "Yes"){this.RegetPlayerInfo();}
     });
   }
@@ -228,7 +228,7 @@ export class PlayerDetailComponent {
     const selectElement = event.target as HTMLSelectElement;
     const value = selectElement.value;
     this.http.changePlayerName(this.player.id, value).subscribe((data) => {
-      console.log(data);
+      ////console.log(data);
     });
   }
   onChangeJob(event : Event){
@@ -239,7 +239,7 @@ export class PlayerDetailComponent {
 
     // Reset Job dependant values for the player.
     this.http.resetPlayerJobDependantValues(this.player.id).subscribe((data) => {
-      console.log(data);
+      ////console.log(data);
       this.RegetPlayerInfo();
     });
 
@@ -250,7 +250,7 @@ export class PlayerDetailComponent {
   RecomputePGSWholeStatic(){
       // Recomputing PGS
       this.http.RecomputePGS(this.player.staticRef.uuid).subscribe((data) => {
-        console.log(data);
+        ////console.log(data);
         var data = data["playerGearScoreList"];
         for(var i = 0; i < data.length; i++){
           var index = this.player.staticRef.players.findIndex((player, b, c) => player.id === data[i].id);
@@ -262,7 +262,7 @@ export class PlayerDetailComponent {
 
   RegetPlayerInfo(){
     this.http.GetSingletonPlayerInfo(this.player.staticRef.uuid, this.player.id).subscribe((data) => {
-      console.log(data);
+      ////console.log(data);
       var newPlayer = Player.CreatePlayerFromDict(data);
       newPlayer.staticRef = this.player.staticRef;
       newPlayer.staticId = this.player.staticId;

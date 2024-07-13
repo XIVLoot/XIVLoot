@@ -1,11 +1,13 @@
 <div>
 <h2 mat-dialog-title>Would you like to import the following etro.gg gearset as your BiS?</h2>
+<h3 style="color:red">The etro import option is deactivated until the new raid gear is available on etro.gg</h3>
 <div style="width: 98%;padding-left: 1%;height: 95%;">
+  
 <iframe style="width: 100%;height:100%;border-radius: 10px;border: 1px solid black;" title="Etro Gearset" [src]="getSafeUrl()"></iframe>
 </div>
 
 <mat-dialog-actions style="display: flex; justify-content: space-between;">
-  <button mat-button style="background-color: rgba(0, 0, 0, 0.156);" (click)="ImportEtro(data.playerId, data.newEtro)">Yes</button>
+  <button mat-button style="background-color: rgba(0, 0, 0, 0.156);" (click)="ImportEtro(data.playerId, data.newEtro)" [disabled]="true">Yes</button>
   <button mat-button mat-dialog-close style="background-color: rgba(0, 0, 0, 0.156);">No</button>
 </mat-dialog-actions>
 </div>

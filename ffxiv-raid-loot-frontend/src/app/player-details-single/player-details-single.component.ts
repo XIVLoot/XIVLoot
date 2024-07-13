@@ -223,8 +223,8 @@ export class PlayerDetailsSingleComponent {
           height: '200px',
           data: {title : "Fight uncertainty", content : "The gear you selected can be dropped from turn 2 and turn 3, please select where it came from.", yes_option : "Turn 2", no_option : "Turn 3"}
         }).afterClosed().subscribe(result => {
-          console.log("after closed")
-          console.log(result)
+          ////console.log("after closed")
+          ////console.log(result)
           if (result === "No"){
             return resolve(3);
           } else if (result === "Yes") {
@@ -332,7 +332,7 @@ export class PlayerDetailsSingleComponent {
 
 
       await this.http.changePlayerGear(this.player.id, GearTypeNumber, NewGear.id, bis, Turn, CheckPlayerLock, this.player.staticRef.useBookForGearAcq).pipe(catchError((error, s) => {
-        console.log(error);
+        ////console.log(error);
         this.unauthorized();
         // Reverting change
         selectElement.value = oldGear.gearName;
@@ -408,7 +408,7 @@ export class PlayerDetailsSingleComponent {
         return of(null);
       }))
       .subscribe((data) => {
-        console.log(data);
+        ////console.log(data);
         this.RegetPlayerInfoSoft();
       });
       return true;
@@ -502,8 +502,8 @@ export class PlayerDetailsSingleComponent {
             no_option: "No"
           }
         }).afterClosed().subscribe(result => {
-          console.log("after closed");
-          console.log(result);
+          ////console.log("after closed");
+          ////console.log(result);
           resolve(result === "Yes"); // Resolve the promise with true if the result is "Yes"
         });
       } else {
@@ -563,8 +563,8 @@ export class PlayerDetailsSingleComponent {
       height: '500px',
       data: {playerId, newEtro}
     }).afterClosed().subscribe(result => {
-      console.log("after closed")
-      console.log(result)
+      //console.log("after closed")
+      //console.log(result)
       if (result === "Yes"){this.RegetPlayerInfo();}
     });
   }
@@ -593,7 +593,7 @@ export class PlayerDetailsSingleComponent {
       // Reset Job dependant values for the player.
       this.oldJob = this.player.job;
       this.http.resetPlayerJobDependantValues(this.player.id).subscribe((data) => {
-        console.log(data);
+        //console.log(data);
         this.RegetPlayerInfo();
     });
     });
@@ -607,7 +607,7 @@ export class PlayerDetailsSingleComponent {
   RecomputePGSWholeStatic(){
       // Recomputing PGS
       this.http.RecomputePGS(this.player.staticRef.uuid).subscribe((data) => {
-        console.log(data);
+        //console.log(data);
         var data = data["playerGearScoreList"];
         for(var i = 0; i < data.length; i++){
           var index = this.player.staticRef.players.findIndex((player, b, c) => player.id === data[i].id);
@@ -621,7 +621,7 @@ export class PlayerDetailsSingleComponent {
 
   RegetPlayerInfo(){
     this.http.GetSingletonPlayerInfo(this.player.staticRef.uuid, this.player.id).subscribe((data) => {
-      console.log(data);
+      //console.log(data);
       var newPlayer = Player.CreatePlayerFromDict(data);
       newPlayer.staticRef = this.player.staticRef;
       newPlayer.staticId = this.player.staticId;
@@ -637,7 +637,7 @@ export class PlayerDetailsSingleComponent {
 
   RegetPlayerInfoSoft(){
     this.http.GetSingletonPlayerInfoSoft(this.player.id).subscribe((data) => {
-      console.log(data);
+      //console.log(data);
       this.player.LockedList = data["lockedList"].map(dateStr => new Date(dateStr));
 
       this.player.BisAverageItemLevel = data["averageItemLevelBis"];
@@ -663,15 +663,23 @@ export class PlayerDetailsSingleComponent {
       height: '200px',
       data: {title : "Remove lock.", content : "Are you sure you want to remove the lock of this player on turn " + turn + "?", yes_option : "Yes", no_option : "No"}
     }).afterClosed().subscribe(result => {
-      console.log("after closed")
-      console.log(result)
+      //console.log("after closed")
+      //console.log(result)
       if (result === "Yes"){
         this.http.RemoveLock(this.player.id, turn).pipe(catchError(error => {
           this.unauthorized();
           return throwError(() => new Error('Failed to remove lock : ' + error.message))
         }))
         .subscribe((data) => {
-          console.log(data);
+          ////console.log(data);
+          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+            duration: 3500,
+            data: {
+              message: "Successfuly removed lock",
+              subMessage: "",
+              color : "green"
+            }
+          });
           this.RegetPlayerInfoSoft();
         });
       }
@@ -680,7 +688,7 @@ export class PlayerDetailsSingleComponent {
 
   onMouseEnter(turn : number, event: any) {
     var check = this.player.IsLockedOutOfTurn(turn);
-    console.log(check);
+    ////console.log(check);
     if (check){
       event.target.style.cursor = 'pointer';
       event.target.style.filter = 'brightness(1.1)';
@@ -745,6 +753,7 @@ export class EtroDialog {
   }
 
   ImportEtro(playerId : number, newEtro : string){
+    return;
     this.isLoading = true;
     this.http.changePlayerEtro(playerId, newEtro).pipe(
       catchError(err => {

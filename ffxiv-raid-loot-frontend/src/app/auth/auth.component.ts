@@ -24,7 +24,7 @@ export class AuthComponent {
     // Check if the referrer is not the Discord login page
     if (!document.referrer.includes("discord.com")) {
       window.location.href = url;
-      console.log("Redirecting to discord login page");
+      //console.log("Redirecting to discord login page");
     }
     return false;
   }
@@ -36,7 +36,7 @@ export class AuthComponent {
     const hash = window.location.hash;
     const code = new URLSearchParams(window.location.search).get('code');
     if (code) {
-      console.log('code:', code);
+      ////console.log('code:', code);
       const tokenUrl = 'https://discord.com/api/oauth2/token';
       const body = {};
       body['client_id'] = this.client_id;
@@ -44,15 +44,15 @@ export class AuthComponent {
       body['grant_type'] = 'authorization_code';
       body['code'] = code;
       body['redirect_uri'] = environment.site_url + 'auth/discord/callback';
-      console.log("Doing request");
+      ////console.log("Doing request");
       this.httpService.GetDiscordToken(body).subscribe(response => {
-        //console.log('Access Token:', response);
-        console.log("got a");
+        ////console.log('Access Token:', response);
+        ////console.log("got a");
         // Store the access token securely
         //localStorage.setItem('discord_access_token_xiv_loot', response['access_token']);
 
         this.httpService.GetDiscordCookie(response['access_token']).subscribe(res => {
-          console.log("Got token");
+          ////console.log("Got token");
           var rurl = localStorage.getItem('return_url');
           localStorage.removeItem('return_url');
           window.location.href = rurl;
