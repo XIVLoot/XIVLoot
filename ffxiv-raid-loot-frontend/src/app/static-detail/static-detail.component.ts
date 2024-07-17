@@ -273,6 +273,9 @@ export class StaticDetailComponent implements OnInit {
   }
 
   ChangeHistoryLoaded(){
+    if (this.ShowNumberLastWeekHistory > 16){
+      this.ShowNumberLastWeekHistory = 16;
+    }
     this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(data => {
       // TODO : THIS UPADATE IS NOT VERY EFFICIENT
       this.GearAcqHistory = data["info"];
