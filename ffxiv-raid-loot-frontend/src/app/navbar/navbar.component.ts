@@ -286,7 +286,7 @@ export class LoginDialog {
       duration: 3500,
       data: {
         message: "Error while trying to logging in.",
-        subMessage: "(Reach out of this persists)",
+        subMessage: "(Reach out if this persists)",
         color : "red"
       }
     });resolve(false);});
