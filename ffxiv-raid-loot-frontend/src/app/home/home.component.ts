@@ -20,6 +20,7 @@ export class HomeComponent {
   public IsLoggedIn : boolean = false;
   private api = environment.api_url; // Base URL for the API
   private url = environment.site_url;
+  public IsLoading = false;
 
   // Lifecycle hook that is called after Angular has initialized all data-bound properties
   async ngOnInit(): Promise<void> {
@@ -73,13 +74,14 @@ export class HomeComponent {
     }
 
     this.IsLoggedIn=true;
+    this.IsLoading = true;
     
     if(DiscordLoggedIn){
       this.http.GetDiscordUserInfo().subscribe(data => {
-        this.http.GetAllClaimedPlayerDiscord(data["id"]).subscribe(res => this.claimedPlayerList = res);
+        this.http.GetAllClaimedPlayerDiscord(data["id"]).subscribe(res => {this.claimedPlayerList = res;this.IsLoading = false;});
       });
     } else if (DefaultLoggedIn){
-      this.http.GetAllClaimedPlayerDefault().subscribe(res => this.claimedPlayerList = res);
+      this.http.GetAllClaimedPlayerDefault().subscribe(res => {this.claimedPlayerList = res;this.IsLoading = false;});
     }
   }
 
