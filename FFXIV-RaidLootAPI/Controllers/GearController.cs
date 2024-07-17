@@ -95,6 +95,99 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        [HttpPost("UpdateDatabase")]
+        public async Task<ActionResult> UpdateDatabase(int StartingIndex, int EndIndex){
+            using (var context = _context.CreateDbContext())
+            {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://etro.gg");
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                for (int i = StartingIndex;i<=EndIndex;i++)
+                {
+
+                        try
+                        {
+                            // Make the GET request
+                            HttpResponseMessage response = await client.GetAsync("/api/equipment/"+i.ToString()+"/");
+                            // Ensure the request was successful
+                            //response.EnsureSuccessStatusCode();
+                            
+                            // Read and process the response content
+                            string responseBody = await response.Content.ReadAsStringAsync();
+                            Dictionary<string, object>? responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseBody);
+
+                            if (responseData is null || responseData.ContainsKey("detail"))
+                            {
+                                Console.WriteLine(i.ToString() + " : " + responseData?["detail"].ToString());
+                                continue;
+                            }
+                            Console.WriteLine("Valid id : " + i.ToString());
+
+                            
+
+                            string GearILevel = responseData["itemLevel"].ToString();
+                            string GearName = responseData["name"].ToString();
+                            string JobName = responseData["jobName"].ToString();
+                            string IconPath = responseData["iconPath"].ToString();
+                            if (int.Parse(GearILevel) < 690 || GearName.Contains("Shield"))
+                                continue;
+                            bool IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
+
+                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
+
+                            if (newGear.GearType == GearType.LeftRing)
+                            {   
+                                Gear RightRingGear = new Gear() 
+                                {
+                                    Name=newGear.Name + " (R)",
+                                    GearLevel=newGear.GearLevel,
+                                    GearStage=newGear.GearStage,
+                                    GearType=GearType.RightRing,
+                                    GearCategory=newGear.GearCategory,
+                                    GearWeaponCategory=Job.Empty,
+                                    IconPath=newGear.IconPath,
+                                    EtroGearId=newGear.EtroGearId
+                                };
+                                newGear.Name += " (L)";
+                                GearName += " (L)";
+                                Gear? existingGear = await context.Gears.FirstOrDefaultAsync(g => g.GearLevel == RightRingGear.GearLevel && g.GearStage == RightRingGear.GearStage && g.GearType == RightRingGear.GearType && g.GearCategory == RightRingGear.GearCategory);
+                                if (existingGear is not null)
+                                {
+                                    existingGear.EtroGearId = newGear.EtroGearId;
+                                    existingGear.IconPath = newGear.IconPath;
+                                    existingGear.Name = RightRingGear.Name;
+                                    await context.SaveChangesAsync();
+                                    continue;
+                                } else{
+                                    Console.WriteLine("Gear not found: " + RightRingGear.Name + " : " + RightRingGear.GearLevel + " : " + RightRingGear.GearStage + " : " + RightRingGear.GearType + " : " + RightRingGear.GearCategory);
+                                }
+                            }
+                                Gear? gear2 = await context.Gears.FirstOrDefaultAsync(g => g.GearLevel == newGear.GearLevel && g.GearStage == newGear.GearStage && g.GearType == newGear.GearType && g.GearCategory == newGear.GearCategory);
+                                if (gear2 is not null)
+                                {
+                                    gear2.EtroGearId = newGear.EtroGearId;
+                                    gear2.IconPath = newGear.IconPath;
+                                    gear2.Name = newGear.Name;
+                                    await context.SaveChangesAsync();
+                                    continue;
+                                }else{
+                                    Console.WriteLine("Gear not found: " + newGear.Name + " : " + newGear.GearLevel + " : " + newGear.GearStage + " : " + newGear.GearType + " : " + newGear.GearCategory);
+                                }
+
+                        }
+                        catch (HttpRequestException e)
+                        {
+                            Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
+                            return Ok("Could not find etro gearset.");
+                        }
+                }
+            
+            return Ok();
+            }
+            }
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<Gear>>> GetAllGear()
         {
