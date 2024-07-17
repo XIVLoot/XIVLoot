@@ -148,7 +148,7 @@
       <div style="display: flex;flex-direction: row;border-radius: 10px;padding: 5px;">
         <mat-form-field>
           <mat-label>Number of weeks to display.</mat-label>
-          <input matInput type="number" min="1" max="16" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="ChangeHistoryLoaded()" [disabled]="ShowAllHistory">
+          <input matInput type="number" min="1" max="16" step="1" [(ngModel)]="ShowNumberLastWeekHistory" value="ShowNumberLastWeekHistory" (ngModelChange)="ChangeHistoryLoaded()">
         </mat-form-field>
       <!--<div style="display: flex;flex-direction: row;">
         <p style="margin-right: 10px;">Or show all gear acquisition</p>

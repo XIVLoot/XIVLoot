@@ -179,7 +179,8 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddYears(2)
         });
 
         // Return the JWT in the response
@@ -193,7 +194,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("access_token", accessToken) }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddYears(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
