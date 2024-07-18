@@ -201,12 +201,15 @@ namespace FFXIV_RaidLootAPI.Models
                 return new CostDTO {TomeCost=TotalTomeCost, TwineCost=TotalTwineCost, ShineCost=TotalShineCost,SolventCost=TotalSolventCost,WeaponTomestoneCost=TotalHermeticCost};
 
             ////Console.WriteLine("1");
+            Console.WriteLine("Current gearstage : " + GearStage.ToString());
+            Console.WriteLine("Current bisgearstage : " + BisGear.GearStage.ToString());
 
             if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == 0) && // Need to buy tome
                 (BisGear.GearStage == GearStage.Upgraded_Tomes || BisGear.GearStage == GearStage.Tomes))
                 {
                     ////Console.WriteLine("2");
-                    switch (GearType)
+                    
+                    switch (BisGear.GearType)
                     {
                         case GearType.Weapon:
                             TotalTomeCost += WEAPON_TOME_COST;
@@ -237,7 +240,7 @@ namespace FFXIV_RaidLootAPI.Models
                 (BisGear.GearStage == GearStage.Upgraded_Tomes))
                 {
                     ////Console.WriteLine("4");
-                    switch (GearType)
+                    switch (BisGear.GearType)
                     {
                         case GearType.Weapon:
                             TotalSolventCost+=1;
