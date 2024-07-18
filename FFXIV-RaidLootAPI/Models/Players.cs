@@ -79,8 +79,8 @@ namespace FFXIV_RaidLootAPI.Models
 
         public static Dictionary<Job, decimal> JobScoreMultiplier = new Dictionary<Job, decimal>()
         {
-            {Job.BlackMage, 1.0m},
-            {Job.Samurai, 1.0m/0.952m},
+            {Job.BlackMage, 1.0m/0.818m},
+            {Job.Samurai, 1.0m},
             {Job.Ninja, 1.0m/0.89m},
             {Job.Monk, 1.0m/0.888m},
             {Job.Reaper, 1.0m/0.877m},
@@ -98,14 +98,14 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.WhiteMage, 1.0m/0.524m},
             {Job.Scholar, 1.0m/0.510m},
             {Job.Astrologian, 1.0m/0.445m},
-            {Job.Viper, 1.0m/0.877m}, // Assuming similar to Reaper
-            {Job.Pictomancer, 1.0m/0.836m}, // Assuming similar to Summoner
+            {Job.Viper, 1.0m},
+            {Job.Pictomancer, 1.0m/0.952m}, 
 
         };
 
         public static Dictionary<Job, decimal> JobGroupMultiplier = new Dictionary<Job, decimal>()
         {
-            {Job.BlackMage, 1.486988848m},
+            {Job.BlackMage, 1.6m},
             {Job.Samurai, 1.0m},
             {Job.Ninja, 1.19760479m},
             {Job.Monk, 1.338912134m},
@@ -114,7 +114,7 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.Machinist, 2.069857697m},
             {Job.Bard, 1.619433198m},
             {Job.Dancer,1.982651797m},
-            {Job.RedMage, 1.54589372m},
+            {Job.RedMage, 1.5m},
             {Job.Summoner, 1.211203634m},
             {Job.DarkKnight, 1.297648013m},
             {Job.Gunbreaker, 2.046035806m},
@@ -124,8 +124,8 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.WhiteMage, 1.744820065m},
             {Job.Scholar, 4.060913706m},
             {Job.Astrologian, 3.827751196m},
-            {Job.Viper, 1.42m}, // Assuming similar to Reaper
-            {Job.Pictomancer, 1.21m}, // Assuming similar to Summoner
+            {Job.Viper, 1.0m},
+            {Job.Pictomancer, 1.1m},
 
         };
 
