@@ -58,7 +58,7 @@
           <div style="display: flex;flex-direction: row;margin: 0; margin-right: 5%;">
             <mat-form-field style="width:210px;">
               <mat-label># Piece until lock</mat-label>
-              <input  matInput type="number" min="1" [(ngModel)]="staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']" value="{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}" (ngModelChange)="CheckChange()" [disabled]="true || !staticDetail.LockParam['BOOL_LOCK_PLAYERS']">
+              <input  matInput type="number" min="1" [(ngModel)]="staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']" value="{{staticDetail.LockParam['INT_NUMBER_OF_PIECES_UNTIL_LOCK']}}" (ngModelChange)="CheckChange()" [disabled]="true"> <!--!staticDetail.LockParam['BOOL_LOCK_PLAYERS']-->
             </mat-form-field>
             <mat-icon matTooltip="{{pieceUntilLockToolTip}}" style="cursor: pointer; align-self: center;color:white;margin-left: 10px;margin-bottom: 20px;">help_outline</mat-icon>
           </div>
