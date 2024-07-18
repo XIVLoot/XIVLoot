@@ -20,7 +20,7 @@ export const lockPerFightToolTip = `This option lets you lock a player as a per 
                                     Otherwise a player is locked from all fights as soon as it is locked from one.`;
 export const lockPlayerForAugmentToolTip = `This option lets you lock a player for receiving augment items. If this option is turned on a player that received a gear augment item
                                      will be locked from the fight just like if the player had received raid gear.`;
-export const pieceUntilLockToolTip = `This allows you to configure how many gear piece a player can receive before being locked.`;
+export const pieceUntilLockToolTip = `THIS FEATURE IS CURRENTLY DISABLED.This allows you to configure how many gear piece a player can receive before being locked.`;
 
 export const numberWeekResetToolTip = `This allows you to configure for how many weeks a player is locked once it is first locked. Note that the lock starts at the next loot pool reset (every tuesday 4 am EST) and not as soon as gear is acquired.`
 
