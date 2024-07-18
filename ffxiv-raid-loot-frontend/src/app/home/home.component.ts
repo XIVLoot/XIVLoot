@@ -5,6 +5,7 @@ import { DataService } from '../service/data.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map } from 'rxjs';
+import { HomeClaimPlayerToolTip } from '../tooltip';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,8 @@ export class HomeComponent {
   private api = environment.api_url; // Base URL for the API
   private url = environment.site_url;
   public IsLoading = false;
+
+  public HomeClaimPlayerToolTip = HomeClaimPlayerToolTip
 
   // Lifecycle hook that is called after Angular has initialized all data-bound properties
   async ngOnInit(): Promise<void> {
