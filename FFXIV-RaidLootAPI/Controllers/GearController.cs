@@ -189,7 +189,8 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }*/
 
-        [HttpPost("UpdateDatabaseXivAPI")]
+        // To Use this function remove the comment under to be able to call it with API
+        //[HttpPost("UpdateDatabaseXivAPI")]
         public async Task<ActionResult> UpdateDatabaseXivAPI(int StartingIndex, int EndIndex){
             using (var context = _context.CreateDbContext())
             {
