@@ -53,6 +53,14 @@ export class PlayerDetailsSingleComponent {
     var oldGear;
     if (selectedIndex == 0){
       // Reverting change
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "You cannot select the 'NoEquipment' option.",
+          subMessage: "",
+          color : "red"
+        }
+      });
       switch (GearType){
         case "Weapon":
           if(bis)
