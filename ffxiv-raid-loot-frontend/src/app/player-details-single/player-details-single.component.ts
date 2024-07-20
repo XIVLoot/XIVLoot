@@ -172,7 +172,7 @@ export class PlayerDetailsSingleComponent {
         GearTypeNumber = 11;
         break;
     }
-    if (!bis && !(NewGear.gearStage == "Tomes" || NewGear.gearStage == "Preparation")){
+    if (!bis && (NewGear.gearStage == "Upgraded_Tomes" || NewGear.gearStage == "Raid")){
       if (NewGear.gearStage == "Upgraded_Tomes"){ // If is augment then change turn to turn where the augment drops.
         switch(GearType){
           case "Weapon":
@@ -516,14 +516,16 @@ export class PlayerDetailsSingleComponent {
     if (gear.gearName == "No Equipment" || (gear === null))
       return 'assets/no_gear.webp';
     switch (gear.gearStage) {
-      case 'Preparation':
-        return 'assets/crafted_gear_icon.webp';
       case 'Tomes':
         return 'assets/tomestone_icon.png';
       case 'Raid':
         return 'assets/raid_icon.webp';
       case 'Upgraded_Tomes':
           return 'assets/tomestone_icon_upgraded.png';
+      case 'Extreme':
+        return 'assets/extreme.webp';
+      default:
+        return 'assets/crafted_gear_icon.webp';
     }
   }
 

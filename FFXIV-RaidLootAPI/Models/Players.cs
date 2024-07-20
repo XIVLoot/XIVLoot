@@ -518,7 +518,7 @@ namespace FFXIV_RaidLootAPI.Models
         }
 
         public async Task<bool> add_gear_acquisition_timestamp(Gear newGear, Turn turn, bool IsFromBook, DataContext context){
-            if (newGear is null || newGear.GearStage == GearStage.Preparation || newGear.GearStage == GearStage.Tomes)
+            if (newGear is null || (newGear.GearStage != GearStage.Raid && newGear.GearStage != GearStage.Upgraded_Tomes))
                 return false;
             GearAcquisitionTimestamp newTimestamp = new GearAcquisitionTimestamp(){
                 GearId = newGear.Id,

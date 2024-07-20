@@ -14,16 +14,20 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly string RAID_GEAR = "Ascension";
         private static readonly string AUGMENT_TOME = "Augment";
         private static readonly string CRAFTED_GEAR = "Crafted";
+        private static readonly string NORMAL_RAID = "Light-heavy";
+        private static readonly string EX_TRIAL = "Resilient";
+        private static readonly string EX_WEAPON = "Skyruin";
+        private static readonly string EARLY_TOME = "Neo Kingdom";
         private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
-            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret","Hood", "Chapeau", }},
+            {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret","Hood", "Chapeau", "Bandana", ""}},
             {"Body",new List<string> {"Mail", "Cuirass", "Cloak", "Corselet", "Robe", "Surcoat", "Jacket", "Coat", "Tunic", "Tabard"}},
             {"Hands",new List<string> {"Armlet","Gauntlets", "Gloves", "Armguards", "Halfgloves", "Halfgloves"}},
-            {"Legs",new List<string> {"Bottom","Hose", "Breeches", "Trousers", "Longkilt", "Poleyns", "Brayettes", "Kecks"}},
+            {"Legs",new List<string> {"Bottom","Hose", "Breeches", "Trousers", "Longkilt", "Poleyns", "Brayettes", "Kecks", "Brais"}},
             {"Feet",new List<string> {"Shoe","Sollerets", "Sabatons", "Longboots", "Sandals", "Boots", "Thighboots"}},
             {"Earrings",new List<string> {"Earring"}},
             {"Necklace",new List<string> {"Necklace", "Choker"}},
-            {"Bracelets",new List<string> {"Bracelet", "Wristband", "Bangles"}},
+            {"Bracelets",new List<string> {"Bracelet", "Wristband", "Bangle"}},
             {"Ring",new List<string> {"Ring"}}
         };
 
@@ -64,6 +68,8 @@ namespace FFXIV_RaidLootAPI.Models
             {Job.Machinist, "MCH"}
         };
 
+        public static readonly int MIN_LEVEL = 690; // Min item level of gear to display to user choice.
+
         public static readonly Dictionary<Job, List<GearCategory>> JOB_TO_GEAR_CATEGORY_MAP = new Dictionary<Job, List<GearCategory>>()
         {
             {Job.Gunbreaker, new List<GearCategory> {GearCategory.Fending, GearCategory.Fending}},
@@ -103,12 +109,15 @@ namespace FFXIV_RaidLootAPI.Models
         public Job GearWeaponCategory {get; set;} = Job.Empty;
         public string IconPath {get; set;} = string.Empty;
         public int EtroGearId {get;set;}
+        //public int XivApiGearId {get;set;}
+        
+        // XIVGear and Etro both share Ids matching with XIVAPI. To facilitate we will simply use the field EtroGearId which represents the ID available on XIVAPI.
 
         // Gear object functions
 
-        public static Gear CreateGearFromEtro(string ItemLevel, string name, bool IsWeapon, string JobName, string IconPath, int EtroId)
+        public static Gear CreateGearFromInfo(string ItemLevel, string name, bool IsWeapon, string JobName, string IconPath, int Externalid, GearType gearType)
         {   
-            GearStage stage = GearStage.Preparation;
+            GearStage stage = GearStage.Preparation; // If nothing it will be preperation, ie : crafted.
             if (name.IndexOf(TOME_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Tomes;
              // Not doing else if here so it will catch the upgrade if it is but won't if its only tome.
@@ -116,9 +125,18 @@ namespace FFXIV_RaidLootAPI.Models
                 stage = GearStage.Upgraded_Tomes;
             else if (name.IndexOf(RAID_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Raid;
+            else if (name.IndexOf(EX_TRIAL, StringComparison.OrdinalIgnoreCase) >= 0)
+                stage = GearStage.Extreme;
+            else if (name.IndexOf(NORMAL_RAID, StringComparison.OrdinalIgnoreCase) >= 0)
+                stage = GearStage.Raid_Normal;
+            else if (name.IndexOf(EARLY_TOME, StringComparison.OrdinalIgnoreCase) >= 0)
+                stage = GearStage.Tome_Early;
+            else if (name.IndexOf(EX_WEAPON, StringComparison.OrdinalIgnoreCase) >= 0)
+                stage = GearStage.Extreme;
 
-            GearType type = GearType.Weapon;
-            bool FoundMatch = false;
+            GearType type = gearType;
+            bool FoundMatch = true;
+            /*
             bool IsRing;
             foreach (KeyValuePair<string, List<string>> pair in GEAR_TYPE_NAME)
             {   
@@ -138,8 +156,9 @@ namespace FFXIV_RaidLootAPI.Models
                 }
                 if (FoundMatch) break;
             }
-            if (!FoundMatch)
+            if (!FoundMatch && !IsWeapon)
                 Console.WriteLine("Gear type not found for : " + name);
+            */
             GearCategory category = GearCategory.Weapon;
             FoundMatch = false;
             foreach (KeyValuePair<GearCategory, List<string>> pair in GEAR_CATEGORY_NAME)
@@ -167,10 +186,13 @@ namespace FFXIV_RaidLootAPI.Models
                     {
                         FoundMatch=true;
                         WeaponCategory = pair.Key;
+                        Console.WriteLine("Found match for weapon : " + name + " : " + JobName + " : " + WeaponCategory.ToString() + " : " + pair.Value);
                         break;
                     }
                 }
             }
+            if (!FoundMatch)
+                Console.WriteLine("Did not found match for weapon : " + name + " : " + JobName);
             return new Gear() {
                 Name=name,
                 GearLevel=int.Parse(ItemLevel),
@@ -179,7 +201,7 @@ namespace FFXIV_RaidLootAPI.Models
                 GearCategory=category,
                 GearWeaponCategory=WeaponCategory,
                 IconPath=IconPath,
-                EtroGearId=EtroId
+                EtroGearId=Externalid
             };
 
         }   
@@ -286,32 +308,34 @@ namespace FFXIV_RaidLootAPI.Models
             };
             if (GearType == GearType.Weapon)
             {
-                IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearWeaponCategory == Job && g.GearCategory == GearCategory.Weapon);
+                List<Gear> GearIterFromDb = context.Gears.Where(g => g.GearWeaponCategory == Job && g.GearCategory == GearCategory.Weapon).OrderBy(g => g.GearLevel).ToList();
                 foreach (Gear gear in GearIterFromDb)
                 {
-                    OptionList.Add(new GearOptionsDTO.GearOption()
-                    {
-                        GearName = gear.Name,
-                        GearItemLevel = gear.GearLevel,
-                        GearStage = gear.GearStage.ToString(),
-                        GearId = gear.Id
-                    });
+                    if (gear.GearLevel >= MIN_LEVEL)
+                        OptionList.Add(new GearOptionsDTO.GearOption()
+                        {
+                            GearName = gear.Name,
+                            GearItemLevel = gear.GearLevel,
+                            GearStage = gear.GearStage.ToString(),
+                            GearId = gear.Id
+                        });
                 }
             }
             else
             {
                 GearCategory GearToChooseFrom = Gear.JOB_TO_GEAR_CATEGORY_MAP[Job][(int) GearType >=7 ? 1 : 0];
                 // Left side is index 0 right side is index 1
-                IEnumerable<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom && g.GearType == GearType);
+                List<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom && g.GearType == GearType).OrderBy(g => g.GearLevel).ToList();
                 foreach (Gear gear in GearIterFromDb)
-                {
-                    OptionList.Add(new GearOptionsDTO.GearOption()
-                    {
-                        GearName = gear.Name,
-                        GearItemLevel = gear.GearLevel,
-                        GearStage = gear.GearStage.ToString(),
-                        GearId = gear.Id
-                    });
+                {   
+                    if (gear.GearLevel >= MIN_LEVEL)
+                        OptionList.Add(new GearOptionsDTO.GearOption()
+                        {
+                            GearName = gear.Name,
+                            GearItemLevel = gear.GearLevel,
+                            GearStage = gear.GearStage.ToString(),
+                            GearId = gear.Id
+                        });
                 }
 
             }
@@ -340,11 +364,16 @@ namespace FFXIV_RaidLootAPI.Models
         Preparation = 1,
         Tomes = 2,
         Upgraded_Tomes = 3,
-        Raid = 4
+        Raid = 4,
+        Extreme = 5,
+        Raid_Normal = 6,
+        Tome_Early = 7,
+        Artifact = 8
     }
 
     public enum GearType
     {
+        Empty = 0,
         Weapon = 1,
         Head = 2,
         Body = 3,

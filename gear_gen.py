@@ -1,6 +1,6 @@
 x = "INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES (1, N'No Equipment', 0, 0, 0, 0, 0, N'0', 0)"
 
-GearToGen = [(710, "Normal raid", 1), (710, "Crafted", 1), (720, "Tome gear", 2), (730,"Augmented tome", 3), (730, "Raid", 4)]
+GearToGen = [(710, "Normal raid", 6), (710, "Crafted", 1), (720, "Tome gear", 2), (730,"Augmented tome", 3), (730, "Raid", 4), (710, "Extreme", 5), (700, "Neo Kingdom", 7), (690, "Artifact", 8)]
 
 genSQLString = """
 USE [LootManagementDB]
@@ -45,14 +45,20 @@ for gearInfo in GearToGen:
     iLevel = gearInfo[0]
     stage=gearInfo[2]
     for type in GearType:  
+        if name == "Extreme" and type in [1,2,3,4,5,6]: # Only acc and weapon
+            continue
         for cat in GearCategory:
             genSQLString+= (f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel}, {type}, {stage}, {cat}, N'0', N'0', 0)\n")
             id+=1
 
     # Generating weapon
     for i in range(1,22):
-        genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel}, 1, {stage}, 9, N'{i}', N'0', 0)\n"
-        id+=1
+        if name == "Raid":
+            genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel+5}, 1, {stage}, 9, N'{i}', N'0', 0)\n"
+            id+=1
+        else :
+            genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel}, 1, {stage}, 9, N'{i}', N'0', 0)\n"
+            id+=1
 
         # Open a file in write mode
 with open('output.sql', 'w') as file:

@@ -20,7 +20,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
         }
 
-
+        /*
         [HttpPost("PopulateDatabase")]
         public async Task<ActionResult> PopulateDatabase(int StartingIndex, int EndIndex){
             using (var context = _context.CreateDbContext())
@@ -60,7 +60,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 continue;
                             bool IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
 
-                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
+                            Gear newGear = Gear.CreateGearFromInfo(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
 
                             if (newGear.GearType == GearType.LeftRing)
                             {   
@@ -93,10 +93,11 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok();
             }
             }
-        }
+        }*/
 
-        [HttpPost("UpdateDatabase")]
-        public async Task<ActionResult> UpdateDatabase(int StartingIndex, int EndIndex){
+        /*
+        [HttpPost("UpdateDatabaseEtro")]
+        public async Task<ActionResult> UpdateDatabaseEtro(int StartingIndex, int EndIndex){
             using (var context = _context.CreateDbContext())
             {
             using (HttpClient client = new HttpClient())
@@ -134,7 +135,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 continue;
                             bool IsWeapon = Convert.ToBoolean(responseData["weapon"].ToString());
 
-                            Gear newGear = Gear.CreateGearFromEtro(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
+                            Gear newGear = Gear.CreateGearFromInfo(GearILevel,GearName,IsWeapon,JobName,IconPath, i);
 
                             if (newGear.GearType == GearType.LeftRing)
                             {   
@@ -186,6 +187,145 @@ namespace FFXIV_RaidLootAPI.Controllers
             return Ok();
             }
             }
+        }*/
+
+        [HttpPost("UpdateDatabaseXivAPI")]
+        public async Task<ActionResult> UpdateDatabaseXivAPI(int StartingIndex, int EndIndex){
+            using (var context = _context.CreateDbContext())
+            {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://xivapi.com");
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                for (int i = StartingIndex;i<=EndIndex;i++)
+                {
+                        try
+                        {
+                            // Make the GET request
+                            HttpResponseMessage response = await client.GetAsync("/item/"+i.ToString()+"/");
+                            // Ensure the request was successful
+                            //response.EnsureSuccessStatusCode();
+                            
+                            // Read and process the response content
+                            string responseBody = await response.Content.ReadAsStringAsync();
+                            Dictionary<string, object>? responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseBody);
+
+                            if (responseData is null || responseData["Name"].ToString() == "")
+                            {
+                                Console.WriteLine(i.ToString() + " Was an invalid ID");
+                                continue;
+                            }
+                            Console.WriteLine("Valid id : " + i.ToString());
+
+                            
+
+                            string? GearILevel = responseData["LevelItem"].ToString();
+                            string? GearName = responseData["Name"].ToString();
+                            
+                            string? classJobCategoryJson = responseData["ClassJobCategory"].ToString();
+                            Dictionary<string, object>? classJobCategory = JsonSerializer.Deserialize<Dictionary<string, object>>(classJobCategoryJson!);
+                            string? JobName = classJobCategory!["Name"].ToString();
+
+                            string? IconPath = responseData["Icon"].ToString();
+                            if (int.Parse(GearILevel!) < 690 || GearName!.Contains("Shield"))
+                                continue;
+                            string? EquipSlotCategory = responseData["EquipSlotCategory"].ToString();
+                            Dictionary<string, object>? equipSlot = JsonSerializer.Deserialize<Dictionary<string, object>>(EquipSlotCategory!);
+
+                            if (equipSlot is null)
+                                continue;
+
+                            GearType gearTypeFromInfo = getGearTypeFromInfo(equipSlot);
+
+                            if (gearTypeFromInfo == GearType.Empty)
+                                continue;
+
+                            bool IsWeapon = gearTypeFromInfo == GearType.Weapon;
+
+                            Gear newGear = Gear.CreateGearFromInfo(GearILevel!,GearName,IsWeapon,JobName!,IconPath!, i, gearTypeFromInfo);
+
+                            if (newGear.GearType == GearType.LeftRing)
+                            {   
+                                Gear RightRingGear = new Gear() 
+                                {
+                                    Name=newGear.Name + " (R)",
+                                    GearLevel=newGear.GearLevel,
+                                    GearStage=newGear.GearStage,
+                                    GearType=GearType.RightRing,
+                                    GearCategory=newGear.GearCategory,
+                                    GearWeaponCategory=Job.Empty,
+                                    IconPath=newGear.IconPath,
+                                    EtroGearId=newGear.EtroGearId
+                                };
+                                newGear.Name += " (L)";
+                                GearName += " (L)";
+                                Gear? existingGear = await context.Gears.FirstOrDefaultAsync(g => g.GearLevel == RightRingGear.GearLevel && g.GearStage == RightRingGear.GearStage && g.GearType == RightRingGear.GearType && g.GearCategory == RightRingGear.GearCategory);
+                                if (existingGear is not null)
+                                {
+                                    existingGear.EtroGearId = newGear.EtroGearId;
+                                    existingGear.IconPath = newGear.IconPath;
+                                    existingGear.Name = RightRingGear.Name;
+                                    await context.SaveChangesAsync();
+                                } else{
+                                    Console.WriteLine("Gear not found: " + RightRingGear.Name + " : " + RightRingGear.GearLevel + " : " + RightRingGear.GearStage + " : " + RightRingGear.GearType + " : " + RightRingGear.GearCategory);
+                                }
+                            }
+
+                            Gear? gear2 = await context.Gears.FirstOrDefaultAsync(g => g.GearLevel == newGear.GearLevel && g.GearStage == newGear.GearStage && g.GearType == newGear.GearType && g.GearCategory == newGear.GearCategory && g.GearWeaponCategory == newGear.GearWeaponCategory);
+                            if (gear2 is not null)
+                            {
+                                gear2.EtroGearId = newGear.EtroGearId;
+                                gear2.IconPath = newGear.IconPath;
+                                gear2.Name = newGear.Name;
+                                gear2.GearWeaponCategory = newGear.GearWeaponCategory;
+                                Console.WriteLine("Saving gear : " + gear2.Name);
+                                
+                                
+                            }else{
+                                Console.WriteLine("Gear not found: " + newGear.Name + " : " + newGear.GearLevel + " : " + newGear.GearStage + " : " + newGear.GearType + " : " + newGear.GearCategory);
+                            }
+                            await context.SaveChangesAsync();
+                            Console.WriteLine("Saved gear ");
+
+                        }
+                        catch (HttpRequestException e)
+                        {
+                            Console.WriteLine("Request error: " + e.Message + " : " + i.ToString());
+                            return Ok("Could not find etro gearset.");
+                        }
+                }
+            
+            return Ok();
+            }
+            }
+        }
+
+
+        private GearType getGearTypeFromInfo(Dictionary<string,object> equipSlot){
+            if (equipSlot["Body"].ToString() == "1") 
+                return GearType.Body;
+            else if (equipSlot["MainHand"].ToString() == "1") 
+                return GearType.Weapon;
+            else if (equipSlot["Ears"].ToString() == "1") 
+                return GearType.Earrings;
+            else if (equipSlot["Feet"].ToString() == "1") 
+                return GearType.Feet;
+            else if (equipSlot["FingerL"].ToString() == "1") 
+                return GearType.LeftRing;
+            else if (equipSlot["FingerR"].ToString() == "1") 
+                return GearType.LeftRing; // Left ring in both case
+            else if (equipSlot["Gloves"].ToString() == "1") 
+                return GearType.Hands;
+            else if (equipSlot["Head"].ToString() == "1") 
+                return GearType.Head;
+            else if (equipSlot["Legs"].ToString() == "1") 
+                return GearType.Legs;
+            else if (equipSlot["Neck"].ToString() == "1") 
+                return GearType.Necklace;
+            else if (equipSlot["Wrists"].ToString() == "1") 
+                return GearType.Bracelets;
+            else 
+                return GearType.Empty;
         }
 
         [HttpGet]
