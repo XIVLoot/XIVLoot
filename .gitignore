@@ -366,3 +366,5 @@ FodyWeavers.xsd
 .idea/
 
 FFXIV-RaidLootAPI/docker-db/docker-compose.yaml
+
+output.sql
