@@ -282,6 +282,184 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         }
 
+
+        [HttpPut("ImportXIVGear/{setNumber}")]
+        public async Task<ActionResult> ImportXIVGear(PlayerDTO dto, int setNumber)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(dto.Id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+                if (player.IsClaimed)
+                {   
+                    bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                    if(!isAuthorized)
+                        return Unauthorized("Not Authorized");
+                }
+
+                if (dto.UseBis)
+                    player.EtroBiS = dto.NewEtro;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri("https://api.xivgear.app/shortlink/");
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    Object items = new object();
+
+                    // Extracting uuid from link
+
+                   /* https://xivgear.app/?page=sl%7C ac66ee64-8ecd-4382-a52e-2a179f4f991d */
+
+
+                    string uuid = dto.NewEtro.Split("https://xivgear.app/?page=sl%7C")[1];
+                    Console.WriteLine("Detected uuid : " + uuid);
+
+                    try{
+
+                        // Make the GET request
+                        HttpResponseMessage response = await client.GetAsync(uuid);
+
+                        // Ensure the request was successful
+                        response.EnsureSuccessStatusCode();
+
+                        // Read and process the response content
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        Dictionary<string, object>? responseData = JsonSerializer.Deserialize<Dictionary<string, object>>(responseBody);
+
+                        if (responseData is null)
+                            throw new HttpRequestException();
+                        
+                        if (responseData.ContainsKey("sets")){
+                            // Has to take one set. Assume the user has already choosen on the front-end.
+                            string? r = responseData["sets"].ToString();
+                            List<object> setsList = JsonSerializer.Deserialize<List<object>>(r);
+
+                            if (setNumber > setsList.Count)
+                                throw new HttpRequestException();
+
+                            items = setsList[setNumber];
+
+                        } else if (responseData.ContainsKey("items")){
+                            items = responseData["items"];
+                        } else{
+                            throw new HttpRequestException();
+                        }
+
+                    } catch (HttpRequestException e){
+                        Console.WriteLine("Error happened ");
+                        return NotFound("Could not find xivgear.app gearset");
+                    }
+
+                    string? itemString = items.ToString();
+                    Dictionary<string,Dictionary<string,object>> itemSet = JsonSerializer.Deserialize<Dictionary<string,Dictionary<string,object>>>(itemString);
+
+                    if (itemSet is null)
+                        return NotFound("Error while processing gear set");
+
+                    foreach (KeyValuePair<string,Dictionary<string,object>> pair in itemSet){
+                        Console.WriteLine("Value : " + pair.Value["id"].ToString());
+                        int gearExternalId = Convert.ToInt32(pair.Value["id"].ToString());
+                        Gear? gear;
+                    
+                        if (pair.Key == "RingRight")
+                            {
+                                gear = context.Gears.FirstOrDefault(g => g.EtroGearId == gearExternalId && g.GearType == GearType.RightRing);
+                            }
+                        else if (pair.Key == "RingLeft")
+                            {
+                                gear = context.Gears.FirstOrDefault(g => g.EtroGearId == gearExternalId && g.GearType == GearType.LeftRing);
+                            }
+                        else 
+                            {
+                            gear = context.Gears.FirstOrDefault(g => g.EtroGearId == gearExternalId);
+                            }
+
+                        if (gear is null)
+                            {
+                            Console.WriteLine("Gear not found : " + gearExternalId);
+                            continue;
+                            }
+
+                        switch(pair.Key){
+                            case "Weapon":
+                                if (dto.UseBis)
+                                    player.BisWeaponGearId = gear.Id;
+                                else
+                                    player.CurWeaponGearId = gear.Id;
+                                break;
+                            case "Head":
+                                if (dto.UseBis)
+                                    player.BisHeadGearId = gear.Id;
+                                else
+                                    player.CurHeadGearId = gear.Id;
+                                break;
+                            case "Body":
+                                if (dto.UseBis)
+                                    player.BisBodyGearId = gear.Id;
+                                else
+                                    player.CurBodyGearId = gear.Id;
+                                break;
+                            case "Hand":
+                                if (dto.UseBis)
+                                    player.BisHandsGearId = gear.Id;
+                                else
+                                    player.CurHandsGearId = gear.Id;
+                                break;
+                            case "Feet":
+                                if (dto.UseBis)
+                                    player.BisFeetGearId = gear.Id;
+                                else
+                                    player.CurFeetGearId = gear.Id;
+                                break;
+                            case "Legs":
+                                if (dto.UseBis)
+                                    player.BisLegsGearId = gear.Id;
+                                else
+                                    player.CurLegsGearId = gear.Id;
+                                break;
+                            case "Ears":
+                                if (dto.UseBis)
+                                    player.BisEarringsGearId = gear.Id;
+                                else
+                                    player.CurEarringsGearId = gear.Id;
+                                break;
+                            case "Neck":
+                                if (dto.UseBis)
+                                    player.BisNecklaceGearId = gear.Id;
+                                else
+                                    player.CurNecklaceGearId = gear.Id;
+                                break;
+                            case "Wrist":
+                                if (dto.UseBis)
+                                    player.BisBraceletsGearId = gear.Id;
+                                else
+                                    player.CurBraceletsGearId = gear.Id;
+                                break;
+                            case "RingRight":
+                                if (dto.UseBis)
+                                    player.BisRightRingGearId = gear.Id;    
+                                else
+                                    player.CurRightRingGearId = gear.Id;
+                                break;
+                            case "RingLeft":
+                                if (dto.UseBis)
+                                    player.BisLeftRingGearId = gear.Id;    
+                                else
+                                    player.CurLeftRingGearId = gear.Id;
+                                break;  
+                            default:
+                                continue;
+
+                        }
+                    }
+                    await context.SaveChangesAsync();
+                    return Ok();
+                }
+            }
+        }
+
         [HttpPut("NewEtro")]
         public async Task<ActionResult> UpdatePlayerEtro(PlayerDTO dto)
         {
@@ -309,10 +487,12 @@ namespace FFXIV_RaidLootAPI.Controllers
                 List<int> ListIdGears = new List<int> {0,0,0,0,0,0,0,0,0,0,0};
                 int IdLeftRing = 0;
                 int IdRightRing = 0;
-                    try
-                    {
+
+                string uuid = dto.NewEtro.Split("https://etro.gg/gearsets/")[1];
+                try
+                {
                         // Make the GET request
-                        HttpResponseMessage response = await client.GetAsync("/api/gearsets/"+dto.NewEtro); // Replace 'endpoint' with the actual endpoint you want to access
+                        HttpResponseMessage response = await client.GetAsync("/api/gearsets/"+uuid); // Replace 'endpoint' with the actual endpoint you want to access
 
                         // Ensure the request was successful
                         response.EnsureSuccessStatusCode();

@@ -52,7 +52,7 @@ namespace FFXIV_RaidLootAPI.Models
         public DateTime Turn4LockedUntilDate {get;set;}
         public int staticId { get; set; }
 
-        public string EtroBiS {get; set;} = "";
+        public string EtroBiS {get; set;} = ""; // THe etrobis field will be used for both etro.gg and xivgear.app link. The front-end will parse the value to differentiate between both.
         public int BisWeaponGearId { get; set; }
         public int BisHeadGearId { get; set; }
         public int BisBodyGearId { get; set; }

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Inject, Input, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Player } from '../models/player';
 import { Gear } from '../models/gear';
-import { HttpService } from '../service/http.service'; // Importing the HttpService
+import { HttpClient, HttpService } from '../service/http.service'; // Importing the HttpService
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -26,6 +26,9 @@ export class PlayerDetailsSingleComponent {
   public lockOnPlayerToolTip = lockOnPlayerToolTip;
   public gearSelectionToolTip = gearSelectionToolTip;
 
+  public BisIsEtro : boolean = false;
+  public BisIsXIVGear : boolean = false;
+
   constructor(public http: HttpService, private route: ActivatedRoute, public dialog: MatDialog,
               private cdr : ChangeDetectorRef,private staticEventsService: StaticEventsService,
               private _snackBar: MatSnackBar
@@ -34,6 +37,11 @@ export class PlayerDetailsSingleComponent {
   ngOnInit(){
     this.player.GetGroupColorNoAlpha();
     this.oldJob = this.player.job;
+
+    if (this.player.etroBiS.includes("xivgear.app"))
+      this.BisIsXIVGear = true;
+    else if (this.player.etroBiS.includes("etro.gg"))
+      this.BisIsEtro = true;
   }
 
   unauthorized(){
@@ -571,7 +579,7 @@ export class PlayerDetailsSingleComponent {
     this.dialog.open(EtroDialog, {
       width: '500px',
       height: '500px',
-      data: {playerId, newEtro}
+      data: {playerId, newEtro, IsEtro : false}
     }).afterClosed().subscribe(result => {
       //console.log("after closed")
       //console.log(result)
@@ -725,6 +733,7 @@ import {
   MatDialogTitle,
   MatDialogContent,
   MAT_DIALOG_DATA,
+  MatDialogModule,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -733,22 +742,52 @@ import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.com
 import { catchError, of, throwError } from 'rxjs';
 import { StaticEventsService } from '../service/static-events.service';
 import { etroToolTip, gearSelectionToolTip, lockOnPlayerToolTip, pgsOnPlayerToolTip } from '../tooltip';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'import-etro',
   templateUrl: './import-etro.component.html',
   standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent],
+  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, CommonModule, MatDialogModule],
 })
 export class EtroDialog {
   constructor(public dialogRef: MatDialogRef<EtroDialog>,public http: HttpService,
-    @Inject(MAT_DIALOG_DATA) public data: { playerId: number; newEtro: string, oldEtro : string },
-    private sanitizer: DomSanitizer, private _snackBar: MatSnackBar
+    @Inject(MAT_DIALOG_DATA) public data: { playerId: number; newEtro: string, oldEtro : string, IsEtro : boolean },
+    private sanitizer: DomSanitizer, private _snackBar: MatSnackBar, private httpClient : HttpClient
   ) {}
-  public isLoading = false;
+  public isLoading : boolean = false;
+  public xivGearUncertainty : boolean = false;
+  public xivGearUniqueName : string = "";
+  public selectedxivGearSet : number = 0;
+  public xivGearSelection : any = [];
   getSafeUrl(){
   let unsafeUrl = 'https://etro.gg/embed/gearset/' + this.data.newEtro;
   return this.sanitizer.bypassSecurityTrustResourceUrl(unsafeUrl);
+  }
+
+  ngOnInit(){
+    if (!this.data.IsEtro){
+      // Must check if more than one set.
+      this.isLoading = true;
+      var uuid = this.data.newEtro.split("xivgear.app/?page=sl%7C")[1];
+      this.httpClient.get("https://api.xivgear.app/shortlink/" + uuid).subscribe((data) => {
+        if ('items' in data){
+          this.xivGearUniqueName = data['name'];
+          this.isLoading = false;return;
+        } else if ('sets' in data){
+          this.xivGearUncertainty = true;
+          var setList : any = data['sets'];
+          for (let set in setList){
+            this.xivGearSelection.push([setList[set]['name'], set]);
+          }
+          this.isLoading = false;return;
+        }
+      });
+    }
+  }
+
+  onSelectXIVGearSet(id : number){
+    this.xivGearSelection = id;
   }
 
   unauthorized(){
@@ -763,7 +802,6 @@ export class EtroDialog {
   }
 
   ImportEtro(playerId : number, newEtro : string){
-    return;
     this.isLoading = true;
     this.http.changePlayerEtro(playerId, newEtro).pipe(
       catchError(err => {
@@ -792,6 +830,10 @@ export class EtroDialog {
         });
       this.dialogRef.close("Yes");
     });
+  }
+
+  ImportXIVGear(playerId : number, link : string){
+
   }
 }
 
