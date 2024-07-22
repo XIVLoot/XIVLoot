@@ -24,8 +24,7 @@ export const pieceUntilLockToolTip = `THIS FEATURE IS CURRENTLY DISABLED.This al
 
 export const numberWeekResetToolTip = `This allows you to configure for how many weeks a player is locked once it is first locked. Note that the lock starts at the next loot pool reset (every tuesday 4 am EST) and not as soon as gear is acquired.`
 
-export const etroToolTip = `Put the link (or only the UUID of the gearset) of any etro.gg gearset and click the "Import" button to be prompted to import it as your new best in slot. Click the "Etro.gg" button to view the 
-                            gearset on etro.gg. Note that it only saves the gearset's UUID (a unique identifier) so you will not find the whole etro.gg link when you come back to to this website.`;
+export const etroToolTip = `To import a current gear set click the 'Import cur' button which will prompt you to input a etro.gg or xivgear.app link. To import a BiS gearset copy your valid etro.gg or xivgear.app link into the 'Bis Link' field and then press the 'Import BiS' button to be prompted to import the gearset as your BiS gearset.`;
 export const pgsOnPlayerToolTip = `This is the current PGS value of the player. The colored indicator refers to the color grouping priority (gold, purple, blue and green in this order). The player(s) with the smallest PGS
                                     value will be recommended to receive gear by the PGS analysis.`;
 export const lockOnPlayerToolTip = `This section shows all fights the player is currently locked from with the date the lock will be lifted. Click on a fight to remove the lock if needed.`;
