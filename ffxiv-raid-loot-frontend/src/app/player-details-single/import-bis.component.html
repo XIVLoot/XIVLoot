@@ -1,0 +1,36 @@
+<ng-container *ngIf="!data.IsEtro">
+<div>
+  <h2 mat-dialog-title>Would you like to import the following xivgear.app gearset as your BiS?</h2>
+  <p mat-dialog-content *ngIf="xivGearUncertainty" style="color:rgba(255, 255, 255, 0.95);width: 97%;margin-left: 1.5%;background-color: rgba(255, 0, 0, 0.2);border: 1px solid rgba(255, 0, 0, 0.5);padding: 5px;border-radius: 10px;">The given xivgear url contains mutliple gear sets. Please choose one to import.</p>
+  <p mat-dialog-content *ngIf="!xivGearUncertainty">Gearset name : {{xivGearUniqueName}}</p>
+  <div *ngIf="xivGearUncertainty" style="width: 97%;margin: 1%;height: 175px;background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border: 2px solid black;display: flex;flex-direction: column;align-items: center;overflow-y: auto;">
+    <div *ngFor="let set of xivGearSelection" 
+          style="width: 95%;height: 50px;background-color: rgba(0, 0, 0, 0.3);margin-top: 5px;margin-bottom: 5px;padding: 5px;border-radius: 10px;border: 1px solid black;"
+          (click)="selectGearSet([set[0],set[1]])"
+          (mouseenter)="mouseOver($event)" (mouseleave)="mouseLeave($event)">
+      <h2 style="text-align: center;">{{set[0]}}</h2>
+    </div>
+  </div>
+  <p mat-dialog-content *ngIf="xivGearUncertainty">Selected gearset : {{selectedxivGearSet[0]}}</p>
+
+  <mat-dialog-actions style="display: flex; justify-content: space-between;">
+    <button mat-button style="background-color: rgba(0, 0, 0, 0.156);" (click)="ImportXIVGear(data.playerId, data.newEtro)" >Yes</button>
+    <button mat-button mat-dialog-close style="background-color: rgba(0, 0, 0, 0.156);">No</button>
+  </mat-dialog-actions>
+</div>
+</ng-container>
+
+<ng-container *ngIf="data.IsEtro">
+<div>
+<h2 mat-dialog-title>Would you like to import the following etro.gg gearset as your BiS?</h2>
+<div style="width: 98%;padding-left: 1%;height: 95%;">
+  
+<iframe style="width: 100%;height:100%;border-radius: 10px;border: 1px solid black;" title="Etro Gearset" [src]="getSafeUrl()"></iframe>
+</div>
+
+<mat-dialog-actions style="display: flex; justify-content: space-between;">
+  <button mat-button style="background-color: rgba(0, 0, 0, 0.156);" (click)="ImportEtro(data.playerId, data.newEtro)">Yes</button>
+  <button mat-button mat-dialog-close style="background-color: rgba(0, 0, 0, 0.156);">No</button>
+</mat-dialog-actions>
+</div>
+</ng-container>

@@ -310,7 +310,7 @@ export class EtroDialog {
 
   ImportEtro(playerId : number, newEtro : string){
     this.isLoading = true;
-    this.http.changePlayerEtro(playerId, newEtro).pipe(
+    this.http.changePlayerEtro(playerId, newEtro, false).pipe(
       catchError(err => {
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
           duration: 8000,

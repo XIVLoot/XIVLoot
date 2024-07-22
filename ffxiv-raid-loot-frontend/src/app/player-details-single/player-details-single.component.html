@@ -24,20 +24,16 @@
       </div>
       
       <div style="display: flex; flex-direction: row; justify-content: space-between;margin-top: 1%;height:7ch;">
-        <mat-form-field style="width:70%;height: 8ch;margin-top: 0px!important;">
+        <mat-form-field style="width:60%;height: 8ch;margin-top: 0px!important;">
             <mat-label>BiS link : </mat-label>
-            <input matInput value="{{player.etroBiS}}"  id="etroField" #etroField [(ngModel)]="player.etroBiS" (ngModelChange)="onEtroBiSChange()">
+            <input matInput  id="etroField" #etroField [(ngModel)]="player.etroBiS" (ngModelChange)="onEtroBiSChange()">
         </mat-form-field>
         <div style="display: flex; flex-direction: column; align-items: center;width: 15%;">
-          <div style="margin-top: 5%;">
-          <button mat-raised-button color="accent" style="width: 20%;height: 2.5ch;" (click)="EtroDialogOpen(player.id)">Import</button>
+          <div style="margin-top: 5%;padding-right: 12%;">
+          <button mat-raised-button color="accent" style="width: 120px;height: 2.5ch;" (click)="GearImportDialog(player.id, true)">Import BiS</button>
           </div>
           <div style="padding-top: 0.5ch;padding-right: 12%;">
-          <a mat-raised-button href="{{ 'https://etro.gg/gearset/' + player.etroBiS }}" target="_blank" style="width: 20%;height: 2.5ch;margin-left: 2ch;" title="View the gearset on {{BisIsEtro ? 'etro.gg' : 'xivgear.app'}}" [disabled]="!BisIsXIVGear && !BisIsEtro">
-            <span *ngIf="BisIsEtro">Etro.gg</span>
-            <span *ngIf="BisIsXIVGear">XIVGear</span>
-            <span *ngIf="!BisIsXIVGear && !BisIsEtro">----------</span>
-          </a>
+          <button mat-raised-button color="accent" style="width: 120px;height: 2.5ch;" (click)="GearImportDialog(player.id, false)">Import Cur</button>
           </div>
         </div>
         <mat-icon matTooltip="{{etroToolTip}}" style="cursor: pointer;color:white;margin-top: 3%;margin-right: 10px;">help_outline</mat-icon>

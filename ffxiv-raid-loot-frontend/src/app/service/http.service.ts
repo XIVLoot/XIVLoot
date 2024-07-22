@@ -103,14 +103,29 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     );
   }
 
-  changePlayerEtro(playerId : number, newEtro : string) : Observable<any>{
+  changePlayerEtro(playerId : number, newEtro : string, useBis : boolean) : Observable<any>{
     const url = `${this.api}Player/NewEtro`; // Adjust the endpoint as necessary
     const body = {
       "id": playerId,
-      "UseBis": true,
+      "UseBis": useBis,
       "gearToChange": 1,
       "newGearId": 0,
       "newEtro": newEtro,
+      "newName": "string",
+      "newJob": 0,
+      "newLock": true
+    }
+    return this.http.put(url, body, {withCredentials:true});
+  }
+
+  changePlayerXIVGear(playerId : number, newXIV : string, gearNumber : number, useBis : boolean) : Observable<any>{
+    const url = `${this.api}Player/ImportXIVGear/${gearNumber}`; // Adjust the endpoint as necessary
+    const body = {
+      "id": playerId,
+      "UseBis": useBis,
+      "gearToChange": 1,
+      "newGearId": 0,
+      "newEtro": newXIV,
       "newName": "string",
       "newJob": 0,
       "newLock": true

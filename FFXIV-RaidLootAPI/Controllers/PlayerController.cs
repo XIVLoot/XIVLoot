@@ -291,6 +291,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 Players? player = await context.Players.FindAsync(dto.Id);
                 if (player is null)
                     return NotFound("Player not found");
+                Console.WriteLine("HERE");
 
                 if (player.IsClaimed)
                 {   
@@ -298,22 +299,30 @@ namespace FFXIV_RaidLootAPI.Controllers
                     if(!isAuthorized)
                         return Unauthorized("Not Authorized");
                 }
+                 Console.WriteLine("HERE2");
 
                 if (dto.UseBis)
                     player.EtroBiS = dto.NewEtro;
+                 Console.WriteLine("HERE3");
 
                 using (HttpClient client = new HttpClient())
                 {
                     client.BaseAddress = new Uri("https://api.xivgear.app/shortlink/");
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                     Console.WriteLine("HERE4");
                     Object items = new object();
+                     Console.WriteLine("HERE5");
 
                     // Extracting uuid from link
 
                    /* https://xivgear.app/?page=sl%7C ac66ee64-8ecd-4382-a52e-2a179f4f991d */
-
-
-                    string uuid = dto.NewEtro.Split("https://xivgear.app/?page=sl%7C")[1];
+                    Console.WriteLine(dto.NewEtro);
+                    Console.WriteLine(dto.NewEtro.Split("https://xivgear.app/?page=sl|")[0]);
+                    
+                    List<string> firstTry = dto.NewEtro.Split("xivgear.app/?page=sl|").ToList();
+                    List<string> secondTry = dto.NewEtro.Split("xivgear.app/?page=sl%7C").ToList();
+                    string uuid = firstTry.Count > 1 ? firstTry[1] : secondTry[1];
+                    Console.WriteLine("HERE6");
                     Console.WriteLine("Detected uuid : " + uuid);
 
                     try{
@@ -339,7 +348,9 @@ namespace FFXIV_RaidLootAPI.Controllers
                             if (setNumber > setsList.Count)
                                 throw new HttpRequestException();
 
-                            items = setsList[setNumber];
+                            string? setString = setsList[setNumber].ToString();
+                            items = JsonSerializer.Deserialize<Dictionary<string, object>>(setString)["items"];
+
 
                         } else if (responseData.ContainsKey("items")){
                             items = responseData["items"];
@@ -353,6 +364,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                     }
 
                     string? itemString = items.ToString();
+                    Console.WriteLine(itemString);
                     Dictionary<string,Dictionary<string,object>> itemSet = JsonSerializer.Deserialize<Dictionary<string,Dictionary<string,object>>>(itemString);
 
                     if (itemSet is null)
@@ -487,8 +499,9 @@ namespace FFXIV_RaidLootAPI.Controllers
                 List<int> ListIdGears = new List<int> {0,0,0,0,0,0,0,0,0,0,0};
                 int IdLeftRing = 0;
                 int IdRightRing = 0;
-
-                string uuid = dto.NewEtro.Split("https://etro.gg/gearsets/")[1];
+                Console.WriteLine("Etro link : " + dto.NewEtro);
+                string uuid = dto.NewEtro.Split("https://etro.gg/gearset/")[1];
+                Console.WriteLine("Etro detected uuid : " + uuid);
                 try
                 {
                         // Make the GET request
@@ -598,7 +611,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                         }
                     }
                 await context.SaveChangesAsync();
-                return AllGearPieceFound ? Ok() : Ok("Could not find at least one gear piece.");
+                return Ok();
+                //return AllGearPieceFound ? Ok() : Ok("Could not find at least one gear piece.");
             }
         
         }
