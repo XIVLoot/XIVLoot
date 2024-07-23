@@ -24,7 +24,7 @@ export const pieceUntilLockToolTip = `THIS FEATURE IS CURRENTLY DISABLED.This al
 
 export const numberWeekResetToolTip = `This allows you to configure for how many weeks a player is locked once it is first locked. Note that the lock starts at the next loot pool reset (every tuesday 4 am EST) and not as soon as gear is acquired.`
 
-export const etroToolTip = `To import a current gear set click the 'Import cur' button which will prompt you to input a etro.gg or xivgear.app link. To import a BiS gearset copy your valid etro.gg or xivgear.app link into the 'Bis Link' field and then press the 'Import BiS' button to be prompted to import the gearset as your BiS gearset.`;
+export const etroToolTip = `To import either a current or BiS gearset click on the 'Import gear' button. If you import a BiS gearset it will be saved to this character and you can then access it on its original website using the button to the left of 'Import gear'.`;
 export const pgsOnPlayerToolTip = `This is the current PGS value of the player. The colored indicator refers to the color grouping priority (gold, purple, blue and green in this order). The player(s) with the smallest PGS
                                     value will be recommended to receive gear by the PGS analysis.`;
 export const lockOnPlayerToolTip = `This section shows all fights the player is currently locked from with the date the lock will be lifted. Click on a fight to remove the lock if needed.`;
@@ -38,3 +38,6 @@ export const alreadyClaimedToolTip = `Someone else has already claimed the playe
 export const UseBookForGearAcqToolTip = `This options allows to specify to the program if any gear acquisitioned was through books. If a gear is gained through book (rather than through raid) the player will not be locked (if such would have been the case) and the gear acquisition
                                          history will display that the specific gear coffer (or augment item) was obtained through the use of books.`;
 export const HomeClaimPlayerToolTip = `Here you will see all of your claimed players. Claimed players are players from static that only you have the ability to modify. In a way you own these players. To claim a player create a static and select a player to edit, you will then see a "Claim Player" option above the edit window if this player has not been claimed yet. To unclaim a player, navigate to a previously claimed player and above the edit window there will be a "Unclaim player" option which you click to unclaim the player.`;
+
+export const UseBisToolTip = `To import the etro.gg or xivgear.app gearset as your current gear set uncheck this option. To import it as your current BiS check this option. If you import as your BiS the link will be saved with this character
+                              and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button on the character's view page.`;

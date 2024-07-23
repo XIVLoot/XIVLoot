@@ -3,6 +3,32 @@ import { Player } from '../models/player';
 import { Gear } from '../models/gear';
 import { HttpClient, HttpService } from '../service/http.service'; // Importing the HttpService
 import { ActivatedRoute } from '@angular/router';
+import {
+  MatDialog,
+  MatDialogRef,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogTitle,
+  MatDialogContent,
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
+import { catchError, of, throwError } from 'rxjs';
+import { StaticEventsService } from '../service/static-events.service';
+import { UseBisToolTip, etroToolTip, gearSelectionToolTip, lockOnPlayerToolTip, pgsOnPlayerToolTip } from '../tooltip';
+import { CommonModule } from '@angular/common';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
+import { MatInput } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+
+
 
 @Component({
   selector: 'app-player-details-single',
@@ -575,39 +601,14 @@ export class PlayerDetailsSingleComponent {
   }
 
   GearImportDialog(playerId : number, useBis : boolean){
-
-    if (!useBis){
-      const newEtro = this.etroInputRef.nativeElement.value;
-      this.dialog.open(ImportCurDialog, {
-        width: '500px',
-        height: '700px',
-        data: {playerId, newEtro, IsEtro : this.BisIsEtro}
-      }).afterClosed().subscribe(result => {
-        if (result === "Yes"){this.RegetPlayerInfo();}
-      });
-      return;
-    }
-
-    if (this.player.etroBiS === "" || !this.player.etroBiS.includes("etro.gg") && !this.player.etroBiS.includes("xivgear.app")){
-      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-        duration: 3500,
-        data: {
-          message: "The bis link must contain a valid link from 'etro.gg' or 'xivgear.app'",
-          subMessage: "",
-          color : "yellow"
-        }
-      });
-      return;
-    }
-    this.BisIsEtro = this.player.etroBiS.includes("etro.gg");
-    const newEtro = this.etroInputRef.nativeElement.value;
-    this.dialog.open(ImportBisDialog, {
+    this.dialog.open(ImportGearDialog, {
       width: '500px',
-      height: '500px',
-      data: {playerId, newEtro, IsEtro : this.BisIsEtro}
+      height: '800px',
+      data: {playerId, newEtro : this.player.etroBiS, IsEtro : this.BisIsEtro}
     }).afterClosed().subscribe(result => {
       if (result === "Yes"){this.RegetPlayerInfo();}
     });
+    return;
   }
 
   onChangeName(event : Event){
@@ -745,187 +746,16 @@ export class PlayerDetailsSingleComponent {
 
 }
 
-import {
-  MatDialog,
-  MatDialogRef,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogTitle,
-  MatDialogContent,
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-} from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { DomSanitizer } from '@angular/platform-browser';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
-import { catchError, of, throwError } from 'rxjs';
-import { StaticEventsService } from '../service/static-events.service';
-import { etroToolTip, gearSelectionToolTip, lockOnPlayerToolTip, pgsOnPlayerToolTip } from '../tooltip';
-import { CommonModule } from '@angular/common';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { FormsModule } from '@angular/forms';
-import { MatInput } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
+
 
 @Component({
-  selector: 'import-bis',
-  templateUrl: './import-bis.component.html',
+  selector: 'import-gear',
+  templateUrl: './import-gear.component.html',
   standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, CommonModule, MatDialogModule, MatSlideToggle, FormsModule],
+  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, CommonModule, MatDialogModule, MatSlideToggle, FormsModule, MatInput, MatFormFieldModule, MatIcon, MatTooltip],
 })
-export class ImportBisDialog {
-  constructor(public dialogRef: MatDialogRef<ImportBisDialog>,public http: HttpService,
-    @Inject(MAT_DIALOG_DATA) public data: { playerId: number; newEtro: string, oldEtro : string, IsEtro : boolean },
-    private sanitizer: DomSanitizer, private _snackBar: MatSnackBar, private httpClient : HttpClient
-  ) {}
-  public isLoading : boolean = false;
-  public xivGearUncertainty : boolean = false;
-  public xivGearUniqueName : string = "";
-  public selectedxivGearSet : any = ["", 0];
-  public xivGearSelection : any = [];
-  public uuid : string = "";
-  public useBis : boolean = true;
-  getSafeUrl(){
-  let unsafeUrl = 'https://etro.gg/embed/gearset/' + this.uuid;
-  return this.sanitizer.bypassSecurityTrustResourceUrl(unsafeUrl);
-  }
-
-  mouseOver(event : any){
-    event.target.style.outline = "2px solid rgba(255, 255, 255, 0.7)";
-    event.target.style.cursor = 'pointer';
-  }
-  mouseLeave(event : any){
-    event.target.style.outline = "";
-  }
-
-
-  ngOnInit(){
-    this.useBis = true;
-    if (!this.data.IsEtro){
-      // Must check if more than one set.
-      this.isLoading = true;
-      var firstTry = this.data.newEtro.split("xivgear.app/?page=sl|");
-      var secondTry = this.data.newEtro.split("xivgear.app/?page=sl%7C");
-      var uuid = firstTry.length > 1 ? firstTry[1] : secondTry[1];
-      this.uuid = uuid;
-      //uuid = "cd2c8bf4-1fa2-4197-88f5-f305b9a93bdf";
-      this.httpClient.get("https://api.xivgear.app/shortlink/" + uuid).subscribe((data) => {
-        if ('items' in data){
-          this.xivGearUniqueName = data['name'];
-          this.selectedxivGearSet = [data['name'], 0];
-          this.isLoading = false;return;
-        } else if ('sets' in data){
-          this.xivGearUncertainty = true;
-          var setList : any = data['sets'];
-          for (let set in setList){
-            this.xivGearSelection.push([setList[set]['name'], set]);
-          }
-          this.isLoading = false;return;
-        }
-      });
-    } else{
-      this.uuid = this.data.newEtro.split("https://etro.gg/gearset/")[1];
-    }
-  }
-
-  selectGearSet(info : any){
-    this.selectedxivGearSet = info;
-  }
-
-  unauthorized(){
-    this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-      duration: 3500,
-      data: {
-        message: "You have not claimed this player. Only its owner can modify it.",
-        subMessage: "The changes will be reverted",
-        color : "red"
-      }
-    });
-  }
-
-  ImportEtro(playerId : number, newEtro : string){
-    this.isLoading = true;
-    console.log("Importing etro : " + newEtro);
-    this.http.changePlayerEtro(playerId, newEtro, true).pipe(
-      catchError(err => {
-        if (err.status === 401) {
-          this.unauthorized();
-        } else{
-          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-            duration: 8000,
-            data: {
-              message: "Error while trying to import from etro.",
-              subMessage: "(Make sure the link is correct)",
-              color : "red"
-            }
-          });
-        }
-        return throwError(() => new Error('Failed to import etro : ' + err.message))
-      })
-    ).subscribe((data) => {
-        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-          duration: 8000,
-          data: {
-            message: "Successfuly imported gearset from etro.gg",
-            subMessage: "(Unmatched gear piece where left as is, if some 'No Equipment' remain please change them manually)",
-            color : "green"
-          }
-        });
-      this.dialogRef.close("Yes");
-    });
-  }
-
-  ImportXIVGear(playerId : number, newXIV : string){
-    this.isLoading = true;
-    this.http.changePlayerXIVGear(playerId, newXIV, this.selectedxivGearSet[1], true).pipe(
-      catchError(err => {
-        if (err.status === 401) {
-          this.unauthorized();
-        } else if(err.error.text === "Could not find at least one gear piece."){
-          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-            duration: 8000,
-            data: {
-              message: "At least one piece of gear could not be matched with our database",
-              subMessage: "(Artifact gear is not supported yet, please manually set it where needed)",
-              color : "yellow"
-            }
-          });
-        }
-        else{
-          this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-            duration: 8000,
-            data: {
-              message: "Error while trying to import from xivgear.",
-              subMessage: "(Make sure the link is correct)",
-              color : "red"
-            }
-          });
-        }
-        return throwError(() => new Error('Failed to import xivgear : ' + err.message))
-      })
-    ).subscribe((data) => {
-        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
-          duration: 8000,
-          data: {
-            message: "Successfuly imported gearset from xivgear.app",
-            subMessage: "(Unmatched gear piece where left as is, if some 'No Equipment' remain please change them manually)",
-            color : "green"
-          }
-        });
-      this.dialogRef.close("Yes");
-    });
-  }
-}
-
-@Component({
-  selector: 'import-cur',
-  templateUrl: './import-cur.component.html',
-  standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, CommonModule, MatDialogModule, MatSlideToggle, FormsModule, MatInput, MatFormFieldModule],
-})
-export class ImportCurDialog {
-  constructor(public dialogRef: MatDialogRef<ImportCurDialog>,public http: HttpService,
+export class ImportGearDialog {
+  constructor(public dialogRef: MatDialogRef<ImportGearDialog>,public http: HttpService,
     @Inject(MAT_DIALOG_DATA) public data: { playerId: number; newEtro: string, oldEtro : string, IsEtro : boolean },
     private sanitizer: DomSanitizer, private _snackBar: MatSnackBar, private httpClient : HttpClient
   ) {}
@@ -938,6 +768,9 @@ export class ImportCurDialog {
   public bisLink : string = "";
   public isEtro : boolean = false;
   public isXIVGear : boolean = false;
+  public useBis : boolean = true;
+  public safeEtroUrl : any = "";
+  public UseBisToolTip = UseBisToolTip;
   getSafeUrl(){
   let unsafeUrl = 'https://etro.gg/embed/gearset/' + this.uuid;
   return this.sanitizer.bypassSecurityTrustResourceUrl(unsafeUrl);
@@ -988,17 +821,20 @@ export class ImportCurDialog {
           var setList : any = data['sets'];
           for (let set in setList){
             this.xivGearSelection.push([setList[set]['name'], set]);
+            this.selectedxivGearSet = [setList[set]['name'], set]
           }
           this.isLoading = false;return;
         }
       });
     } else if (this.isEtro){
       this.uuid = this.bisLink.split("https://etro.gg/gearset/")[1];
+      this.safeEtroUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://etro.gg/embed/gearset/' + this.uuid);
     }
   }
 
-  selectGearSet(info : any){
+  selectGearSet(info : any, event : any){
     this.selectedxivGearSet = info;
+    event.target.style.outline = "2px solid white";
   }
 
   unauthorized(){
@@ -1015,7 +851,7 @@ export class ImportCurDialog {
   ImportEtro(playerId : number, newEtro : string){
     this.isLoading = true;
     console.log("Importing etro : " + newEtro);
-    this.http.changePlayerEtro(playerId, this.bisLink, false).pipe(
+    this.http.changePlayerEtro(playerId, this.bisLink, this.useBis).pipe(
       catchError(err => {
         if (err.status === 401) {
           this.unauthorized();
@@ -1046,7 +882,7 @@ export class ImportCurDialog {
 
   ImportXIVGear(playerId : number, newXIV : string){
     this.isLoading = true;
-    this.http.changePlayerXIVGear(playerId, this.bisLink, this.selectedxivGearSet[1], false).pipe(
+    this.http.changePlayerXIVGear(playerId, this.bisLink, this.selectedxivGearSet[1], this.useBis).pipe(
       catchError(err => {
         if (err.status === 401) {
           this.unauthorized();
@@ -1093,8 +929,8 @@ export class ImportCurDialog {
               {{data.content}}
             </mat-dialog-content>
             <mat-dialog-actions>
-              <button mat-button (click)="dialogRef.close('Yes')">{{data.yes_option}}</button>
               <button mat-button (click)="dialogRef.close('No')">{{data.no_option}}</button>
+              <button mat-button (click)="dialogRef.close('Yes')">{{data.yes_option}}</button>
             </mat-dialog-actions>`,
   standalone: true,
   imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent],
