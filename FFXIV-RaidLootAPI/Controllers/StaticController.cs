@@ -32,6 +32,130 @@ namespace FFXIV_RaidLootAPI.Controllers
             
         }
 
+        [HttpGet("GetItemNeedForPlayers/{uuid}")]
+        public async Task<ActionResult<ItemBreakdownDTO>> GetItemNeedForPlayers(string uuid)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound("Static not found");
+
+                List<Players> players = await context.Players.Where(p => p.staticId == dbStatic.Id).ToListAsync();
+                ItemBreakdownDTO itemBreakdown = new ItemBreakdownDTO();
+                foreach (GearType type in Enum.GetValues(typeof(GearType)))
+                {
+                    if (type == GearType.Empty)
+                        continue;
+
+                    foreach (Players player in players)
+                    {
+                        if (player is null)
+                            continue;
+                        
+                        Turn turn = Turn.turn_0;
+
+                        // Need raid?
+                        if (await player.need_this_gear(type, GearStage.Raid, context))
+                        {
+                            switch(type){
+                                case GearType.Weapon:
+                                    turn = Turn.turn_4;
+                                    break;
+                                case GearType.Legs:
+                                case GearType.Body:
+                                    turn = Turn.turn_3;
+                                    break;
+                                case GearType.Head:
+                                case GearType.Hands:
+                                case GearType.Feet:
+                                    turn = Turn.turn_2;
+                                    break;
+                                default:
+                                    turn = Turn.turn_1;
+                                    break;
+                            }
+
+                            if (turn == Turn.turn_2){
+                                // Everything raid from 2 can drop in 3 so also add to turn_3.
+                                itemBreakdown.ItemBreakdown[Turn.turn_2][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                    Name=player.Name,
+                                    NeedThisGearType=true,
+                                    playerId=player.Id
+                                });
+                                itemBreakdown.ItemBreakdown[Turn.turn_3][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                    Name=player.Name,
+                                    NeedThisGearType=true,
+                                    playerId=player.Id
+                                });
+                            } else if(turn == Turn.turn_1 && (type == GearType.RightRing || type == GearType.LeftRing)){
+                                if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_1, "Ring")){
+                                    itemBreakdown.ItemBreakdown[turn]["Ring"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                        Name=player.Name,
+                                        NeedThisGearType=true,
+                                        playerId=player.Id
+                                    });
+                                }
+                            }
+                            else{
+                                itemBreakdown.ItemBreakdown[turn][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                    Name=player.Name,
+                                    NeedThisGearType=true,
+                                    playerId=player.Id
+                                });
+                            }
+                            turn = Turn.turn_0; // Reset
+                        }
+
+                        
+
+                        // Need tome augment
+                        if (await player.need_this_gear(type, GearStage.Upgraded_Tomes, context))
+                        {
+                            switch(type){
+                                case GearType.Weapon:
+                                    turn = Turn.turn_4;
+                                    break;
+                                case GearType.Legs:
+                                case GearType.Body:
+                                case GearType.Feet:
+                                case GearType.Hands:
+                                case GearType.Head:
+                                    turn = Turn.turn_3;
+                                    break;
+                                default:
+                                    turn = Turn.turn_2;
+                                    break;
+                            }
+
+                            //if (turn == Turn.turn_4)// TODO SUPPORT WEAPON UPGRADE
+                            //    continue;
+                            if (turn == Turn.turn_2){
+                                // Check if the player already needs a shine. If they do we add to the counter
+                                if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_2, "Shine")){
+                                    itemBreakdown.ItemBreakdown[Turn.turn_2]["Shine"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                        Name=player.Name,
+                                        NeedThisGearType=true,
+                                        playerId=player.Id
+                                    });
+                                }
+                            } else if (turn == Turn.turn_3){
+                                if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_3, "Twine")){
+                                    itemBreakdown.ItemBreakdown[turn]["Twine"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                        Name=player.Name,
+                                        NeedThisGearType=true,
+                                        playerId=player.Id
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                }
+                return Ok(itemBreakdown);
+            }
+        }
+
 
 // Get only static name
         [HttpGet("GetOnlyStaticName/{uuid}")]

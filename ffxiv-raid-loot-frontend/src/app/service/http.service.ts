@@ -118,6 +118,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     return this.http.put(url, body, {withCredentials:true});
   }
 
+  GetItemBreakdownInfo(uuid : string) : Observable<any>{
+    const url = `${this.api}Static/GetItemNeedForPlayers/${uuid}`;
+    return this.http.get(url).pipe(
+      catchError(error => throwError(() => new Error('Failed to get item breakdown info: ' + error.message)))
+    );
+  }
+
   changePlayerXIVGear(playerId : number, newXIV : string, gearNumber : number, useBis : boolean) : Observable<any>{
     const url = `${this.api}Player/ImportXIVGear/${gearNumber}`; // Adjust the endpoint as necessary
     const body = {
