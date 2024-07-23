@@ -42,6 +42,4 @@ export const HomeClaimPlayerToolTip = `Here you will see all of your claimed pla
 export const UseBisToolTip = `To import the etro.gg or xivgear.app gearset as your current gear set uncheck this option. To import it as your current BiS check this option. If you import as your BiS the link will be saved with this character
                               and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button on the character's view page.`;
 
-export const GearBreakdownToolTip = `This section shows all the gear players need. You can navigate to each turn and see what player need which drop. It indicates how many of the drop a player needs and also
-                                     indicates if the player is currently locked from a fight by having the background color be green if the player CAN receive gear (is not locked) and red if the player CANNOT
-                                     receive gear (is locked).`;
+export const GearBreakdownToolTip = `Within this section, you can find a breakdown of all Raid items required by members of the static. Simply select the Boss on the left side to see a color coordinated view into who needs what item for their BIS build. Green indicates a player is not locked out of getting loot, while red shows players who are locked out based on the loot rules your static follows.`;

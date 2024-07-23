@@ -89,7 +89,7 @@ export class StaticDetailComponent implements OnInit {
     "turn_4" : {}
   };
 
-  public curViewingTool : string = "GearAcq";
+  public curViewingTool : string = "GearBrk";
 
   changeCurViewingTool(newtool : string){
     this.curViewingTool=newtool;

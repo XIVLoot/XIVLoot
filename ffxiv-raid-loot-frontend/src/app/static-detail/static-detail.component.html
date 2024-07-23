@@ -141,13 +141,19 @@
   </div>
 
   <div  style="width:412px;height: 50px;display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;">    
-    <div style="width: 200px;height:40px;margin: 0;margin-left: 5px;margin-top: 5px;">
-      <button mat-raised-button color="accent" style="width: 180px;height: 5ch;margin-left: 10px;" (click)="changeCurViewingTool('GearAcq')">View Gear acquisition history</button>
+    <div style="width: 200px;height:40px;margin: 0;margin-top: 5px;">
+      <button mat-raised-button color="accent" style="width: 180px;height: 5ch;margin-left: 10px;" (click)="changeCurViewingTool('GearBrk')" 
+      [style.outline]="curViewingTool === 'GearBrk' ? '4px solid rgba(0,255,0,0.8)' : ''"
+      >Raid Loot Breakdown</button>
     </div>
     <div style="height: 40px;border-right: 3px solid black;margin:0;margin-top: 5px;"></div>
-    <div style="width: 200px;height:40px;margin: 0;margin-top: 5px;">
-      <button mat-raised-button color="accent" style="width: 180px;height: 5ch;margin-left: 10px;" (click)="changeCurViewingTool('GearBrk')" >View Gear breakdown</button>
+    <div style="width: 200px;height:40px;margin: 0;margin-left: 5px;margin-top: 5px;">
+      <button mat-raised-button color="accent" style="width: 180px;height: 5ch;margin-left: 10px;" (click)="changeCurViewingTool('GearAcq')"
+      [style.outline]="curViewingTool === 'GearAcq' ? '4px solid rgba(0,255,0,0.8)' : ''"
+      >Acquisition History</button>
     </div>
+
+
   </div>
 
   <div *ngIf="curViewingTool === 'GearAcq'" style="background-color: rgba(0, 0, 0, 0.2);border-radius: 10px;border:3px solid rgba(0, 0, 0, 0.4)">

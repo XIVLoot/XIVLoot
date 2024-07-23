@@ -3,7 +3,7 @@
 <div style="width: 15%;display: flex;flex-direction: column;margin-right: 10px;">
 
     <div>
-        <h2 style="text-align: center;margin: 0;">Gear breakdown <mat-icon matTooltip="{{GearBreakdownToolTip}}" style="cursor: pointer;color:white;">help_outline</mat-icon></h2>
+        <h2 style="text-align: center;margin-bottom: 0px;">Arcadion tier 1</h2>
     </div>
 
     <div style="width: 90%;margin-left: 5%;border-bottom: 2px solid black;"></div>
@@ -32,7 +32,7 @@
 
 <div style="height: 50px;width: 100%;">
 
-    <h2 style="text-align: center;margin-bottom: 0px;">{{curSelectTurnName}}</h2>
+    <h2 style="text-align: center;margin-bottom: 0px;">{{curSelectTurnName}}<mat-icon matTooltip="{{GearBreakdownToolTip}}" style="cursor: pointer;color:white;">help_outline</mat-icon></h2>
     <div style="width: 30%;margin-left: 35%;border-bottom: 2px solid black;"></div>
 
 </div>
@@ -58,7 +58,7 @@
                     <mat-icon style="color:white;">{{getLockIcon(info.playerId, curSelectedTurn)}}</mat-icon>
             </div>
             </div>
-            <div *ngIf="itemBreakdownInfo[curSelectedTurn][item].length == 0" style="height: 30px;background-color: rgba(255, 255, 255, 0.2);;border-radius: 5px;border: 2px solid rgba(0, 0, 0, 0.4);margin-top: 5px;">
+            <div *ngIf="itemBreakdownInfo[curSelectedTurn][item].length == 0" style="height: 30px;background-color: rgba(255, 255, 255, 0.2);;border-radius: 5px;border: 2px solid rgba(0, 0, 0, 0.4);margin: 5px;">
                 <p style="margin: 0;margin-top: 5px;margin-left: 5px;text-align: center;">Drop not needed</p>
             </div>
         </div>
