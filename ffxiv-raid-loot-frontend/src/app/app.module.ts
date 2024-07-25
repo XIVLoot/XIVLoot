@@ -50,6 +50,7 @@ import { AuthComponent } from './auth/auth.component';
 import { PlayerDetailsSingleComponent } from './player-details-single/player-details-single.component';
 import { GearAcqHistorySingleComponent } from './gear-acq-history-single/gear-acq-history-single.component';
 import { ItemBreakdownComponent } from './item-breakdown/item-breakdown.component';
+import { CreateStaticComponent } from './create-static/create-static.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { ItemBreakdownComponent } from './item-breakdown/item-breakdown.componen
     AuthComponent,
     PlayerDetailsSingleComponent,
     GearAcqHistorySingleComponent,
-    ItemBreakdownComponent
+    ItemBreakdownComponent,
+    CreateStaticComponent
   ],
   imports: [
     BrowserModule,

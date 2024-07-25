@@ -1,0 +1,16 @@
+<div style="display: flex; justify-content: center; align-items: center;flex-direction: column;">
+    <div style="margin-bottom: 20px;width: 80%;background-color: rgba(0, 0, 0, 0.4);padding: 10px;border-radius: 10px;">
+
+        <h2 style="margin: 0;text-align: center;">Create a static</h2>
+        <div style="width: 150px;border-bottom: 2px solid black;margin: 0 auto;margin-bottom: 10px;"></div>
+
+        <mat-form-field style="width: 100%;">
+          <mat-label>Static Name</mat-label>
+          <input matInput [(ngModel)]="staticName" placeholder="Enter static here" style="font-size: 20px;">
+    
+        </mat-form-field>
+        <mat-action-row>
+          <button mat-button (click)="AddStatic(staticName)" style="background-color: rgba(0, 255, 0, 0.5);">Create Static</button>
+        </mat-action-row>
+    </div>
+    

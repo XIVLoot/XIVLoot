@@ -228,6 +228,12 @@ export class StaticDetailComponent implements OnInit {
     return new Promise<boolean>(resolve => resolve(false));
    }
 
+     // Method to check if URL contains a UUID
+  containsUUID(url: string): boolean {
+    const uuidRegex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
+    return uuidRegex.test(url);
+  }
+
   async ngOnInit() {
     this.test = true;
     this.staticDetail = new Static(0, "", "", [], {});
@@ -236,6 +242,27 @@ export class StaticDetailComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.uuid = params['uuid'];
     });
+
+    if (this.containsUUID(window.location.href.split('?')[0])){
+      var curUUID = window.location.href.split(environment.site_url)[1].split('?')[0];
+      
+      if (localStorage.getItem('recentStatic') !== null){
+        var retrievedList = JSON.parse(localStorage.getItem('recentStatic') || '[]');
+        if (!retrievedList.includes(curUUID))
+          {
+          retrievedList.unshift(curUUID);
+
+          if (retrievedList.length >= 10){
+            retrievedList.pop();
+          }
+
+          localStorage.setItem('recentStatic', JSON.stringify(retrievedList));
+
+          }
+      } else{
+        localStorage.setItem('recentStatic', JSON.stringify([curUUID]));
+      }
+    }
 
 
     this.dialog.open(LoadingDialogComponent, {
@@ -502,7 +529,7 @@ export class StaticDetailComponent implements OnInit {
       nGroup+=1;
     }
     for(let i = playerGroupList.length;i<4;i++){
-      playerGroupList.push({group : [], nGroup : 2*i}) // 2*i so there is no color and so it is empty
+      playerGroupList.push({group : [], nGroup : i}) // change to 2*i if want no color
     }
     return playerGroupList;
   }

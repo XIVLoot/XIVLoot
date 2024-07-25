@@ -30,7 +30,7 @@
         </h3>
         <div style="display: flex; justify-content: space-between;">
           <div *ngFor="let group of groupList" [style.border]="GetGroupBorderColor(group.nGroup)" [style.backgroundColor]="GetGroupColor(group.nGroup)" style="width:240px;border-radius: 10px;padding: 5px;">
-            <p *ngFor="let player of group.group" style="color: white;">{{player.name}}</p>
+            <p *ngFor="let player of group.group" style="color: white;"><img src="assets/job/{{player.job}}.png" style="width: 20px;margin-right:5px;">{{player.name}}</p>
           </div>
         </div>
         <button mat-raised-button color="accent" style="height: 2.5ch;" (click)="openSettingPGS()">Settings</button>
@@ -163,7 +163,7 @@
       <h2>Gear acquisition history
         <mat-icon matTooltip="{{gearAcquisitionToolTip}}" style="cursor: pointer;">help_outline</mat-icon>
       </h2>
-      <h4>(Click on a gear coffer to remove the event if it is erroneous)</h4>
+      <!--<h4>(Click on a gear coffer to remove the event if it is erroneous)</h4>-->
       <div style="display: flex;flex-direction: row;border-radius: 10px;padding: 5px;">
         <mat-form-field>
           <mat-label>Number of weeks to display.</mat-label>

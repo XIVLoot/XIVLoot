@@ -29,13 +29,12 @@
       <a mat-list-item routerLink="/" class="active rounded-button">
         Home
       </a>
+      <a mat-list-item routerLink="/create" class="active rounded-button">
+        Create
+      </a>
       <a mat-list-item routerLink="/about" class="active rounded-button">
         About
       </a>
-      <!--
-      <a  *ngIf="hasStatic" mat-list-item routerLink="/{{curUUID}}" class="active rounded-button">
-        {{staticName}}
-      </a>-->
 
 
       <ng-container *ngIf="isLoggedIn">
@@ -58,6 +57,23 @@
           </mat-list>
         </mat-expansion-panel>
       </ng-container>
+
+
+        <mat-expansion-panel style="margin-top: 10px;">
+          
+          <mat-expansion-panel-header>
+            <mat-panel-title style="margin:0;">
+              Recent static
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-list>
+            <mat-nav-list *ngFor="let static of recentStatic">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <a mat-list-item [href]="GetStaticLink() + static[0]" [title]="static[1]">{{ static[1] }}</a>
+              </div>
+            </mat-nav-list>
+          </mat-list>
+        </mat-expansion-panel>
     </mat-nav-list>
 
   </mat-sidenav>

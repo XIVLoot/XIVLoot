@@ -28,7 +28,9 @@ export class NavbarComponent {
   public isLoggedInDiscord = false;
   public isLoggedInDefault = false;
   public discordInfo : any = {};
-  public userSavedStatic = [];
+  public userSavedStatic : any= [];
+
+  public recentStatic : any= [];
 
   public username = "";
 
@@ -73,13 +75,17 @@ export class NavbarComponent {
       this.isLoggedInDiscord = false;
     }
 
-
-    if (this.containsUUID(window.location.href.split('?')[0])){
-      this.hasStatic = true;
-      this.curUUID = window.location.href.split(environment.site_url)[1].split('?')[0];
-      ////console.log("Has static : " + this.curUUID)
-      this.http.getStaticName(this.curUUID).subscribe(res => this.staticName = "Edit : " + res);
+    if (localStorage.getItem('recentStatic') !== null){
+      var retrievedList = JSON.parse(localStorage.getItem('recentStatic') || '[]');
+      for (let i in retrievedList){
+        var uuid = retrievedList[i];
+        this.http.getStaticName(uuid).subscribe(res => {
+          this.recentStatic.push([uuid, res])
+        });
+      }
     }
+
+
 
 
   }
