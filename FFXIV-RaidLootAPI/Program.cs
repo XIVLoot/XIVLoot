@@ -1,17 +1,11 @@
 using FFXIV_RaidLootAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AspNet.Security.OAuth.Discord;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FFXIV_RaidLootAPI.Models;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authentication.OAuth;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +59,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddMvc();
+builder.Services.UseHttpClientMetrics();
 
 var app = builder.Build();
 app.UseDeveloperExceptionPage();
@@ -78,9 +73,11 @@ if (app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("AllowSpecificOrigins"); 
+app.UseHttpMetrics();
+app.UseCors("AllowSpecificOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 
 using (var scope = app.Services.CreateScope())
@@ -106,6 +103,7 @@ app.Use(async (context, next) =>
 
 
 app.MapIdentityApi<ApplicationUser>();
+app.MapMetrics();
 app.MapControllers();
 
 app.Run();
