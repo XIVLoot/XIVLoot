@@ -82,6 +82,18 @@ export class StaticDetailComponent implements OnInit {
   public HistoryGear : any = [];
   public IsLoading : boolean = true;
   public userOwns : any = {};
+  public itemBreakdownInfo : any = {
+    "turn_1" : {},
+    "turn_2" : {},
+    "turn_3" : {},
+    "turn_4" : {}
+  };
+
+  public curViewingTool : string = "GearBrk";
+
+  changeCurViewingTool(newtool : string){
+    this.curViewingTool=newtool;
+  }
 
   constructor(public http: HttpService, private route: ActivatedRoute, private _snackBar: MatSnackBar,
     private staticEventsService: StaticEventsService, private dialog : MatDialog, private cdr: ChangeDetectorRef
@@ -259,10 +271,15 @@ export class StaticDetailComponent implements OnInit {
             this.SelectedPlayer = parseInt(pId);
         }
 
+        this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
+          this.itemBreakdownInfo = rData.itemBreakdown;
+          this.IsLoading = false;
+          this.dialog.closeAll();
+          this.cdr.detectChanges();
+        });
 
-        this.IsLoading = false;
-        this.dialog.closeAll();
-        this.cdr.detectChanges();
+
+
     });
     });
     this.onResize(null); // Call onResize to set initial gridColumns based on window size

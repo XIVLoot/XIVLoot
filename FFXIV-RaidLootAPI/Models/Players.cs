@@ -282,11 +282,11 @@ namespace FFXIV_RaidLootAPI.Models
             return;
         }
 
-        public async Task<bool> need_this_gear(Gear NewGear, DataContext context){
+        public async Task<bool> need_this_gear(GearType NewGearType, GearStage NewGearStage, DataContext context){
             // Checks if the player needs this gear to see if it is being contested.
             Gear? curGear;
             Gear? bisGear;
-            switch (NewGear.GearType){
+            switch (NewGearType){
                 case GearType.Weapon:
                    curGear = await context.Gears.FindAsync(CurWeaponGearId);
                    bisGear = await context.Gears.FindAsync(BisWeaponGearId);
@@ -337,7 +337,7 @@ namespace FFXIV_RaidLootAPI.Models
             if (curGear is null || bisGear is null)
                 return false;
 
-            return bisGear.GearStage == NewGear.GearStage && curGear.GearStage != NewGear.GearStage;
+            return bisGear.GearStage == NewGearStage && curGear.GearStage != NewGearStage;
         }
 
         public async Task<bool> check_if_contested(Gear NewGear, Static s, DataContext context){
@@ -345,7 +345,7 @@ namespace FFXIV_RaidLootAPI.Models
             List<Players> players = s.GetPlayers(context);
 
             foreach (Players player in players){
-                if (player.Id != Id && await player.need_this_gear(NewGear, context)){
+                if (player.Id != Id && await player.need_this_gear(NewGear.GearType, NewGear.GearStage, context)){
                     return true;
                 }
             }

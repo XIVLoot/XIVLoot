@@ -32,16 +32,16 @@
       <a mat-list-item routerLink="/about" class="active rounded-button">
         About
       </a>
+      <!--
       <a  *ngIf="hasStatic" mat-list-item routerLink="/{{curUUID}}" class="active rounded-button">
         {{staticName}}
-      </a>
+      </a>-->
 
 
       <ng-container *ngIf="isLoggedIn">
         <mat-expansion-panel>
           
           <mat-expansion-panel-header>
-            <mat-icon matTooltip="Here you will see all of your saved statics." style="cursor: pointer;color:white;margin-top: 3%;margin-right: 10px;">help_outline</mat-icon>
             <mat-panel-title style="margin:0;">
               Saved statics
             </mat-panel-title>
