@@ -78,19 +78,19 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                             if (turn == Turn.turn_2){
                                 // Everything raid from 2 can drop in 3 so also add to turn_3.
-                                itemBreakdown.ItemBreakdown[Turn.turn_2][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), Turn.turn_2)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                     Name=player.Name,
                                     NeedThisGearType=true,
                                     playerId=player.Id
                                 });
-                                itemBreakdown.ItemBreakdown[Turn.turn_3][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), Turn.turn_3)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                     Name=player.Name,
                                     NeedThisGearType=true,
                                     playerId=player.Id
                                 });
                             } else if(turn == Turn.turn_1 && (type == GearType.RightRing || type == GearType.LeftRing)){
                                 if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_1, "Ring")){
-                                    itemBreakdown.ItemBreakdown[turn]["Ring"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                    itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), turn)!]["Ring"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                         Name=player.Name,
                                         NeedThisGearType=true,
                                         playerId=player.Id
@@ -98,7 +98,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 }
                             }
                             else{
-                                itemBreakdown.ItemBreakdown[turn][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), turn)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                     Name=player.Name,
                                     NeedThisGearType=true,
                                     playerId=player.Id
@@ -133,7 +133,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                             if (turn == Turn.turn_2){
                                 // Check if the player already needs a shine. If they do we add to the counter
                                 if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_2, "Shine")){
-                                    itemBreakdown.ItemBreakdown[Turn.turn_2]["Shine"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                    itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), Turn.turn_2)!]["Shine"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                         Name=player.Name,
                                         NeedThisGearType=true,
                                         playerId=player.Id
@@ -141,7 +141,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                 }
                             } else if (turn == Turn.turn_3){
                                 if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_3, "Twine")){
-                                    itemBreakdown.ItemBreakdown[turn]["Twine"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
+                                    itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), turn)!]["Twine"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                         Name=player.Name,
                                         NeedThisGearType=true,
                                         playerId=player.Id
