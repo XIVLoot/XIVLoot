@@ -6,8 +6,12 @@ using FFXIV_RaidLootAPI.Models;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Prometheus;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) => 
+configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 
@@ -63,6 +67,7 @@ builder.Services.UseHttpClientMetrics();
 
 var app = builder.Build();
 app.UseDeveloperExceptionPage();
+app.UseSerilogRequestLogging();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
