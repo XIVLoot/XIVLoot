@@ -76,12 +76,15 @@ export class NavbarComponent {
     }
 
     if (localStorage.getItem('recentStatic') !== null){
+      
       var retrievedList = JSON.parse(localStorage.getItem('recentStatic') || '[]');
+      console.log(retrievedList);
       for (let i in retrievedList){
         var uuid = retrievedList[i];
-        this.http.getStaticName(uuid).subscribe(res => {
-          this.recentStatic.push([uuid, res])
-        });
+        var res : string = await new Promise<string>(resolve => this.http.getStaticName(uuid).subscribe(res => {
+          resolve(res);
+        }));
+        this.recentStatic.push([uuid, res]);
       }
     }
 
