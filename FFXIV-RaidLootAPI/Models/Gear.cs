@@ -226,7 +226,8 @@ namespace FFXIV_RaidLootAPI.Models
             //Console.WriteLine("Current gearstage : " + GearStage.ToString());
             //Console.WriteLine("Current bisgearstage : " + BisGear.GearStage.ToString());
 
-            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == 0) && // Need to buy tome
+            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == 0 || GearStage == GearStage.Extreme || 
+                 GearStage == GearStage.Artifact || GearStage == GearStage.Raid_Normal || GearStage == GearStage.Tome_Early) && // Need to buy tome
                 (BisGear.GearStage == GearStage.Upgraded_Tomes || BisGear.GearStage == GearStage.Tomes))
                 {
                     ////Console.WriteLine("2");
@@ -258,7 +259,8 @@ namespace FFXIV_RaidLootAPI.Models
 
             ////Console.WriteLine("3");
             // Need to augment (and maybe buy)
-            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == GearStage.Tomes || GearStage == 0) &&
+            if ((GearStage == GearStage.Raid || GearStage == GearStage.Preparation || GearStage == GearStage.Tomes || GearStage == 0 || GearStage == GearStage.Extreme || 
+                 GearStage == GearStage.Artifact || GearStage == GearStage.Raid_Normal || GearStage == GearStage.Tome_Early) &&
                 (BisGear.GearStage == GearStage.Upgraded_Tomes))
                 {
                     ////Console.WriteLine("4");
