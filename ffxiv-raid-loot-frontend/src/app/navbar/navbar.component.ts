@@ -272,6 +272,20 @@ export class LoginDialog {
 
 
   async login(ShowSuccess : boolean){
+
+
+    if (!this.loginEmail.includes("@")){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "You must be using an email to login.",
+          subMessage: "It does not seem like the login information you provided is an email.",
+          color : "red"
+        }
+      });
+      return;
+    }
+
     var check = await new Promise<boolean>(resolve => {this.http.Login(this.loginEmail, this.loginPassword).subscribe((res : any) => {
       if (ShowSuccess){
         this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
@@ -291,7 +305,7 @@ export class LoginDialog {
     }, (error : any) => {this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "Error while trying to logging in.",
+        message: "Error while trying to logging in. Check email and password.",
         subMessage: "(Reach out if this persists)",
         color : "red"
       }
