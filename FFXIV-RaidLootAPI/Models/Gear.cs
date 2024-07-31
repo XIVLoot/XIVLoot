@@ -10,10 +10,10 @@ namespace FFXIV_RaidLootAPI.Models
         private static readonly int ARMOR_LOW_COST = 495; // Head, Hands, feet
         private static readonly int ARMOR_HIGH_COST = 825; // Body, Legs
         private static readonly int WEAPON_TOME_COST = 500; // Body, Legs
-        private static readonly string TOME_GEAR = "Credendum";
-        private static readonly string RAID_GEAR = "Ascension";
+        private static readonly string TOME_GEAR = "Quetzalli";//"Credendum";
+        private static readonly string RAID_GEAR = "Dark Horse";//"Ascension";
         private static readonly string AUGMENT_TOME = "Augment";
-        private static readonly string CRAFTED_GEAR = "Crafted";
+        private static readonly string CRAFTED_GEAR = "Archeo";
         private static readonly string NORMAL_RAID = "Light-heavy";
         private static readonly string EX_TRIAL = "Resilient";
         private static readonly string EX_WEAPON = "Skyruin";
