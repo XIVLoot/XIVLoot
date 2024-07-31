@@ -15,7 +15,7 @@ namespace FFXIV_RaidLootAPI.Models
         public decimal GearScoreA {get;set;} = 0.0m;
         public decimal GearScoreB {get;set;} = 0.0m;
         public decimal GearScoreC {get;set;} = 0.0m;
-        public int ownerId {get;set;} = 0;
+        public string ownerIdString {get;set;} = string.Empty;
         public string LOCK_PARAM {get;set;} = "FALSE;FALSE;1;TRUE;1;FALSE;FALSE;1;1;1"; // Default values.
         /*
         - BOOL_LOCK_PLAYERS; (FALSE)

@@ -26,6 +26,36 @@ namespace FFXIV_RaidLootAPI.Controllers
             _jwtKey = _configuration["JwtSettings:Key"]!;
             
         }
+
+
+        [HttpGet("UserIsOwner/{uuid}")]
+        public async Task<IActionResult> CheckUserOwnsStatic(string uuid){
+            using (var context = _context.CreateDbContext())
+            {
+
+                Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return Ok(false);
+
+                if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
+                {
+                    string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                    if (!(user is null))
+                        return Ok(user.Id.ToString() == dbStatic.ownerIdString);
+                } else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
+                {
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null)
+                    Ok(userIdClaim.Value == dbStatic.ownerIdString);
+                }
+                return Ok(false);
+            }
+        }
+
 // Get All statics        
         [HttpGet(Name = "GetAllStatics")]
         public async Task<ActionResult<List<Static>>> GetAllStatics()
@@ -351,7 +381,7 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
-                int userId = 0;
+                string userId = string.Empty;
                 // Getting user info if any to add as creator.
 
                 if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
@@ -360,19 +390,14 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                     Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
                     if (!(user is null))
-                        userId = user.Id;
-                } else if (!(User is null)) // Email user
+                        userId = user.Id.ToString();
+                } else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
                 {
                 var claimsIdentity = User.Identity as ClaimsIdentity;
                 var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-                if (userIdClaim != null)
-                {
-                    string uId = userIdClaim.Value;
 
-                    ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == uId);
-                    if (user != null)
-                        userId = int.Parse(user.Id);
-                }
+                if (userIdClaim != null)
+                    userId = userIdClaim.Value;
                 }
 
                 List<Static> staticList = await context.Statics.ToListAsync();
@@ -381,7 +406,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 {
                     Name = name,
                     UUID = uuid,
-                    ownerId=userId
+                    ownerIdString=userId
                 };
                 await context.Statics.AddAsync(newStatic);
                 await context.SaveChangesAsync();

@@ -393,6 +393,10 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
+  UserOwnStatic(uuid : string){
+    var url = `${this.api}Auth/GetDiscordJWT/${at}`;
+  }
+
   LogoutDiscord(){
     var url = `${this.api}Auth/LogoutDiscord`;
     return this.http.get(url, { withCredentials: true });
