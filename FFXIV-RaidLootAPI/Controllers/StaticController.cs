@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
+using FFXIV_RaidLootAPI.User;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +15,15 @@ namespace FFXIV_RaidLootAPI.Controllers
     public class StaticController : ControllerBase
     {
         private readonly IDbContextFactory<DataContext> _context;
+
+        private readonly string _jwtKey;
+        private readonly IConfiguration _configuration;
         
-        public StaticController(IDbContextFactory<DataContext> context)
+        public StaticController(IDbContextFactory<DataContext> context,IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
+            _jwtKey = _configuration["JwtSettings:Key"]!;
             
         }
 // Get All statics        
@@ -344,12 +351,37 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+                int userId = 0;
+                // Getting user info if any to add as creator.
+
+                if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
+                {
+                    string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                    if (!(user is null))
+                        userId = user.Id;
+                } else if (!(User is null)) // Email user
+                {
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null)
+                {
+                    string uId = userIdClaim.Value;
+
+                    ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == uId);
+                    if (user != null)
+                        userId = int.Parse(user.Id);
+                }
+                }
+
                 List<Static> staticList = await context.Statics.ToListAsync();
                 string uuid = Guid.NewGuid().ToString();
                 Static newStatic = new Static
                 {
                     Name = name,
-                    UUID = uuid
+                    UUID = uuid,
+                    ownerId=userId
                 };
                 await context.Statics.AddAsync(newStatic);
                 await context.SaveChangesAsync();

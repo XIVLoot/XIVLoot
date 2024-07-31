@@ -43,25 +43,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                     };
 
 
-
-        async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
-            // Now checks if this user claimed a player from the static. In which case they can edit this player.
-            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
-            if (player is null)
-                return false;
-
-            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
-            foreach (Players playerToInspect in validPlayers){
-                if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
-                    return true;
-            }
-            return false;
-        }
-
-        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
-            //Console.WriteLine("Checking authorization");
-            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
-                //Console.WriteLine("Discord : " + jwt.ToString());
+        async public static Task<string> GetUserDiscordIdFromJwt(string jwt, string _jwtKey){
+            //Console.WriteLine("Discord : " + jwt.ToString());
                 // Logged in discord
                 // Decode the JWT to get the access_token
                 var handler = new JwtSecurityTokenHandler();
@@ -83,7 +66,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                 if (string.IsNullOrEmpty(accessToken))
                 {
-                    return false;
+                    return string.Empty;
                 }
 
                 using (var client = new HttpClient())
@@ -104,21 +87,47 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                         // Access the 'id' value from the dictionary
                         string discordId = responseData["id"].ToString()!;
-
-                        Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
-                        if (user is null)
-                            return false;
-                        if (user.UserClaimedPlayer(playerId))
-                            return true;
-
-                        return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
+                        return discordId;
                 }
+        }
+
+
+        async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
+            // Now checks if this user claimed a player from the static. In which case they can edit this player.
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
+            if (player is null)
+                return false;
+
+            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
+            foreach (Players playerToInspect in validPlayers){
+                if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
+                    return true;
+            }
+            return false;
+        }
+
+        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
+            //Console.WriteLine("Checking authorization");
+            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
+                
+                string discordId = await GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                if (user is null)
+                    return false;
+                if (user.UserClaimedPlayer(playerId))
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
+
             } 
             else if (!(User is null)){
                 //Console.WriteLine("DEFAUTL CONNECTED");
                 var claimsIdentity = User.Identity as ClaimsIdentity;
                 var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
                 var userId = userIdClaim?.Value;
+
+                Console.WriteLine("USER ID FROM EMAIL IS : " + userId);
 
                 ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 if (user is null)

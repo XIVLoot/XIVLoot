@@ -172,7 +172,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   AddStatic(name : string) : Observable<any>{
     const url = `${this.api}Static/CreateNewStatic/${name}`;
 
-    return this.http.put(url, {}, { responseType: 'text' }).pipe(
+    return this.http.put(url, {}, { withCredentials : true,responseType: 'text'}).pipe(
       catchError(error => throwError(() => new Error('Failed to add static: ' + error.message)))
     );
   }
