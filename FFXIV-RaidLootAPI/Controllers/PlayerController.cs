@@ -42,6 +42,22 @@ namespace FFXIV_RaidLootAPI.Controllers
             "fingerR"
                     };
 
+
+
+        async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
+            // Now checks if this user claimed a player from the static. In which case they can edit this player.
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
+            if (player is null)
+                return false;
+
+            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
+            foreach (Players playerToInspect in validPlayers){
+                if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
+                    return true;
+            }
+            return false;
+        }
+
         async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
             //Console.WriteLine("Checking authorization");
             if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
@@ -92,7 +108,10 @@ namespace FFXIV_RaidLootAPI.Controllers
                         Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
                         if (user is null)
                             return false;
-                        return user.UserClaimedPlayer(playerId);
+                        if (user.UserClaimedPlayer(playerId))
+                            return true;
+
+                        return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
                 }
             } 
             else if (!(User is null)){
@@ -105,7 +124,11 @@ namespace FFXIV_RaidLootAPI.Controllers
                 if (user is null)
                     return false;
 
-                return user.UserClaimedPlayer(playerId);
+                bool thisUserClaimed = user.UserClaimedPlayer(playerId);
+                if (thisUserClaimed)
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<ApplicationUser>(user,playerId,context);
             }
 
             return false;
