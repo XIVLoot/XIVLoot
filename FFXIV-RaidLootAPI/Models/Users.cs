@@ -20,9 +20,11 @@ namespace FFXIV_RaidLootAPI.User{
         }
 
         public void removePlayerClaim(string playerId){
+            Console.WriteLine("Removing : " + playerId);
             List<string> uuidList = user_claimed_playerId.Split(';').ToList();
             uuidList.Remove(playerId);
             user_claimed_playerId = String.Join(";", uuidList);
+            Console.WriteLine("After changed : " + user_claimed_playerId);
         }
 
         public List<string> getAllClaimedPlayerId(){

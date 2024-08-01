@@ -294,7 +294,6 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
-
                 Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
                 if (dbStatic is null)
                     return NotFound();
@@ -308,40 +307,57 @@ namespace FFXIV_RaidLootAPI.Controllers
                     if (!(user is null) && user.Id.ToString() != dbStatic.ownerIdString)
                         return Unauthorized();
 
-                    user.removePlayerClaim(playerId);
+
+                    // Looking for owner
+                    ApplicationUser? userWhoClaimed = await context.Users.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    Users? userWhoClaimedDiscord = null;
+
+                    if (userWhoClaimed is null)
+                        userWhoClaimedDiscord = await context.User.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    if (!(userWhoClaimed is null))
+                        userWhoClaimed.removePlayerClaim(playerId);
+                    else if (!(userWhoClaimedDiscord is null))
+                        userWhoClaimedDiscord.removePlayerClaim(playerId);
 
                     Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
                     if (!(player is null))
                         player.IsClaimed = false;
-                    await context.SaveChangesAsync();
                     
-                } else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
-                {
-                var claimsIdentity = User.Identity as ClaimsIdentity;
-                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+                } 
+                    else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
+                    {
+                    var claimsIdentity = User.Identity as ClaimsIdentity;
+                    var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
-                if (userIdClaim != null && userIdClaim.Value != dbStatic.ownerIdString)
-                    return Unauthorized();
+                    if (userIdClaim != null && userIdClaim.Value != dbStatic.ownerIdString)
+                        return Unauthorized();
 
-                if(userIdClaim is null)
-                    return NotFound();
+                    if(userIdClaim is null)
+                        return NotFound();
 
-                ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userIdClaim.Value);
-                if (user is null)
-                    return NotFound();
+                    // Looking for owner
+                    ApplicationUser? userWhoClaimed = await context.Users.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
 
-                user.removePlayerClaim(playerId);
+                    Users? userWhoClaimedDiscord = null;
 
-                Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
-                if (!(player is null))
-                    player.IsClaimed = false;
+                    if (userWhoClaimed is null)
+                        userWhoClaimedDiscord = await context.User.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    if (!(userWhoClaimed is null))
+                        userWhoClaimed.removePlayerClaim(playerId);
+                    else if (!(userWhoClaimedDiscord is null))
+                        userWhoClaimedDiscord.removePlayerClaim(playerId);
+
+                    Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
+                    if (!(player is null))
+                        player.IsClaimed = false;
+                    } 
+                    else
+                        return Unauthorized(); // Has to be a logged in user
 
                 await context.SaveChangesAsync();
-
-                } else
-                    return Unauthorized(); // Has to be a logged in user
-
-                
                 return Ok();
             }
         }
