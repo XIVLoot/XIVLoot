@@ -82,6 +82,9 @@ export class StaticDetailComponent implements OnInit {
   public HistoryGear : any = [];
   public IsLoading : boolean = true;
   public userOwns : any = {};
+
+  public UserIsOwnerOfStatic : boolean = false;
+
   public itemBreakdownInfo : any = {
     "turn_1" : {},
     "turn_2" : {},
@@ -146,6 +149,22 @@ export class StaticDetailComponent implements OnInit {
       });
     }
 
+   }
+
+   FreePlayer(player : Player){
+    var id = player.id;
+    this.http.FreePlayer(player.staticRef.uuid, player).subscribe(data => {
+      player.IsClaimed = false;
+      player.staticRef.userOwn[id] = false;
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data : {
+          message : "Successfully freed the player", 
+          subMessage : "",
+          color : "Green"
+        }
+      });
+    });
    }
 
    async ClaimPlayer(player : Player){
@@ -300,9 +319,13 @@ export class StaticDetailComponent implements OnInit {
 
         this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
           this.itemBreakdownInfo = rData.itemBreakdown;
-          this.IsLoading = false;
-          this.dialog.closeAll();
-          this.cdr.detectChanges();
+          this.http.UserOwnStatic(this.uuid).subscribe(pData => {
+            this.UserIsOwnerOfStatic = (pData.toLowerCase() === 'true');
+            console.log("This static is owned : " + this.UserIsOwnerOfStatic);
+            this.IsLoading = false;
+            this.dialog.closeAll();
+            this.cdr.detectChanges();
+          });
         });
 
 

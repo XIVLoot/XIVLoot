@@ -289,6 +289,63 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         }
 
+        [HttpPut("FreePlayer/{uuid}/{playerId}")]
+        public async Task<IActionResult> FreePlayer(string uuid, string playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+
+                Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound();
+
+                // Check if can actually do it in case the user was evil):
+                if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
+                {
+                    string discordId = await GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                    if (!(user is null) && user.Id.ToString() != dbStatic.ownerIdString)
+                        return Unauthorized();
+
+                    user.removePlayerClaim(playerId);
+
+                    Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
+                    if (!(player is null))
+                        player.IsClaimed = false;
+                    await context.SaveChangesAsync();
+                    
+                } else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
+                {
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null && userIdClaim.Value != dbStatic.ownerIdString)
+                    return Unauthorized();
+
+                if(userIdClaim is null)
+                    return NotFound();
+
+                ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userIdClaim.Value);
+                if (user is null)
+                    return NotFound();
+
+                user.removePlayerClaim(playerId);
+
+                Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
+                if (!(player is null))
+                    player.IsClaimed = false;
+
+                await context.SaveChangesAsync();
+
+                } else
+                    return Unauthorized(); // Has to be a logged in user
+
+                
+                return Ok();
+            }
+        }
+
 
 
         [HttpPut("RemovePlayerLock/{turn}")]

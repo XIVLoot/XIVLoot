@@ -50,7 +50,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userIdClaim != null)
-                    Ok(userIdClaim.Value == dbStatic.ownerIdString);
+                    return Ok(userIdClaim.Value == dbStatic.ownerIdString);
                 }
                 return Ok(false);
             }

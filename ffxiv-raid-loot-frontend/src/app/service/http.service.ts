@@ -6,6 +6,7 @@ import { DataService } from './data.service';
 import { environment } from '../../environments/environments';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
+import { Player } from '../models/player';
 @Injectable({
   providedIn: 'root'
 })
@@ -394,7 +395,10 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   }
 
   UserOwnStatic(uuid : string){
-    var url = `${this.api}Auth/GetDiscordJWT/${at}`;
+    var url = `${this.api}Static/UserisOwner/${uuid}`;
+    return this.http.get(url, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to chck ownership: ' + error.message));
+    }));
   }
 
   LogoutDiscord(){
@@ -434,6 +438,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     var url = `${this.api}Auth/GetDiscordUserInfo`;
     return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
       return throwError(() => new Error('Failed to get discord user info: ' + error.message));
+    }));
+  }
+
+  FreePlayer(uuid : string, player : Player){
+    var url = `${this.api}Player/FreePlayer/${uuid}/${player.id}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to free the player ' + error.message));
     }));
   }
 
