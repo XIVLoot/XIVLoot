@@ -6,6 +6,7 @@ import { DataService } from './data.service';
 import { environment } from '../../environments/environments';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
+import { Player } from '../models/player';
 @Injectable({
   providedIn: 'root'
 })
@@ -172,7 +173,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   AddStatic(name : string) : Observable<any>{
     const url = `${this.api}Static/CreateNewStatic/${name}`;
 
-    return this.http.put(url, {}, { responseType: 'text' }).pipe(
+    return this.http.put(url, {}, { withCredentials : true,responseType: 'text'}).pipe(
       catchError(error => throwError(() => new Error('Failed to add static: ' + error.message)))
     );
   }
@@ -393,6 +394,50 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
+  UserOwnStatic(uuid : string){
+    var url = `${this.api}Static/UserisOwner/${uuid}`;
+    return this.http.get(url, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to chck ownership: ' + error.message));
+    }));
+  }
+
+  GetOwnerName(uuid : string){
+    var url = `${this.api}Static/GetOwnerName/${uuid}`;
+    return this.http.get(url, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get owner name : ' + error.message));
+    }));
+  }
+
+  UnclaimStaticOwnerShip(uuid : string){
+    var url = `${this.api}Static/UnclaimStaticOwnerShip/${uuid}`;
+    return this.http.put(url,{}, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to unclaim static.",
+          subMessage: "Reach out.2",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed unclaim ownership : ' + error.message));
+    }));
+  }
+
+  ClaimStaticOwnerShip(uuid : string){
+    var url = `${this.api}Static/ClaimStaticOwnerShip/${uuid}`;
+    return this.http.put(url,{}, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to claim static.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed claim ownership : ' + error.message));
+    }));
+  }
+
   LogoutDiscord(){
     var url = `${this.api}Auth/LogoutDiscord`;
     return this.http.get(url, { withCredentials: true });
@@ -430,6 +475,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     var url = `${this.api}Auth/GetDiscordUserInfo`;
     return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
       return throwError(() => new Error('Failed to get discord user info: ' + error.message));
+    }));
+  }
+
+  FreePlayer(uuid : string, player : Player){
+    var url = `${this.api}Player/FreePlayer/${uuid}/${player.id}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to free the player ' + error.message));
     }));
   }
 

@@ -74,7 +74,7 @@ export class PlayerDetailsSingleComponent {
     this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "You have not claimed this player. Only its owner can modify it.",
+        message: "You have not claimed this player. Only its owner and static members can modify it.",
         subMessage: "The changes will be reverted",
         color : "red"
       }
@@ -841,7 +841,7 @@ export class ImportGearDialog {
     this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "You have not claimed this player. Only its owner can modify it.",
+        message: "You have not claimed this player. Only its owner and static members can modify it.",
         subMessage: "The changes will be reverted",
         color : "red"
       }

@@ -37,7 +37,9 @@ import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSett
   lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,
   claimPlayerToolTip,
   unclaimPlayerToolTip,
-  alreadyClaimedToolTip, UseBookForGearAcqToolTip
+  alreadyClaimedToolTip, UseBookForGearAcqToolTip, FreePlayerToolTip,
+  ClaimStaticToolTip,
+  UnclaimStaticToolTip
 } from '../tooltip';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -66,6 +68,9 @@ export class StaticDetailComponent implements OnInit {
   public unclaimPlayerToolTip = unclaimPlayerToolTip;
   public alreadyClaimedToolTip = alreadyClaimedToolTip;
   public useBookForGearAcqToolTip = UseBookForGearAcqToolTip;
+  public FreePlayerToolTip = FreePlayerToolTip;
+  public ClaimStaticToolTip = ClaimStaticToolTip;
+  public UnclaimStaticToolTip = UnclaimStaticToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
@@ -82,6 +87,10 @@ export class StaticDetailComponent implements OnInit {
   public HistoryGear : any = [];
   public IsLoading : boolean = true;
   public userOwns : any = {};
+  public staticLeaderName : string = "";
+
+  public UserIsOwnerOfStatic : boolean = false;
+
   public itemBreakdownInfo : any = {
     "turn_1" : {},
     "turn_2" : {},
@@ -146,6 +155,22 @@ export class StaticDetailComponent implements OnInit {
       });
     }
 
+   }
+
+   FreePlayer(player : Player){
+    var id = player.id;
+    this.http.FreePlayer(player.staticRef.uuid, player).subscribe(data => {
+      player.IsClaimed = false;
+      player.staticRef.userOwn[id] = false;
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data : {
+          message : "Successfully freed the player", 
+          subMessage : "",
+          color : "Green"
+        }
+      });
+    });
    }
 
    async ClaimPlayer(player : Player){
@@ -300,9 +325,17 @@ export class StaticDetailComponent implements OnInit {
 
         this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
           this.itemBreakdownInfo = rData.itemBreakdown;
-          this.IsLoading = false;
-          this.dialog.closeAll();
-          this.cdr.detectChanges();
+          this.http.UserOwnStatic(this.uuid).subscribe(pData => {
+            this.UserIsOwnerOfStatic = (pData.toLowerCase() === 'true');
+            console.log("This static is owned : " + this.UserIsOwnerOfStatic);
+            this.http.GetOwnerName(this.uuid).subscribe(datar => {
+              this.staticLeaderName = datar
+              this.IsLoading = false;
+              this.dialog.closeAll();
+              this.cdr.detectChanges();
+            });
+
+          });
         });
 
 
@@ -312,8 +345,58 @@ export class StaticDetailComponent implements OnInit {
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
   }
 
-  c(){
-    
+  UnclaimThisStatic(){
+    this.http.UnclaimStaticOwnerShip(this.uuid).subscribe(data => {
+      if (data === "true"){
+        this.staticLeaderName = "REFRESH TO SEE";
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly Unclaimed static.",
+            subMessage: "",
+            color : "green"
+          }
+        });
+        this.UserIsOwnerOfStatic = false;
+        this.staticLeaderName = "";
+      } else {
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 8000,
+          data: {
+            message: "Failed to unclaim static.",
+            subMessage: "Reach out.",
+            color : "red"
+          }
+        });
+      }
+    });
+  }
+
+  ClaimThisStatic(){
+    this.http.ClaimStaticOwnerShip(this.uuid).subscribe(data =>{
+      if (data === "true"){
+        
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly Claimed static.",
+            subMessage: "",
+            color : "green"
+          }
+        });
+        this.staticLeaderName = "REFRESH TO SEE";
+        this.UserIsOwnerOfStatic = true;
+      } else {
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 8000,
+          data: {
+            message: "Failed to claim static.",
+            subMessage: "Make sure you have claimed a player from this static and are logged in.",
+            color : "red"
+          }
+        });
+      }
+    });
   }
 
   ChangeHistoryLoaded(){

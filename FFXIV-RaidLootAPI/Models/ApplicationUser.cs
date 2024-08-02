@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FFXIV_RaidLootAPI.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser, IUserInterface
     {
 
         public string user_saved_static {get;set;} = string.Empty;
