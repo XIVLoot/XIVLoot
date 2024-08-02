@@ -6,6 +6,14 @@
 <div style="max-width: 1350px;">
   <!-- Container for static detail header -->
   <div>
+    <div style="display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;padding: 5px;align-items: center;width: 500px;">
+      <mat-icon *ngIf="staticLeaderName === ''" matTooltip="{{ClaimStaticToolTip}}" style="cursor: pointer; align-self: center;color:white;margin-right: 5px;">help_outline</mat-icon>
+      <button *ngIf="staticLeaderName === ''" mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;padding-right: 20px;" (click)="ClaimThisStatic()">Claim Static</button>
+      <mat-icon *ngIf="staticLeaderName !== ''" matTooltip="{{UnclaimStaticToolTip}}" style="cursor: pointer; align-self: center;color:white;margin-right: 5px;">help_outline</mat-icon>
+      <h3 *ngIf="staticLeaderName !== ''" style="margin: 0;">Static leader : {{staticLeaderName}}</h3>
+      <div *ngIf="UserIsOwnerOfStatic" style="height: 20px;border-right: 3px solid black;margin:0;margin-left: 10px;margin-right: 10px;"></div>
+      <button *ngIf="UserIsOwnerOfStatic" mat-raised-button color="accent" style="height: 3ch;margin-left: 20px;font-size: 15px;padding-right: 20px;" (click)="UnclaimThisStatic()">Unclaim Static</button>
+    </div>
     <div style="background: rgba(0, 0, 0, 0.2);border-radius: 10px;padding-top: 10px;padding-left: 10px;border: 3px solid rgba(0, 0, 0, 0.4);">
     <mat-form-field style="width:40ch;height: 10ch;margin-bottom: 0px;">
       <mat-label>Static name :</mat-label>
@@ -136,8 +144,9 @@
             <mat-icon matTooltip="{{staticDetail.userOwn[player.id] ? unclaimPlayerToolTip : player.IsClaimed ? alreadyClaimedToolTip : claimPlayerToolTip }}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
 
           </div>
-          <div style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:210px;margin-left: 10px;">
-            <button mat-raised-button *ngIf="UserIsOwnerOfStatic" (click)="FreePlayer(player)" style="margin-bottom: 10px;" [disabled]="!player.IsClaimed" [style.backgroundColor]="!player.IsClaimed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.5)'">Free Player</button>
+          <div *ngIf="UserIsOwnerOfStatic" style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:150px;margin-left: 10px;">
+            <button mat-raised-button  (click)="FreePlayer(player)" style="margin-bottom: 10px;" [disabled]="!player.IsClaimed || staticDetail.userOwn[player.id]" [style.backgroundColor]="!player.IsClaimed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.5)'">Free Player</button>
+            <mat-icon matTooltip="{{FreePlayerToolTip}}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
           </div>
         </div>
       <app-player-details-single  [player]="player"></app-player-details-single>

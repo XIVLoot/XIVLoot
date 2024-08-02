@@ -52,3 +52,9 @@ export const UseBisToolTip = `To import the etro.gg or xivgear.app gearset as yo
                               and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button on the character's view page.`;
 
 export const GearBreakdownToolTip = `Within this section, you can find a breakdown of all Raid items required by members of the static. Simply select the Boss on the left side to see a color coordinated view into who needs what item for their BIS build. Green indicates a player is not locked out of getting loot, while red shows players who are locked out based on the loot rules your static follows.`;
+
+export const FreePlayerToolTip = `Click this button to free a player from all claim it has received. This option is only available to the static's creator.`;
+
+export const ClaimStaticToolTip = `Please have the Static leader claim this group. Only members with a claimed player can become the leader of the static. A static leader is given the right to unclaim any previously claimed players. Additional features will come.`;
+
+export const UnclaimStaticToolTip = `If the static leader is incorrect, please have them un-claim the static. For additional assistance with this, please contact us via email at Support@XIVLoot.com`;
