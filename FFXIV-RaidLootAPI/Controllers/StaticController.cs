@@ -56,6 +56,167 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        [HttpPut("UnclaimStaticOwnerShip/{uuid}")]
+        public async  Task<IActionResult> UnclaimStaticOwnership(string uuid){
+            using (var context = _context.CreateDbContext())
+            {
+                Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound(false);
+
+                if (dbStatic.ownerIdString == "")
+                    return Unauthorized(false);
+
+                // Check if can actually do it in case the user was evil):
+                if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
+                {
+                    string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                    if (user is null)
+                        return NotFound();
+
+                    if (user.Id.ToString() == dbStatic.ownerIdString)
+                        dbStatic.ownerIdString = "";
+
+                } 
+                else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
+                    {
+                    var claimsIdentity = User.Identity as ClaimsIdentity;
+                    var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+                    if (userIdClaim is null)
+                        return Unauthorized(false);
+                    ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userIdClaim.Value);
+                    if (user is null)
+                        return NotFound(false);
+
+                    if (user.Id == dbStatic.ownerIdString)
+                        dbStatic.ownerIdString = "";
+                    } 
+                else
+                    return Unauthorized(false); // Has to be a logged in user
+
+                await context.SaveChangesAsync();
+                return Ok(true);
+            }
+        }
+        
+        [HttpPut("ClaimStaticOwnerShip/{uuid}")]
+        public async  Task<IActionResult> ClaimStaticOwnership(string uuid){
+            using (var context = _context.CreateDbContext())
+            {
+                Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound(false);
+
+                if (dbStatic.ownerIdString != "")
+                    return Unauthorized(false);
+
+                // Check if can actually do it in case the user was evil):
+                if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
+                {
+                    string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                    if (user is null)
+                        return Unauthorized(false);
+
+                    IEnumerable<Players> playerInStatic = context.Players.Where(p => p.staticId == dbStatic.Id);
+
+                    foreach (string pId in user.getAllClaimedPlayerId()){
+                        foreach (Players player in playerInStatic){
+                            if (player.Id.ToString() == pId)
+                            {
+                                dbStatic.ownerIdString = user.Id.ToString();
+                                await context.SaveChangesAsync();
+                                 return Ok(true);
+                            }
+                        }
+                    }
+                } 
+                else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
+                    {
+                    var claimsIdentity = User.Identity as ClaimsIdentity;
+                    var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+                    if (userIdClaim is null)
+                        return Unauthorized(false);
+                    ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userIdClaim.Value);
+                    if (user is null)
+                        return NotFound(false);
+
+                    IEnumerable<Players> playerInStatic = context.Players.Where(p => p.staticId == dbStatic.Id);
+
+                    
+
+                    foreach (string pId in user.getAllClaimedPlayerId()){
+                        Console.WriteLine("User claimed player : " + pId);
+                        foreach (Players player in playerInStatic){
+                            Console.WriteLine("User claimed player : " + player.Id.ToString());
+                            if (player.Id.ToString() == pId)
+                            {
+                                dbStatic.ownerIdString = userIdClaim.Value;
+                                await context.SaveChangesAsync();
+                                return Ok(true);
+                            }
+                        }
+                    }
+                    } 
+                else
+                    return Unauthorized(false); // Has to be a logged in user
+
+                return Ok(false);
+            }
+        }
+
+        [HttpGet("GetOwnerName/{uuid}")]
+        public async Task<IActionResult> GetOwnerName(string uuid){
+            using (var context = _context.CreateDbContext())
+            {
+                Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound();
+                
+                if (dbStatic.ownerIdString == "")
+                    return Ok(""); // Means no owner
+
+                if (Guid.TryParse(dbStatic.ownerIdString,out _)){
+                    // is uuid so email account
+                    ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == dbStatic.ownerIdString);
+                    if (user is null)
+                        return NotFound();
+
+                    IEnumerable<Players> playerInStatic = context.Players.Where(p => p.staticId == dbStatic.Id);
+
+                    foreach (string pId in user.getAllClaimedPlayerId()){
+                        foreach (Players player in playerInStatic){
+                            if (player.Id.ToString() == pId)
+                                return Ok(player.Name);
+                        }
+                    }
+
+                    return Ok("CLAIM A PLAYER");
+                } 
+                else{
+                // else is a discord user
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.Id.ToString() == dbStatic.ownerIdString);
+                    if (user is null)
+                        return NotFound();
+
+                    IEnumerable<Players> playerInStatic = context.Players.Where(p => p.staticId == dbStatic.Id);
+
+                    foreach (string pId in user.getAllClaimedPlayerId()){
+                        foreach (Players player in playerInStatic){
+                            if (player.Id.ToString() == pId)
+                                return Ok(player.Name);
+                        }
+                    }
+                    return Ok("CLAIM A PLAYER");
+                }
+            }
+        }
+
 // Get All statics        
         [HttpGet(Name = "GetAllStatics")]
         public async Task<ActionResult<List<Static>>> GetAllStatics()

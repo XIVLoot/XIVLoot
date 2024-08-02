@@ -401,6 +401,43 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
+  GetOwnerName(uuid : string){
+    var url = `${this.api}Static/GetOwnerName/${uuid}`;
+    return this.http.get(url, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get owner name : ' + error.message));
+    }));
+  }
+
+  UnclaimStaticOwnerShip(uuid : string){
+    var url = `${this.api}Static/UnclaimStaticOwnerShip/${uuid}`;
+    return this.http.put(url,{}, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to unclaim static.",
+          subMessage: "Reach out.2",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed unclaim ownership : ' + error.message));
+    }));
+  }
+
+  ClaimStaticOwnerShip(uuid : string){
+    var url = `${this.api}Static/ClaimStaticOwnerShip/${uuid}`;
+    return this.http.put(url,{}, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to claim static.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed claim ownership : ' + error.message));
+    }));
+  }
+
   LogoutDiscord(){
     var url = `${this.api}Auth/LogoutDiscord`;
     return this.http.get(url, { withCredentials: true });
