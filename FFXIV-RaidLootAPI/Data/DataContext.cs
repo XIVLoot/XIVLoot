@@ -1,4 +1,5 @@
-﻿using FFXIV_RaidLootAPI.Models;
+﻿using ffxiRaidLootAPI.Models;
+using FFXIV_RaidLootAPI.Models;
 using FFXIV_RaidLootAPI.User;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,5 +24,7 @@ namespace FFXIV_RaidLootAPI.Data
         public DbSet<Users> User { get; set; }
 
         public DbSet<GearAcquisitionTimestamp> GearAcquisitionTimestamps {get;set;}
+
+        public DbSet<PlayerTomePlan> PlayerTomePlans {get;set;}
     }
 }

@@ -1,0 +1,20 @@
+namespace ffxiRaidLootAPI.DTO;
+
+public class GearPlanSingle
+{
+    public string gearName {get;set;} = string.Empty;
+    public int tomeAmountByEOW {get;set;}
+
+    public int tomeLeeWayAmount {get;set;} // This represents the amount of tomestone that can be used in this week given that the next week has a purchase requirement.
+                                           // This is used to show what can be bought (if anything) if for example the user wants to buy head on week 2 (so week 1 could only be acc.)
+}
+class PlayerTomePlanDto
+{
+
+
+        public int numberWeeks {get;set;}
+        public int numberStartTomes {get;set;}
+        public int numberOffsetTomes {get;set;}
+        public List<string> gearPlanOrder = new List<string>();
+
+}
