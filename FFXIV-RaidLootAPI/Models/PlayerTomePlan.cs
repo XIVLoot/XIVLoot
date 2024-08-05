@@ -53,7 +53,7 @@ namespace ffxiRaidLootAPI.Models
             
             string gear = gearPlanOrderList[i];
 
-            int futureTomeNeed = tomeAmountNeed;
+            int futureTomeNeed = Math.Max(0,tomeAmountNeed);
             int tomeLeeWayAmount = MaxTomePerWeek - futureTomeNeed;
             
 
@@ -75,7 +75,7 @@ namespace ffxiRaidLootAPI.Models
                     break;
                 case nameof(GearType.Empty):
                     cost = 0; 
-                    tomeAmountNeed = 0;
+                    tomeAmountNeed = Math.Max(-1*tomeLeeWayAmount, 0);
                     break;
                 case nameof(GearType.Earrings):
                 case nameof(GearType.Necklace):
@@ -95,7 +95,8 @@ namespace ffxiRaidLootAPI.Models
                 tomeLeeWayAmount=tomeLeeWayAmount,
                 futureTomeNeed = futureTomeNeed,
                 CostOfWeek = cost,
-                surplusTome=Math.Max(0,-1 * tomeAmountNeed)
+                surplusTome=Math.Max(0,-1 * tomeAmountNeed),
+                OptionList=new List<string>()
             });
 
             if (i == 0 && tomeAmountNeed > 0)
@@ -116,11 +117,29 @@ namespace ffxiRaidLootAPI.Models
         {   
             GearPlanSingle plan = rList[i];
             // Will update the leeway of all weeks based on the surplus amount of all weeks.
-            plan.tomeLeeWayAmount += curSurplus;
+            plan.surplusTome = curSurplus;
 
-            plan.tomeAmountByEOW = (i == 0 ? 0 : rList[i-1].tomeAmountByEOW) - plan.CostOfWeek + MaxTomePerWeek; // Should never be under 0. if under 0 investigate
+            int available = Math.Min(plan.surplusTome + plan.tomeLeeWayAmount - plan.CostOfWeek, 2000);
 
-            curSurplus += plan.surplusTome;
+            if (available >= Gear.ARMOR_HIGH_COST)
+                plan.OptionList!.AddRange(new[] { nameof(GearType.Body), nameof(GearType.Legs) });
+            if (available >= Gear.WEAPON_TOME_COST)
+                plan.OptionList!.AddRange(new[] { nameof(GearType.Weapon)});
+            if (available >= Gear.ARMOR_LOW_COST)
+                plan.OptionList!.AddRange(new[] { nameof(GearType.Head), nameof(GearType.Hands),nameof(GearType.Feet)});
+            if (available >= Gear.ACCESSORY_TOME_COST)
+                plan.OptionList!.AddRange(new[] { nameof(GearType.Earrings), nameof(GearType.Necklace),nameof(GearType.Bracelets),nameof(GearType.LeftRing),nameof(GearType.RightRing)});
+
+
+            curSurplus += plan.tomeLeeWayAmount;
+            curSurplus = Math.Min(2000, curSurplus);
+
+
+            
+
+            plan.tomeAmountByEOW = Math.Min(2000,(i == 0 ? 0 : rList[i-1].tomeAmountByEOW) - plan.CostOfWeek + MaxTomePerWeek); // Should never be under 0. if under 0 investigate
+
+            
 
         }
 

@@ -20,8 +20,8 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
         }
 
-        [HttpPut("CreateTomePlan/{playerId}")]
-        public async Task<ActionResult> CreateTomePlan(int playerId)
+        [HttpPut("CreateTomePlan/{playerId}/{order}")]
+        public async Task<ActionResult> CreateTomePlan(int playerId, string order)
         {
             using (var context = _context.CreateDbContext())
             {        
@@ -30,7 +30,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                     playerId=playerId,
                     numberStartTomes = 0,
                     numberOffsetTomes = 0,
-                    gearPlanOrder = "Earrings;Weapon;Empty;Head;Legs;"
+                    gearPlanOrder = order//"Weapon;Empty;Head;Legs"
                 };
                 await context.PlayerTomePlans.AddAsync(newTomePlan);
                 await context.SaveChangesAsync();

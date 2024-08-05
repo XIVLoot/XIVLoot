@@ -10,6 +10,7 @@ public class GearPlanSingle
     public int futureTomeNeed {get;set;}
     public int surplusTome {get;set;}
     public int CostOfWeek {get;set;}
+    public List<string>? OptionList {get;set;}
 }
 public class PlayerTomePlanDto
 {
