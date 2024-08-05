@@ -39,43 +39,92 @@ namespace ffxiRaidLootAPI.Models
         List<GearPlanSingle> rList = new List<GearPlanSingle>();
 
         int curTomesAmount = numberStartTomes - numberOffsetTomes + MaxTomePerWeek; // Assume more than 0
-        int i = 0;
+        int i = gearPlanOrderList.Count-1;
+        int tomeAmountNeed = 0;
+        int cost = 0;
 
-        foreach (string gear in gearPlanOrderList)
+        /* First loop goes through list in reverse order. Gatters what is needed from past weeks for future weeks.
+           This way we can detect if we need some weeks to wait to make the schedule work.
+           This also allows us to check which empty week should be locked (done in the other loop which traverse in the increasing order and adds surplus + eow).
+        */
+
+        while (true)
         {
+            
+            string gear = gearPlanOrderList[i];
+
+            int futureTomeNeed = tomeAmountNeed;
+            int tomeLeeWayAmount = MaxTomePerWeek - futureTomeNeed;
+            
+
             switch (gear){
-                case nameof(GearType.Empty):
-                    break;
                 case nameof(GearType.Weapon):
-                    curTomesAmount-= Gear.WEAPON_TOME_COST;
+                    cost = Gear.WEAPON_TOME_COST;
+                    tomeAmountNeed = cost - tomeLeeWayAmount;
                     break;
                 case nameof(GearType.Head):
                 case nameof(GearType.Hands):
                 case nameof(GearType.Feet):
-                    curTomesAmount-= Gear.ARMOR_LOW_COST;
+                    cost = Gear.ARMOR_LOW_COST;
+                    tomeAmountNeed = cost - tomeLeeWayAmount;
                     break;
                 case nameof(GearType.Body):
                 case nameof(GearType.Legs):
-                    curTomesAmount-= Gear.ARMOR_HIGH_COST;
+                    cost = Gear.ARMOR_HIGH_COST;
+                    tomeAmountNeed = cost - tomeLeeWayAmount;
+                    break;
+                case nameof(GearType.Empty):
+                    cost = 0; 
+                    tomeAmountNeed = 0;
                     break;
                 case nameof(GearType.Earrings):
                 case nameof(GearType.Necklace):
                 case nameof(GearType.Bracelets):
                 case nameof(GearType.RightRing):
                 case nameof(GearType.LeftRing):
-                    curTomesAmount-= Gear.ACCESSORY_TOME_COST;
+                    cost = Gear.ACCESSORY_TOME_COST;
+                    tomeAmountNeed = cost - tomeLeeWayAmount;
                     break;
                 default:
                     break;
             }
-            rList.Add(new GearPlanSingle(){
+
+            rList.Insert(0,new GearPlanSingle(){
                 gearName=gear,
-                tomeAmountByEOW=curTomesAmount,
-                tomeLeeWayAmount=0
+                tomeAmountByEOW=0,
+                tomeLeeWayAmount=tomeLeeWayAmount,
+                futureTomeNeed = futureTomeNeed,
+                CostOfWeek = cost,
+                surplusTome=Math.Max(0,-1 * tomeAmountNeed)
             });
-            curTomesAmount+=MaxTomePerWeek;
-            i++;
+
+            if (i == 0 && tomeAmountNeed > 0)
+            {
+                i=1; // Put pointer back
+                gearPlanOrderList.Insert(0, "Empty"); // Add needed week
+            }
+            i--;
+
+            if (i == -1)
+                break;
         }
+
+        /* Second loop that goes in increasing order */
+
+        int curSurplus = 0;
+        for(i = 0;i<rList.Count;i++)
+        {   
+            GearPlanSingle plan = rList[i];
+            // Will update the leeway of all weeks based on the surplus amount of all weeks.
+            plan.tomeLeeWayAmount += curSurplus;
+
+            plan.tomeAmountByEOW = (i == 0 ? 0 : rList[i-1].tomeAmountByEOW) - plan.CostOfWeek + MaxTomePerWeek; // Should never be under 0. if under 0 investigate
+
+            curSurplus += plan.surplusTome;
+
+        }
+
+
         return rList;
     }
 

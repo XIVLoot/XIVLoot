@@ -20,19 +20,44 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
         }
 
+        [HttpPut("CreateTomePlan/{playerId}")]
+        public async Task<ActionResult> CreateTomePlan(int playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {        
+
+                PlayerTomePlan newTomePlan = new PlayerTomePlan(){
+                    playerId=playerId,
+                    numberStartTomes = 0,
+                    numberOffsetTomes = 0,
+                    gearPlanOrder = "Earrings;Weapon;Empty;Head;Legs;"
+                };
+                await context.PlayerTomePlans.AddAsync(newTomePlan);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
         [HttpGet("GetPlayerTomePlan/{playerId}")]
         public async Task<ActionResult<PlayerTomePlanDto>> GetPlayerTomePlan(int playerId)
         {
-            PlayerTomePlan? playerTomePlan = await _context.PlayerTomePlans.FindAsync(playerId);
-            if (playerTomePlan is null)
-                return NotFound();
+            using (var context = _context.CreateDbContext())
+            {
+                PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == playerId);
+                Console.WriteLine("After playerTomePlan : " + playerTomePlan);
+                if (playerTomePlan is null)
+                    return NotFound();
 
-            return Ok(new PlayerTomePlanDto(){
-                numberWeeks = playerTomePlan.numberWeeks,
-                numberStartTomes = playerTomePlan.numberStartTomes,
-                numberOffsetTomes = playerTomePlan.numberOffsetTomes,
-                gearPlanOrder = playerTomePlan.GetGearPlanOrder()
-            });
+                List<GearPlanSingle> rList = playerTomePlan.ComputeGearPlanInfo();
+                Console.WriteLine("After rList : " + rList);
+
+                return Ok(new PlayerTomePlanDto(){
+                    numberWeeks = playerTomePlan.numberWeeks,
+                    numberStartTomes = playerTomePlan.numberStartTomes,
+                    numberOffsetTomes = playerTomePlan.numberOffsetTomes,
+                    gearPlanOrder = rList
+                });
+            }
         }
     }
 }
