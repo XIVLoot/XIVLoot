@@ -12,9 +12,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddTransient<IEmailSender, EmailSender>();
-builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -64,6 +62,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddMvc();
 builder.Services.UseHttpClientMetrics();
+
+// Add services to the container.
+//builder.Services.AddTransient<IEmailSender, EmailSender>();
+//builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("AuthMessageSenderOptions"));
+
 
 var app = builder.Build();
 app.UseDeveloperExceptionPage();

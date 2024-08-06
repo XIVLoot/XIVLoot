@@ -13,6 +13,11 @@ using Microsoft.EntityFrameworkCore;
 using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.User;
 using System.Text.Json;
+using FFXIV_RaidLootAPI.Models;
+using Microsoft.AspNetCore.Identity;
+using RestSharp;
+using FFXIV_RaidLootAPI.DTO;
+using System.Net;
 
 namespace FFXIV_RaidLootAPI.Controllers
 {
@@ -23,13 +28,16 @@ namespace FFXIV_RaidLootAPI.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IDbContextFactory<DataContext> _context;
+
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly string _jwtKey;
 
-        public AuthController(IDbContextFactory<DataContext> context,IConfiguration configuration)
+        public AuthController(UserManager<ApplicationUser> userManager,IDbContextFactory<DataContext> context,IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
             _jwtKey = _configuration["JwtSettings:Key"]!;
+            _userManager = userManager;
         }
 
     [HttpPost("ReadJwt")]
@@ -200,6 +208,54 @@ namespace FFXIV_RaidLootAPI.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
+
+    [HttpPost("forgot-password")]
+    [EnableCors("AllowSpecificOrigins")]
+    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    {
+        using (var context = _context.CreateDbContext())
+            {
+                ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+                if (user is null)
+                    return NotFound();
+
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"https://localhost:5125/reset-password?email={user.Email}&token={WebUtility.UrlEncode(token)}";
+
+            var client = new RestClient("https://send.api.mailtrap.io/api/send");
+            var request = new RestRequest();
+            request.AddHeader("Authorization", "Bearer 5ddd21984ef1c0e3f43715e6c4966aa5");
+            request.AddHeader("Content-Type", "application/json");
+            var emailJson = JsonSerializer.Serialize(new
+            {
+                from = new { email = "mailtrap@xivloot.com", name = "XIVLoot support" },
+                to = new[] { new { email = user.Email } },
+                template_uuid = "bdb174cd-4c82-4370-842b-9bd756120775",
+                template_variables = new { }
+            });
+            request.AddParameter("application/json", emailJson, ParameterType.RequestBody);
+            var response = client.Post(request);
+            Console.WriteLine(response.Content);
+
+            if (response.IsSuccessful)
+            {
+                return Ok(new AuthResponseDto
+                {
+                    IsSuccess = true,
+                    Message = "Email sent with password reset link. Please check your email."
+                });
+            }
+            else
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = response.Content!.ToString()
+                });
+            } 
+            }
+    }
 
     }
 }

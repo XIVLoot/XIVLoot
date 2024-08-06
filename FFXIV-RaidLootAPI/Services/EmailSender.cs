@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using SendGrid;
@@ -8,6 +10,10 @@ namespace FFXIV_RaidLootAPI.Services;
 public class AuthMessageSenderOptions
 {
     public string? SendGridKey { get; set; }
+    public string? SmtpServer { get; set; } // Added
+    public int SmtpPort { get; set; } // Added
+    public string? SmtpUsername { get; set; } // Added
+    public string? SmtpPassword { get; set; } // Added
 }
 
 public class EmailSender : IEmailSender
@@ -35,22 +41,21 @@ public class EmailSender : IEmailSender
 
     public async Task Execute(string apiKey, string subject, string message, string toEmail)
     {
-        var client = new SendGridClient(apiKey);
-        var msg = new SendGridMessage()
+        var client = new SmtpClient(Options.SmtpServer)
         {
-            From = new EmailAddress("antoto001@gmail.com", ""),
-            Subject = subject,
-            PlainTextContent = message,
-            HtmlContent = message
+            Port = Options.SmtpPort,
+            Credentials = new NetworkCredential(Options.SmtpUsername, Options.SmtpPassword),
+            EnableSsl = true,
         };
-        msg.AddTo(new EmailAddress(toEmail));
+        var mailMessage = new MailMessage
+        {
+            From = new MailAddress("antoto001@gmail.com", "Test"),
+            Subject = subject,
+            Body = message,
+            IsBodyHtml = true
+        };
+        mailMessage.To.Add(toEmail);
 
-        // Disable click tracking.
-        // See https://sendgrid.com/docs/User_Guide/Settings/tracking.html
-        msg.SetClickTracking(false, false);
-        var response = await client.SendEmailAsync(msg);
-        _logger.LogInformation(response.IsSuccessStatusCode 
-                               ? $"Email to {toEmail} queued successfully!"
-                               : $"Failure Email to {toEmail}");
+        await client.SendMailAsync(mailMessage);
     }
 }
