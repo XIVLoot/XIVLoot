@@ -20,22 +20,46 @@ namespace ffxiRaidLootAPI.Models
         */
 
 
-    public List<string> GetGearPlanOrder()
+    public List<List<string>> GetGearPlanOrder()
     {
-        return gearPlanOrder.Split(';').ToList();
+        List<string> rList = gearPlanOrder.Split(';').ToList();
+        List<List<string>> rList2 = new List<List<string>>();
+        for (int i = 0; i < rList.Count; i++)
+        {
+            rList2.Add(rList[i].Split('/').ToList());
+        }
+        return rList2;
     }
 
-    public void EditGearPlanOrder(int index, GearType gearType)
+    public void RemoveGearFromWeek(int week, GearType type)
     {
-        List<string> gearPlanOrderList = GetGearPlanOrder();
-        gearPlanOrderList[index] = Enum.GetName(typeof(GearType), gearType)!;
-        // TODO : CHECK IF LEGAL MODIFICATION (NEVER GO UNDER NEEDED TOME)
-        gearPlanOrder = string.Join(";", gearPlanOrderList);
+        List<List<string>> gearPlanOrderList = GetGearPlanOrder();
+        gearPlanOrderList[week].Remove(Enum.GetName(typeof(GearType), type)!);
+        return;
+        List<string> rList = new List<string>();
+        for (int i = 0;i< gearPlanOrderList.Count;i++)
+        {
+            rList.Add(string.Join("/", gearPlanOrderList[i]));
+        }
+        gearPlanOrder = string.Join(";", rList);
+    }
+
+    public void AddGearFromWeek(int week, GearType type)
+    {
+        List<List<string>> gearPlanOrderList = GetGearPlanOrder();
+        gearPlanOrderList[week].Add(Enum.GetName(typeof(GearType), type)!);
+        return;
+        List<string> rList = new List<string>();
+        for (int i = 0;i< gearPlanOrderList.Count;i++)
+        {
+            rList.Add(string.Join("/", gearPlanOrderList[i]));
+        }
+        gearPlanOrder = string.Join(";", rList);
     }
 
     public List<GearPlanSingle> ComputeGearPlanInfo()
     {
-        List<string> gearPlanOrderList = GetGearPlanOrder();
+        List<List<string>> gearPlanOrderList = GetGearPlanOrder();
         List<GearPlanSingle> rList = new List<GearPlanSingle>();
 
         int curTomesAmount = numberStartTomes - numberOffsetTomes + MaxTomePerWeek; // Assume more than 0
