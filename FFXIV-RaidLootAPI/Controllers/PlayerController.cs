@@ -768,7 +768,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
             }
 
-        [HttpGet("FixDatabase")]
+        /*[HttpGet("FixDatabase")]
         public async Task<ActionResult> FixDatabase(){
             using (var context = _context.CreateDbContext())
             {
@@ -808,7 +808,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 await context.SaveChangesAsync();
                 return Ok(msg);
             }
-        }
+        }*/
 
         
 
