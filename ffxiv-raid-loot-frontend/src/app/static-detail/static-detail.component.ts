@@ -808,6 +808,7 @@ export class SettingPGS {
     <div style="text-align: center; padding: 20px;">
       <h1 style="color:white;">Loading Static : {{data.uuid}}</h1>
       <img src="assets/loading_gif.gif" style="width:100px;height:100px;">
+      <p>(Click out to close if it is stuck on loading)</p>
     </div>
   `,
 })
