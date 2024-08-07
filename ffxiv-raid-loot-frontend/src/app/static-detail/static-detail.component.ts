@@ -291,57 +291,71 @@ export class StaticDetailComponent implements OnInit {
 
 
     this.dialog.open(LoadingDialogComponent, {
-      disableClose:true,
+      //disableClose:true,
       data : {uuid : this.uuid}
     });
 
     //console.log("Trying details");
     // Fetch static details from the server using the uuid
-    this.http.getStatic(this.uuid).subscribe(details => {
-      ////console.log("Received details");
-      this.staticDetail = details; // Assign the fetched details to staticDetail
-      this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
-      ////console.log(this.staticDetail); // Log the static details to the console
-      this.groupList = this.ComputeNumberPGSGroup();
-      this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
-        this.GearAcqHistory = data["info"];
-        const keys = Object.keys(this.GearAcqHistory);
+    try {
+      this.http.getStatic(this.uuid).subscribe(details => {
+        ////console.log("Received details");
+        this.staticDetail = details; // Assign the fetched details to staticDetail
+        this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
+        ////console.log(this.staticDetail); // Log the static details to the console
+        this.groupList = this.ComputeNumberPGSGroup();
+        this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
+          this.GearAcqHistory = data["info"];
+          const keys = Object.keys(this.GearAcqHistory);
 
-        for (let x = keys.length-1;x>=0;x--){
-          this.HistoryGear.push(keys[x]);
-        }
-        this.staticDetail.userOwn = {};
-        for(let player of this.staticDetail.players){
-          this.CheckClaimPlayer(player.id).then((result: boolean) => {
-            this.staticDetail.userOwn[player.id] = result;
-        });;
-        }
+          for (let x = keys.length-1;x>=0;x--){
+            this.HistoryGear.push(keys[x]);
+          }
+          this.staticDetail.userOwn = {};
+          for(let player of this.staticDetail.players){
+            this.CheckClaimPlayer(player.id).then((result: boolean) => {
+              this.staticDetail.userOwn[player.id] = result;
+          });;
+          }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const pId = urlParams.get('pId');
-        if (pId) {
-            this.SelectedPlayer = parseInt(pId);
-        }
+          const urlParams = new URLSearchParams(window.location.search);
+          const pId = urlParams.get('pId');
+          if (pId) {
+              this.SelectedPlayer = parseInt(pId);
+          }
 
-        this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
-          this.itemBreakdownInfo = rData.itemBreakdown;
-          this.http.UserOwnStatic(this.uuid).subscribe(pData => {
-            this.UserIsOwnerOfStatic = (pData.toLowerCase() === 'true');
-            console.log("This static is owned : " + this.UserIsOwnerOfStatic);
-            this.http.GetOwnerName(this.uuid).subscribe(datar => {
-              this.staticLeaderName = datar
-              this.IsLoading = false;
-              this.dialog.closeAll();
-              this.cdr.detectChanges();
+          this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
+            this.itemBreakdownInfo = rData.itemBreakdown;
+            this.http.UserOwnStatic(this.uuid).subscribe(pData => {
+              this.UserIsOwnerOfStatic = (pData.toLowerCase() === 'true');
+              console.log("This static is owned : " + this.UserIsOwnerOfStatic);
+              this.http.GetOwnerName(this.uuid).subscribe(datar => {
+                this.staticLeaderName = datar
+                this.IsLoading = false;
+                this.dialog.closeAll();
+                this.cdr.detectChanges();
+              });
+
             });
-
           });
-        });
 
 
 
-    });
-    });
+      });
+      });
+    } catch (error){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "An error occured while loading the static.",
+          subMessage: "if you see any issues please reach out.",
+          color: "red"
+        }
+      });
+      this.IsLoading = false;
+      this.dialog.closeAll();
+      this.cdr.detectChanges();
+    }
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
   }
 
