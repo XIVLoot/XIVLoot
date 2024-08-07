@@ -2,7 +2,7 @@ namespace ffxiRaidLootAPI.DTO;
 
 public class GearPlanSingle
 {
-    public string gearName {get;set;} = string.Empty;
+    public List<string>? gearName {get;set;}
     public int tomeAmountByEOW {get;set;}
 
     public int tomeLeeWayAmount {get;set;} // This represents the amount of tomestone that can be used in this week given that the next week has a purchase requirement.

@@ -35,7 +35,6 @@ namespace ffxiRaidLootAPI.Models
     {
         List<List<string>> gearPlanOrderList = GetGearPlanOrder();
         gearPlanOrderList[week].Remove(Enum.GetName(typeof(GearType), type)!);
-        return;
         List<string> rList = new List<string>();
         for (int i = 0;i< gearPlanOrderList.Count;i++)
         {
@@ -48,7 +47,6 @@ namespace ffxiRaidLootAPI.Models
     {
         List<List<string>> gearPlanOrderList = GetGearPlanOrder();
         gearPlanOrderList[week].Add(Enum.GetName(typeof(GearType), type)!);
-        return;
         List<string> rList = new List<string>();
         for (int i = 0;i< gearPlanOrderList.Count;i++)
         {
@@ -65,7 +63,6 @@ namespace ffxiRaidLootAPI.Models
         int curTomesAmount = numberStartTomes - numberOffsetTomes + MaxTomePerWeek; // Assume more than 0
         int i = gearPlanOrderList.Count-1;
         int tomeAmountNeed = 0;
-        int cost = 0;
 
         /* First loop goes through list in reverse order. Gatters what is needed from past weeks for future weeks.
            This way we can detect if we need some weeks to wait to make the schedule work.
@@ -74,51 +71,50 @@ namespace ffxiRaidLootAPI.Models
 
         while (true)
         {
-            
-            string gear = gearPlanOrderList[i];
+            List<string> weekGearList = gearPlanOrderList[i];
+            int costOfWeek = 0;
+            foreach (string gear in weekGearList){
+                int cost = 0;
+                switch (gear){
+                    case nameof(GearType.Weapon):
+                        cost = Gear.WEAPON_TOME_COST;
+                        break;
+                    case nameof(GearType.Head):
+                    case nameof(GearType.Hands):
+                    case nameof(GearType.Feet):
+                        cost = Gear.ARMOR_LOW_COST;
+                        break;
+                    case nameof(GearType.Body):
+                    case nameof(GearType.Legs):
+                        cost = Gear.ARMOR_HIGH_COST;
+                        break;
+                    case nameof(GearType.Empty):
+                        cost = 0; 
+                        break;
+                    case nameof(GearType.Earrings):
+                    case nameof(GearType.Necklace):
+                    case nameof(GearType.Bracelets):
+                    case nameof(GearType.RightRing):
+                    case nameof(GearType.LeftRing):
+                        cost = Gear.ACCESSORY_TOME_COST;
+                        break;
+                    default:
+                        break;
+                }
+                costOfWeek += cost;
+            }
 
             int futureTomeNeed = Math.Max(0,tomeAmountNeed);
             int tomeLeeWayAmount = MaxTomePerWeek - futureTomeNeed;
             
-
-            switch (gear){
-                case nameof(GearType.Weapon):
-                    cost = Gear.WEAPON_TOME_COST;
-                    tomeAmountNeed = cost - tomeLeeWayAmount;
-                    break;
-                case nameof(GearType.Head):
-                case nameof(GearType.Hands):
-                case nameof(GearType.Feet):
-                    cost = Gear.ARMOR_LOW_COST;
-                    tomeAmountNeed = cost - tomeLeeWayAmount;
-                    break;
-                case nameof(GearType.Body):
-                case nameof(GearType.Legs):
-                    cost = Gear.ARMOR_HIGH_COST;
-                    tomeAmountNeed = cost - tomeLeeWayAmount;
-                    break;
-                case nameof(GearType.Empty):
-                    cost = 0; 
-                    tomeAmountNeed = Math.Max(-1*tomeLeeWayAmount, 0);
-                    break;
-                case nameof(GearType.Earrings):
-                case nameof(GearType.Necklace):
-                case nameof(GearType.Bracelets):
-                case nameof(GearType.RightRing):
-                case nameof(GearType.LeftRing):
-                    cost = Gear.ACCESSORY_TOME_COST;
-                    tomeAmountNeed = cost - tomeLeeWayAmount;
-                    break;
-                default:
-                    break;
-            }
+            tomeAmountNeed = costOfWeek - tomeLeeWayAmount;
 
             rList.Insert(0,new GearPlanSingle(){
-                gearName=gear,
+                gearName=weekGearList,
                 tomeAmountByEOW=0,
                 tomeLeeWayAmount=tomeLeeWayAmount,
                 futureTomeNeed = futureTomeNeed,
-                CostOfWeek = cost,
+                CostOfWeek = costOfWeek,
                 surplusTome=Math.Max(0,-1 * tomeAmountNeed),
                 OptionList=new List<string>()
             });
@@ -126,7 +122,7 @@ namespace ffxiRaidLootAPI.Models
             if (i == 0 && tomeAmountNeed > 0)
             {
                 i=1; // Put pointer back
-                gearPlanOrderList.Insert(0, "Empty"); // Add needed week
+                gearPlanOrderList.Insert(0, new List<string>(){""}); // Add needed week
             }
             i--;
 
@@ -140,10 +136,11 @@ namespace ffxiRaidLootAPI.Models
         for(i = 0;i<rList.Count;i++)
         {   
             GearPlanSingle plan = rList[i];
+            int oldSurplus = plan.surplusTome;
+            plan.surplusTome = plan.surplusTome + curSurplus;
             // Will update the leeway of all weeks based on the surplus amount of all weeks.
-            plan.surplusTome = curSurplus;
 
-            int available = Math.Min(plan.surplusTome + plan.tomeLeeWayAmount - plan.CostOfWeek, 2000);
+            int available = Math.Min(plan.surplusTome, 2000);
 
             if (available >= Gear.ARMOR_HIGH_COST)
                 plan.OptionList!.AddRange(new[] { nameof(GearType.Body), nameof(GearType.Legs) });
@@ -154,8 +151,9 @@ namespace ffxiRaidLootAPI.Models
             if (available >= Gear.ACCESSORY_TOME_COST)
                 plan.OptionList!.AddRange(new[] { nameof(GearType.Earrings), nameof(GearType.Necklace),nameof(GearType.Bracelets),nameof(GearType.LeftRing),nameof(GearType.RightRing)});
 
-
-            curSurplus += plan.tomeLeeWayAmount;
+            
+            curSurplus += oldSurplus;
+            plan.surplusTome = available;
             curSurplus = Math.Min(2000, curSurplus);
 
 
