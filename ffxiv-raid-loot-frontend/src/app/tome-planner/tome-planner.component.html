@@ -60,7 +60,7 @@
             <div style="width: 45%;margin-left: 2.5%;display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.3);padding: 3px;">
                 <div *ngFor="let item of week.gearName, let i = index" style="width: 85px;display: flex;flex-direction: row;justify-content: space-between;margin-right: 3px;margin-left: 3px;background-color: rgba(255, 255, 255, 0.1);padding: 2px;">
                     <p style="margin:0;">{{item}}</p>
-                    <mat-icon style="color:red" (click)="RemoveGearFromPlan(i, j)">remove_circle</mat-icon>
+                    <mat-icon style="color:red" (click)="RemoveFromTomePlan(j, item)">remove_circle</mat-icon>
                 </div>
                 <div>
                     <mat-icon style="padding: 2px;" (click)="AddGearToPlan(week.optionList,j)" [style.color]="week.optionList.length > 0 ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.1)'">add_circle</mat-icon>

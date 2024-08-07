@@ -21,12 +21,17 @@ namespace ffxiRaidLootAPI.Models
 
 
     public List<List<string>> GetGearPlanOrder()
-    {
+    {   
+        Console.WriteLine("GearPlanString : " + gearPlanOrder);
         List<string> rList = gearPlanOrder.Split(';').ToList();
+        Console.WriteLine("HERE");
+        Console.WriteLine(string.Join(", ", rList));
         List<List<string>> rList2 = new List<List<string>>();
         for (int i = 0; i < rList.Count; i++)
         {
-            rList2.Add(rList[i].Split('/').ToList());
+            Console.WriteLine("IN-");
+            rList2.Add(rList[i].Split('/').ToList());   
+            Console.WriteLine(string.Join(", ", rList[i].Split('/').ToList()));
         }
         return rList2;
     }
@@ -34,6 +39,8 @@ namespace ffxiRaidLootAPI.Models
     public void RemoveGearFromWeek(int week, GearType type)
     {
         List<List<string>> gearPlanOrderList = GetGearPlanOrder();
+        Console.WriteLine(string.Join(", ", gearPlanOrderList));
+        Console.WriteLine("Trying to remove from week : " + week + type); 
         gearPlanOrderList[week].Remove(Enum.GetName(typeof(GearType), type)!);
         List<string> rList = new List<string>();
         for (int i = 0;i< gearPlanOrderList.Count;i++)
@@ -46,6 +53,8 @@ namespace ffxiRaidLootAPI.Models
     public void AddGearFromWeek(int week, GearType type)
     {
         List<List<string>> gearPlanOrderList = GetGearPlanOrder();
+        Console.WriteLine(string.Join(", ", gearPlanOrderList));
+        Console.WriteLine("Trying to add from week : " + week + type); 
         gearPlanOrderList[week].Add(Enum.GetName(typeof(GearType), type)!);
         List<string> rList = new List<string>();
         for (int i = 0;i< gearPlanOrderList.Count;i++)
@@ -89,6 +98,7 @@ namespace ffxiRaidLootAPI.Models
                         cost = Gear.ARMOR_HIGH_COST;
                         break;
                     case nameof(GearType.Empty):
+                    case "":
                         cost = 0; 
                         break;
                     case nameof(GearType.Earrings):
@@ -123,6 +133,7 @@ namespace ffxiRaidLootAPI.Models
             {
                 i=1; // Put pointer back
                 gearPlanOrderList.Insert(0, new List<string>(){""}); // Add needed week
+                gearPlanOrder = ";" + gearPlanOrder;
             }
             i--;
 

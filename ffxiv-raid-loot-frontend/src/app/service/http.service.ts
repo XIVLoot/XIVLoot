@@ -537,6 +537,27 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
   
+  GetTomePlan(playerId : number){
+    var url = `${this.api}PlayerTomePlan/GetPlayerTomePlan/${playerId}`;
+    return this.http.get(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get tome plan : ' + error.message));
+    }));
+  }
+
+  AddToTomePlan(playerId : number, week : number, gear : string){
+    var url = `${this.api}PlayerTomePlan/AddToTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, gearToAdd : gear}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to add to tome plan : ' + error.message));
+    }));
+  }
+
+  RemoveFromTomePlan(playerId : number, week : number, gear : string){
+    var url = `${this.api}PlayerTomePlan/RemoveFromTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, gearToRemove : gear}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to add to tome plan : ' + error.message));
+    }));
+  }
+
   
 
 }
