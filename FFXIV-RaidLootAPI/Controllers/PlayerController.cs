@@ -767,6 +767,49 @@ namespace FFXIV_RaidLootAPI.Controllers
                 return Ok();
             }
             }
+
+        [HttpGet("FixDatabase")]
+        public async Task<ActionResult> FixDatabase(){
+            using (var context = _context.CreateDbContext())
+            {
+                List<Players> players = context.Players.Where(p => p.IsClaimed).ToList();
+                List<Users> discordUsers = context.User.Where(u => u.user_claimed_playerId != "").ToList();
+                List<ApplicationUser> emailUsers = context.Users.Where(u => u.user_claimed_playerId != "").ToList();
+
+                string msg = "";
+
+                foreach (Players player in players){
+                    // Checks if the player is actually claimed.
+
+                    bool HasFoundClaimer = false;
+                    foreach (Users discord in discordUsers){
+                        if (discord.UserClaimedPlayer(player.Id.ToString())){
+                            HasFoundClaimer = true;
+                            msg += "Verified player : " + player.Id.ToString() + ";\n";
+                            break;
+                        }
+                    }
+                    if (!HasFoundClaimer){
+                        foreach (ApplicationUser email in emailUsers){
+                            if (email.UserClaimedPlayer(player.Id.ToString())){
+                                HasFoundClaimer = true;
+                                msg += "Verified player : " + player.Id.ToString() + ";\n";
+                                break;
+                            }
+                        }
+                        if(!HasFoundClaimer){
+                            player.IsClaimed = false;
+                            msg += "Unclaimed player : " + player.Id.ToString() + ";\n";
+                            
+                        }
+                    }
+
+                }
+                await context.SaveChangesAsync();
+                return Ok(msg);
+            }
+        }
+
         
 
     }
