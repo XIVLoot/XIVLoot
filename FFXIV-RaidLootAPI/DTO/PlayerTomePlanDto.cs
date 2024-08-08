@@ -17,6 +17,7 @@ public class PlayerTomePlanDto
         public int numberWeeks {get;set;}
         public int numberStartTomes {get;set;}
         public int numberOffsetTomes {get;set;}
+        public int totalCost {get;set;}
         public List<GearPlanSingle>? gearPlanOrder {get;set;}
 
 }

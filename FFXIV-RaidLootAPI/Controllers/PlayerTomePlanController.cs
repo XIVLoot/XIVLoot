@@ -86,6 +86,78 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
         }
 
+        [HttpPut("SetStartTomes")]
+        public async Task<ActionResult> SetStartTomes(TomePlanEditDTO tomePlanEditDTO)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
+                if (playerTomePlan is null)
+                    return NotFound();
+
+                try{
+                    playerTomePlan.numberStartTomes = tomePlanEditDTO.numberStartTomes;
+                }
+                catch(Exception e){
+                    playerTomePlan.numberStartTomes = 0;
+                    await context.SaveChangesAsync();
+                    return Ok();
+                }
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
+        [HttpPut("SetOffsetTomes")]
+        public async Task<ActionResult> SetOffsetTomes(TomePlanEditDTO tomePlanEditDTO)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
+                if (playerTomePlan is null)
+                    return NotFound();
+
+                try{
+                    playerTomePlan.numberOffsetTomes = tomePlanEditDTO.numberOffsetTomes;
+                }
+                catch(Exception e){
+                    playerTomePlan.numberOffsetTomes = 0;
+                    await context.SaveChangesAsync();
+                    return Ok();
+                }
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
+        [HttpPut("AddWeekToTomePlan")]
+        public async Task<ActionResult> AddWeekToTomePlan(TomePlanEditDTO tomePlanEditDTO)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
+                if (playerTomePlan is null)
+                    return NotFound();
+                playerTomePlan.gearPlanOrder = ";" + playerTomePlan.gearPlanOrder;
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
+        [HttpPut("RemoveWeekFromTomePlan")]
+        public async Task<ActionResult> RemoveWeekFromTomePlan(TomePlanEditDTO tomePlanEditDTO)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
+                if (playerTomePlan is null)
+                    return NotFound();
+                playerTomePlan.RemoveWeekFromGearPlan(tomePlanEditDTO.weekToEdit);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
         [HttpGet("GetPlayerTomePlan/{playerId}")]
         public async Task<ActionResult<PlayerTomePlanDto>> GetPlayerTomePlan(int playerId)
         {
@@ -95,8 +167,9 @@ namespace FFXIV_RaidLootAPI.Controllers
                 Console.WriteLine("After playerTomePlan : " + playerTomePlan);
                 if (playerTomePlan is null)
                     return NotFound();
-
-                List<GearPlanSingle> rList = playerTomePlan.ComputeGearPlanInfo();
+                Tuple<List<GearPlanSingle>,int> tup = playerTomePlan.ComputeGearPlanInfo();
+                List<GearPlanSingle> rList = tup.Item1;
+                int cost = tup.Item2;
                 Console.WriteLine("After rList : " + rList);
                 await context.SaveChangesAsync(); // Changing if we added weeks
 
@@ -104,6 +177,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                     numberWeeks = playerTomePlan.numberWeeks,
                     numberStartTomes = playerTomePlan.numberStartTomes,
                     numberOffsetTomes = playerTomePlan.numberOffsetTomes,
+                    totalCost = cost,
                     gearPlanOrder = rList
                 });
             }

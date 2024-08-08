@@ -2,34 +2,36 @@
 
 <div style="display: flex; flex-direction: row;height: 50px;width: 90%;margin-left: 5%;justify-content: space-between;margin-bottom: 1%;">
 
-    <div style="display: flex; flex-direction: row;border: 3px solid black;align-items: center;">
+    <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Total Tomes Needed</p>
         </div>
         <div style="width: 40%;">
-            <p style="text-align: center;margin: 0;">{{info.neededTomes}}</p>
+            <p style="text-align: center;margin: 0;">{{info.totalCost}}</p>
         </div>
     </div>
 
-    <div style="display: flex; flex-direction: row;border: 3px solid black;align-items: center;">
+    <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Starting Tome Amount</p>
         </div>
-        <div style="width: 40%;">
-            <p style="text-align: center;margin: 0;">{{info.numberStartTomes}}</p>
+        <div style="width: 40%;justify-content: center;display: flex;">
+            <!-- <p style="text-align: center;margin: 0;">{{info.numberStartTomes}}</p> -->
+            <input type="number" style="width: 50px;" [(ngModel)]="info.numberStartTomes" (change)="UpdateNeededTomes()">
         </div>
     </div>
-
-    <div style="display: flex; flex-direction: row;border: 3px solid black;align-items: center;">
+    <!--
+    <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Offset Tome Amount</p>
         </div>
-        <div style="width: 40%;">
-            <p style="text-align: center;margin: 0;">{{info.numberOffsetTomes}}</p>
+        <div style="width: 40%;justify-content: center;display: flex;">
+            <input type="number" style="width: 50px;" [(ngModel)]="info.numberOffsetTomes" (change)="UpdateOffsetTomes()">
         </div>
     </div>
+    -->
 
-    <div style="display: flex; flex-direction: row;border: 3px solid black;align-items: center;">
+    <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Remaining Tomes</p>
         </div>
@@ -38,44 +40,49 @@
         </div>
     </div>
 
-    <div style="display: flex; flex-direction: row;border: 3px solid black;align-items: center;">
+    <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Number of weeks</p>
         </div>
         <div style="width: 40%;">
-            <p style="text-align: center;margin: 0;">{{info.numberWeeks}}</p>
+            <p style="text-align: center;margin: 0;">{{info.gearPlanOrder.length}}</p>
         </div>
     </div>
+
+
 
 </div>
 
 <div style="border-bottom: 3px solid black;width: 95%;margin-left: 2.5%;">
 </div>
 
-<div style="width: 95%;margin-left: 2.5%;background-color: rgba(0, 0, 0, 0.2);margin-top: 1%;">
+<div class="planShower">
 
     <div *ngFor="let week of info.gearPlanOrder, let j = index" style="align-items: center;">
-        <div style="width: 98%;margin-left: 1%;margin-bottom: 0.5%;margin-top:0.5%;border: 3px solid black;display: flex;flex-direction: row;align-items: center;">
+        <div class="weekShower">
             
-            <div style="width: 45%;margin-left: 2.5%;display: flex;flex-direction: row;background-color: rgba(0, 0, 0, 0.3);padding: 3px;">
+            <div class="itemShower">
                 <div *ngFor="let item of week.gearName, let i = index" style="width: 85px;display: flex;flex-direction: row;justify-content: space-between;margin-right: 3px;margin-left: 3px;background-color: rgba(255, 255, 255, 0.1);padding: 2px;">
                     <p style="margin:0;">{{item}}</p>
                     <mat-icon style="color:red" (click)="RemoveFromTomePlan(j, item)">remove_circle</mat-icon>
                 </div>
                 <div>
-                    <mat-icon style="padding: 2px;" (click)="AddGearToPlan(week.optionList,j)" [style.color]="week.optionList.length > 0 ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.1)'">add_circle</mat-icon>
+                    <mat-icon style="padding: 2px;" (click)="AddGearToPlan(week.optionList,j)" [style.color]="week.optionList.length > 0 ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.5)'">add_circle</mat-icon>
                 </div>
             </div>
             
             <div style="width: 45%;margin-left: 2.5%;display: flex;flex-direction: row;">
-                <div style="width: 30%;border: 3px solid black;align-items: center;padding: 2px;margin-right: 5%;">
-                    <p style="margin: 0;text-align: center;">Needed : {{week.costOfWeek}}</p>
+                <div class="weekInfoShower">
+                    <p style="margin: 0;text-align: center;">Cost of week : {{week.costOfWeek}}</p>
                 </div>
-                <div style="width: 30%;border: 3px solid black;align-items: center;padding: 2px;">
+                <div  class="weekInfoShower">
                     <p style="margin: 0;text-align: center;">EOW Tomes : {{week.tomeAmountByEOW}}</p>
                 </div>
-                <div style="width: 30%;border: 3px solid black;align-items: center;padding: 2px;">
-                    <p style="margin: 0;text-align: center;">Surplus : {{week.tomeLeeWayAmount}}</p>
+                <div class="weekInfoShower">
+                    <p style="margin: 0;text-align: center;">Surplus : {{week.surplusTome}}</p>
+                </div>
+                <div>
+                    <mat-icon (click)="RemoveWeekFromTomePlan(j)" style="color: red;">delete_forever</mat-icon>
                 </div>
             </div>
         </div>
@@ -83,5 +90,5 @@
     </div>
 
 </div>
-
+<button (click)="AddWeekToTomePlan()" style="width: 40%;margin-left: 30%;height: 50px;background-color: rgba(255, 255, 255, 0.7);border-radius: 10px;cursor: pointer;">Add week</button>
 </div>

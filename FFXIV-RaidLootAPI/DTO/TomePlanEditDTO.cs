@@ -6,4 +6,6 @@ public class TomePlanEditDTO
     public int weekToEdit {get;set;}
     public string GearToAdd {get;set;} = string.Empty;
     public string GearToRemove {get;set;} = string.Empty;
+    public int numberStartTomes {get;set;}
+    public int numberOffsetTomes {get;set;}
 }

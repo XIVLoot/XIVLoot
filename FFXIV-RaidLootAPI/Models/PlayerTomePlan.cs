@@ -1,3 +1,4 @@
+using System.Numerics;
 using ffxiRaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
 
@@ -30,10 +31,19 @@ namespace ffxiRaidLootAPI.Models
         for (int i = 0; i < rList.Count; i++)
         {
             Console.WriteLine("IN-");
-            rList2.Add(rList[i].Split('/').ToList());   
+            List<string> rList3 = rList[i].Split('/').ToList();
+            rList3.RemoveAll(s => s == "");
+            rList2.Add(rList3);   
             Console.WriteLine(string.Join(", ", rList[i].Split('/').ToList()));
         }
         return rList2;
+    }
+
+    public void RemoveWeekFromGearPlan(int weekindex)
+    {
+        List<List<string>> gearPlanOrderList = GetGearPlanOrder();
+        gearPlanOrderList.RemoveAt(weekindex);
+        ReconstructGearPlanString(gearPlanOrderList);
     }
 
     public void RemoveGearFromWeek(int week, GearType type)
@@ -42,6 +52,11 @@ namespace ffxiRaidLootAPI.Models
         Console.WriteLine(string.Join(", ", gearPlanOrderList));
         Console.WriteLine("Trying to remove from week : " + week + type); 
         gearPlanOrderList[week].Remove(Enum.GetName(typeof(GearType), type)!);
+        ReconstructGearPlanString(gearPlanOrderList);
+    }
+
+    public void ReconstructGearPlanString(List<List<string>> gearPlanOrderList)
+    {
         List<string> rList = new List<string>();
         for (int i = 0;i< gearPlanOrderList.Count;i++)
         {
@@ -56,15 +71,10 @@ namespace ffxiRaidLootAPI.Models
         Console.WriteLine(string.Join(", ", gearPlanOrderList));
         Console.WriteLine("Trying to add from week : " + week + type); 
         gearPlanOrderList[week].Add(Enum.GetName(typeof(GearType), type)!);
-        List<string> rList = new List<string>();
-        for (int i = 0;i< gearPlanOrderList.Count;i++)
-        {
-            rList.Add(string.Join("/", gearPlanOrderList[i]));
-        }
-        gearPlanOrder = string.Join(";", rList);
+        ReconstructGearPlanString(gearPlanOrderList);
     }
 
-    public List<GearPlanSingle> ComputeGearPlanInfo()
+    public Tuple<List<GearPlanSingle>,int> ComputeGearPlanInfo()
     {
         List<List<string>> gearPlanOrderList = GetGearPlanOrder();
         List<GearPlanSingle> rList = new List<GearPlanSingle>();
@@ -72,6 +82,8 @@ namespace ffxiRaidLootAPI.Models
         int curTomesAmount = numberStartTomes - numberOffsetTomes + MaxTomePerWeek; // Assume more than 0
         int i = gearPlanOrderList.Count-1;
         int tomeAmountNeed = 0;
+        int amountUsedFromSurplusAtStart = 0;
+        int totalCost = 0;
 
         /* First loop goes through list in reverse order. Gatters what is needed from past weeks for future weeks.
            This way we can detect if we need some weeks to wait to make the schedule work.
@@ -81,6 +93,19 @@ namespace ffxiRaidLootAPI.Models
         while (true)
         {
             List<string> weekGearList = gearPlanOrderList[i];
+
+            /*if (i == 0 && weekGearList.Count == 0 && gearPlanOrderList.Count > 1 && tomeAmountNeed <= numberStartTomes - numberOffsetTomes)
+            {
+                gearPlanOrder = gearPlanOrder.Substring(1);
+                if (tomeAmountNeed <= numberStartTomes - numberOffsetTomes)
+                {
+                    amountUsedFromSurplusAtStart = tomeAmountNeed;
+                }
+                break;
+            }*/
+                
+
+            
             int costOfWeek = 0;
             foreach (string gear in weekGearList){
                 int cost = 0;
@@ -113,6 +138,7 @@ namespace ffxiRaidLootAPI.Models
                 }
                 costOfWeek += cost;
             }
+            totalCost += costOfWeek;
 
             int futureTomeNeed = Math.Max(0,tomeAmountNeed);
             int tomeLeeWayAmount = MaxTomePerWeek - futureTomeNeed;
@@ -129,11 +155,15 @@ namespace ffxiRaidLootAPI.Models
                 OptionList=new List<string>()
             });
 
-            if (i == 0 && tomeAmountNeed > 0)
+            if (i == 0 && tomeAmountNeed > 0 && tomeAmountNeed > numberStartTomes - numberOffsetTomes)
             {
                 i=1; // Put pointer back
                 gearPlanOrderList.Insert(0, new List<string>(){""}); // Add needed week
                 gearPlanOrder = ";" + gearPlanOrder;
+            }
+            else if (i == 0 && tomeAmountNeed > 0 && tomeAmountNeed <= numberStartTomes - numberOffsetTomes)
+            {
+                amountUsedFromSurplusAtStart = tomeAmountNeed;
             }
             i--;
 
@@ -142,8 +172,8 @@ namespace ffxiRaidLootAPI.Models
         }
 
         /* Second loop that goes in increasing order */
-
-        int curSurplus = 0;
+        Console.WriteLine("Amount used from surplus at start : " + amountUsedFromSurplusAtStart);
+        int curSurplus = numberStartTomes - numberOffsetTomes  - amountUsedFromSurplusAtStart;
         for(i = 0;i<rList.Count;i++)
         {   
             GearPlanSingle plan = rList[i];
@@ -163,6 +193,7 @@ namespace ffxiRaidLootAPI.Models
                 plan.OptionList!.AddRange(new[] { nameof(GearType.Earrings), nameof(GearType.Necklace),nameof(GearType.Bracelets),nameof(GearType.LeftRing),nameof(GearType.RightRing)});
 
             
+
             curSurplus += oldSurplus;
             plan.surplusTome = available;
             curSurplus = Math.Min(2000, curSurplus);
@@ -170,14 +201,16 @@ namespace ffxiRaidLootAPI.Models
 
             
 
-            plan.tomeAmountByEOW = Math.Min(2000,(i == 0 ? 0 : rList[i-1].tomeAmountByEOW) - plan.CostOfWeek + MaxTomePerWeek); // Should never be under 0. if under 0 investigate
+            plan.tomeAmountByEOW = Math.Min(2000,(i == 0 ? numberStartTomes - numberOffsetTomes : rList[i-1].tomeAmountByEOW) - plan.CostOfWeek + MaxTomePerWeek); // Should never be under 0. if under 0 investigate   
+
 
             
 
         }
 
+        return Tuple.Create(rList,totalCost);
 
-        return rList;
+        
     }
 
 
