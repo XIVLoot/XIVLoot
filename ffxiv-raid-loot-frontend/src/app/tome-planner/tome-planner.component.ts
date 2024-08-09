@@ -6,6 +6,9 @@ import { HttpService } from '../service/http.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialog } from '../player-details-single/player-details-single.component';
+import { catchError, throwError } from 'rxjs';
+import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
+import { Player } from '../models/player';
 
 @Component({
   selector: 'app-tome-planner',
@@ -14,20 +17,40 @@ import { ConfirmDialog } from '../player-details-single/player-details-single.co
 })
 export class TomePlannerComponent {
 
-  /*@Input()*/public info:any = {};
+  /**/public info:any = {};
+  @Input() player : Player;
+  public hasTomePlan : boolean = false;
   private UpdateNeedManual : boolean = true;
   constructor(public http: HttpService,  public dialog: MatDialog,
     private _snackBar: MatSnackBar
 ) { } // Constructor with dependency injection
 
   ngOnInit(){
-    this.http.GetTomePlan(4).subscribe(data => {
+    this.http.GetTomePlan(this.player.id).pipe(catchError(error => {
+      this.hasTomePlan = false;
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Error while getting tome plan.",
+          subMessage: "Reach out if this persists.",
+          color : "red"
+        }
+        });
+      return throwError(() => new Error('Failed to get tome plan : ' + error.message));
+    })).subscribe(data => {
       this.info = data;
+      this.hasTomePlan = true;
+    });
+  }
+
+  CreateTomePlan(){
+    this.http.CreateTomePlan(this.player.id).subscribe(data => {
+      this.ngOnInit();
     });
   }
 
   AddWeekToTomePlan(){
-    this.http.AddWeekToTomePlan(4).subscribe(data => {
+    this.http.AddWeekToTomePlan(this.player.id).subscribe(data => {
       this.ngOnInit();
     });
   }
@@ -53,7 +76,7 @@ export class TomePlannerComponent {
       this.info.numberStartTomes = 2000;
       this.UpdateNeedManual = true;
     }
-    this.http.SetStartTomes(4, this.info.numberStartTomes).subscribe(data => {
+    this.http.SetStartTomes(this.player.id, this.info.numberStartTomes).subscribe(data => {
       this.ngOnInit();
     });
   }
@@ -79,7 +102,7 @@ export class TomePlannerComponent {
       this.info.numberOffsetTomes = 2000;
       this.UpdateNeedManual = true;
     }
-    this.http.SetOffsetTomes(4, this.info.numberOffsetTomes).subscribe(data => {
+    this.http.SetOffsetTomes(this.player.id, this.info.numberOffsetTomes).subscribe(data => {
       this.ngOnInit();
     });
   }
@@ -87,7 +110,7 @@ export class TomePlannerComponent {
 
 
   RemoveFromTomePlan(week : number, gear : string){
-    this.http.RemoveFromTomePlan(4, week, gear).subscribe(data => {
+    this.http.RemoveFromTomePlan(this.player.id, week, gear).subscribe(data => {
       this.ngOnInit();
     });
   }
@@ -98,13 +121,13 @@ export class TomePlannerComponent {
     }*/
     this.dialog.open(AddGearDialog, 
       {
-        width: '400px',
+        width: 'this.player.id00px',
         height: '350px',
         data: {item : choiceList},
         disableClose: true
       }).afterClosed().subscribe(data =>{
         if (data !== ""){
-          this.http.AddToTomePlan(4, week, data).subscribe(data => {
+          this.http.AddToTomePlan(this.player.id, week, data).subscribe(data => {
             this.ngOnInit();
           });
         }
@@ -112,12 +135,12 @@ export class TomePlannerComponent {
   }
 
   RemoveGearFromPlan(gear : string, week : number){
-    this.http.RemoveFromTomePlan(4, week, gear).subscribe(data => {
+    this.http.RemoveFromTomePlan(this.player.id, week, gear).subscribe(data => {
       this.ngOnInit();
     });
   }
   RemoveWeekFromTomePlan(week : number){
-    this.http.RemoveWeekFromTomePlan(4, week).subscribe(data => {
+    this.http.RemoveWeekFromTomePlan(this.player.id, week).subscribe(data => {
       this.ngOnInit();
     });
   }
