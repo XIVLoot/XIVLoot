@@ -15,6 +15,7 @@ namespace ffxiRaidLootAPI.Models
         public int numberStartTomes {get;set;}
         public int numberOffsetTomes {get;set;}
         public string gearPlanOrder {get;set;} = string.Empty; 
+        public string weekDoneString {get;set;} = string.Empty;
         /*
         This string is a ';' separated list of gear name in the order the player wants to get them. A value of "Empty" means the player has not yet selected it.
         A value of "Locked" means a future week is using the entirety of tomestones from this week and so it cannot be used.
@@ -39,11 +40,27 @@ namespace ffxiRaidLootAPI.Models
         return rList2;
     }
 
+    public List<bool> GetWeekDoneList()
+    {
+        return weekDoneString.Split(';').Select(s => s == "1").ToList();
+
+    }
+
+    public void SetWeekDone(int week, bool done)
+    {
+        List<bool> weekDoneList = GetWeekDoneList();
+        weekDoneList[week] = done;
+        weekDoneString = string.Join(";", weekDoneList.Select(b => b ? "1" : "0").ToList());
+    }
+
     public void RemoveWeekFromGearPlan(int weekindex)
     {
         List<List<string>> gearPlanOrderList = GetGearPlanOrder();
+        List<bool> weekDoneList = GetWeekDoneList();
         gearPlanOrderList.RemoveAt(weekindex);
+        weekDoneList.RemoveAt(weekindex);
         ReconstructGearPlanString(gearPlanOrderList);
+        weekDoneString = string.Join(";", weekDoneList.Select(b => b ? "1" : "0").ToList());
     }
 
     public void RemoveGearFromWeek(int week, GearType type)

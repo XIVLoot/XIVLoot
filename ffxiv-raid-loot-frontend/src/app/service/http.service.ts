@@ -570,9 +570,9 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
-  AddWeekToTomePlan(playerId : number){
+  AddWeekToTomePlan(playerId : number, week : number){
     var url = `${this.api}PlayerTomePlan/AddWeekToTomePlan`;
-    return this.http.put(url, {playerId : playerId}, {withCredentials:true}).pipe(catchError(error => {
+    return this.http.put(url, {playerId : playerId, weekToEdit : week}, {withCredentials:true}).pipe(catchError(error => {
       return throwError(() => new Error('Failed to set start tomes : ' + error.message));
     }));
   }
@@ -585,9 +585,16 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   }
 
   CreateTomePlan(playerId : number){
-    var url = `${this.api}PlayerTomePlan/CreateTomePlan/${playerId}/;;;`;
+    var url = `${this.api}PlayerTomePlan/CreateTomePlan/${playerId}/;;;/0;0;0;`;
     return this.http.put(url, {playerId : playerId}, {withCredentials:true}).pipe(catchError(error => {
       return throwError(() => new Error('Failed to create tome plan : ' + error.message));
+    }));
+  }
+
+  SetWeekDone(playerId : number, week : number, done : boolean){
+    var url = `${this.api}PlayerTomePlan/SetWeekDone`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, done : done}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to set week done : ' + error.message));
     }));
   }
 

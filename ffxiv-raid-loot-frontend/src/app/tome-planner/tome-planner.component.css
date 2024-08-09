@@ -17,16 +17,19 @@ mat-icon{
     margin: 1%;
     border: 2px solid black;
     padding: 10px;
+    border-radius: 5px;
 }
 .weekShower{
     width: 98%;
     margin-left: 1%;
     margin-bottom: 0.5%;
     margin-top:0.5%;
-    border: 3px solid black;
+    border: 2px solid black;
     display: flex;
     flex-direction: row;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
 }
 .itemShower{
     width: 45%;

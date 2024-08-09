@@ -22,8 +22,8 @@ namespace FFXIV_RaidLootAPI.Controllers
             _context = context;
         }
 
-        [HttpPut("CreateTomePlan/{playerId}/{order}")]
-        public async Task<ActionResult> CreateTomePlan(int playerId, string order)
+        [HttpPut("CreateTomePlan/{playerId}/{order}/{doneString}")]
+        public async Task<ActionResult> CreateTomePlan(int playerId, string order, string doneString)
         {
             using (var context = _context.CreateDbContext())
             {        
@@ -32,9 +32,25 @@ namespace FFXIV_RaidLootAPI.Controllers
                     playerId=playerId,
                     numberStartTomes = 0,
                     numberOffsetTomes = 0,
-                    gearPlanOrder = order//"Weapon;Empty;Head;Legs"
+                    gearPlanOrder = order,
+                    weekDoneString = doneString
+
                 };
                 await context.PlayerTomePlans.AddAsync(newTomePlan);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
+        [HttpPut("SetWeekDone")]
+        public async Task<ActionResult> SetWeekDone(TomePlanEditDTO playerTomePlanDto)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == playerTomePlanDto.playerId);
+                if (playerTomePlan is null)
+                    return NotFound();
+                playerTomePlan.SetWeekDone(playerTomePlanDto.weekToEdit, playerTomePlanDto.done);
                 await context.SaveChangesAsync();
                 return Ok();
             }
@@ -138,7 +154,15 @@ namespace FFXIV_RaidLootAPI.Controllers
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
+                if (tomePlanEditDTO.weekToEdit == 0)
+                {
                 playerTomePlan.gearPlanOrder = ";" + playerTomePlan.gearPlanOrder;
+                playerTomePlan.weekDoneString = "0;" + playerTomePlan.weekDoneString;
+                } else if(tomePlanEditDTO.weekToEdit == -1){
+                    playerTomePlan.gearPlanOrder = playerTomePlan.gearPlanOrder + ";";
+                    playerTomePlan.weekDoneString = playerTomePlan.weekDoneString + ";0";
+                }
+
                 await context.SaveChangesAsync();
                 return Ok();
             }
@@ -178,7 +202,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                     numberStartTomes = playerTomePlan.numberStartTomes,
                     numberOffsetTomes = playerTomePlan.numberOffsetTomes,
                     totalCost = cost,
-                    gearPlanOrder = rList
+                    gearPlanOrder = rList,
+                    weekDone = playerTomePlan.GetWeekDoneList()
                 });
             }
         }

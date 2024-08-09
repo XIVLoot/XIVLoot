@@ -8,4 +8,6 @@ public class TomePlanEditDTO
     public string GearToRemove {get;set;} = string.Empty;
     public int numberStartTomes {get;set;}
     public int numberOffsetTomes {get;set;}
+
+    public bool done {get;set;}
 }

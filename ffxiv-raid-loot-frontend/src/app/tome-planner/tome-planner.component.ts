@@ -9,6 +9,7 @@ import { ConfirmDialog } from '../player-details-single/player-details-single.co
 import { catchError, throwError } from 'rxjs';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { Player } from '../models/player';
+import { CheckWeekDoneToolTip, TotalTomestonesToolTip, StartingTomeToolTip, DeleteWeekToolTip, AddWeekToolTip , AddWeekStartToolTip, CheckWeekNotDoneToolTip} from '../tooltip';
 
 @Component({
   selector: 'app-tome-planner',
@@ -17,9 +18,19 @@ import { Player } from '../models/player';
 })
 export class TomePlannerComponent {
 
+
+  public CheckWeekDoneToolTip = CheckWeekDoneToolTip;
+  public TotalTomestonesToolTip = TotalTomestonesToolTip;
+  public StartingTomeToolTip = StartingTomeToolTip;
+  public DeleteWeekToolTip = DeleteWeekToolTip;
+  public AddWeekToolTip = AddWeekToolTip;
+  public AddWeekStartToolTip = AddWeekStartToolTip;
+  public CheckWeekNotDoneToolTip = CheckWeekNotDoneToolTip;
+
   /**/public info:any = {};
   @Input() player : Player;
   public hasTomePlan : boolean = false;
+  public numberWeeksDone : number = 0;
   private UpdateNeedManual : boolean = true;
   constructor(public http: HttpService,  public dialog: MatDialog,
     private _snackBar: MatSnackBar
@@ -28,18 +39,27 @@ export class TomePlannerComponent {
   ngOnInit(){
     this.http.GetTomePlan(this.player.id).pipe(catchError(error => {
       this.hasTomePlan = false;
+      if (error.status != 404){
       this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
         duration: 8000,
         data: {
           message: "Error while getting tome plan.",
           subMessage: "Reach out if this persists.",
           color : "red"
-        }
+          }
         });
+      }
       return throwError(() => new Error('Failed to get tome plan : ' + error.message));
     })).subscribe(data => {
       this.info = data;
+      this.numberWeeksDone = this.info.weekDone.filter(week => week).length;
       this.hasTomePlan = true;
+    });
+  }
+
+  SetWeekDone(week : number, done : boolean){
+    this.http.SetWeekDone(this.player.id, week, done).subscribe(data => {
+      this.ngOnInit();
     });
   }
 
@@ -49,8 +69,8 @@ export class TomePlannerComponent {
     });
   }
 
-  AddWeekToTomePlan(){
-    this.http.AddWeekToTomePlan(this.player.id).subscribe(data => {
+  AddWeekToTomePlan(week : number){
+    this.http.AddWeekToTomePlan(this.player.id, week).subscribe(data => {
       this.ngOnInit();
     });
   }

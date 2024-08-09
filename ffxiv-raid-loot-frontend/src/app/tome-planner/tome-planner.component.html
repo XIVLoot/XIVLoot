@@ -14,7 +14,7 @@
 <div  style="display: flex; flex-direction: row;height: 50px;width: 90%;margin-left: 5%;justify-content: space-between;margin-bottom: 1%;">
 
 
-    <div class="infoShower">
+    <div class="infoShower" matTooltip="{{TotalTomestonesToolTip}}">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Total Tomes Needed</p>
         </div>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div class="infoShower">
+    <div class="infoShower" matTooltip="{{StartingTomeToolTip}}">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Starting Tome Amount</p>
         </div>
@@ -41,7 +41,7 @@
             <input type="number" style="width: 50px;" [(ngModel)]="info.numberOffsetTomes" (change)="UpdateOffsetTomes()">
         </div>
     </div>
-    -->
+    
 
     <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
@@ -51,13 +51,14 @@
             <p style="text-align: center;margin: 0;">1995</p>
         </div>
     </div>
+    -->
 
     <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
-            <p style="text-align: center;margin: 0;">Number of weeks</p>
+            <p style="text-align: center;margin: 0;margin-right: 5px;">Number of weeks</p>
         </div>
         <div style="width: 40%;">
-            <p style="text-align: center;margin: 0;">{{info.gearPlanOrder.length}}</p>
+            <p style="text-align: center;margin: 0;">{{numberWeeksDone + "/" + info.gearPlanOrder.length}}</p>
         </div>
     </div>
 
@@ -69,10 +70,18 @@
 </div>
 
 <div class="planShower">
-
+        <span (click)="AddWeekToTomePlan(0)" class="material-icons" style="color: rgba(0, 150, 0, 1);width: 3%;margin-left: 48.5%;font-size: 30px;cursor: pointer;" matTooltip="{{AddWeekStartToolTip}}">
+            add_box
+            </span>
     <div *ngFor="let week of info.gearPlanOrder, let j = index" style="align-items: center;">
+
         <div class="weekShower">
-            
+            <h3 style="text-align: center;margin: 0;margin-right: 5px;margin-left: 5px;">{{j+1}}</h3>
+            <span class="material-icons" (click)="SetWeekDone(j, !info.weekDone[j])" style="cursor: pointer;color: {{info.weekDone[j] ? 'green' : 'red'}}" matTooltip="{{info.weekDone[j] ? CheckWeekDoneToolTip : CheckWeekNotDoneToolTip}}">
+                {{info.weekDone[j] ? 'check_box' : 'check_box_outline_blank'}}
+                </span>
+                <div style="height: 40px;border-right: 3px solid black;margin:0;margin-left: 5px;"></div>
+
             <div class="itemShower">
                 <div *ngFor="let item of week.gearName, let i = index" style="width: 85px;display: flex;flex-direction: row;justify-content: space-between;margin-right: 3px;margin-left: 3px;background-color: rgba(255, 255, 255, 0.1);padding: 2px;">
                     <p style="margin:0;">{{item}}</p>
@@ -93,14 +102,18 @@
                 <div class="weekInfoShower">
                     <p style="margin: 0;text-align: center;">Surplus : {{week.surplusTome}}</p>
                 </div>
-                <div>
-                    <mat-icon (click)="RemoveWeekFromTomePlan(j)" style="color: red;">delete_forever</mat-icon>
+                <div style="height: 40px;border-right: 3px solid black;margin:0;margin-right: 10px;"></div>
+                <div style="display: flex;align-items: center;">
+                    <mat-icon (click)="RemoveWeekFromTomePlan(j)" style="color: red;" matTooltip="{{DeleteWeekToolTip}}">delete_forever</mat-icon>
                 </div>
             </div>
         </div>
 
     </div>
-
+        <span (click)="AddWeekToTomePlan(-1)" class="material-icons" style="color: rgba(0, 150, 0, 1);width: 3%;margin-left: 48.5%;font-size: 30px;cursor: pointer;" matTooltip="{{AddWeekToolTip}}">
+            add_box
+        </span>
 </div>
-<button (click)="AddWeekToTomePlan()" style="width: 40%;margin-left: 30%;height: 50px;background-color: rgba(255, 255, 255, 0.7);border-radius: 10px;cursor: pointer;">Add week</button>
+
+
 </div>

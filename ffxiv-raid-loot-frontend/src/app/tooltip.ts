@@ -58,3 +58,22 @@ export const FreePlayerToolTip = `Click this button to free a player from all cl
 export const ClaimStaticToolTip = `Please have the Static leader claim this group. Only members with a claimed player can become the leader of the static. A static leader is given the right to unclaim any previously claimed players. Additional features will come.`;
 
 export const UnclaimStaticToolTip = `If the static leader is incorrect, please have them un-claim the static. For additional assistance with this, please contact us via email at Support@XIVLoot.com`;
+
+
+export const CheckWeekDoneToolTip = `Click this button to mark the week as done.`;
+
+export const CheckWeekNotDoneToolTip = `Click this button to mark the week as not done.`;
+
+export const TotalTomestonesToolTip = `This is the total number of Tomestones needed to complete the tome plan.`;
+
+export const StartingTomeToolTip = `Input your starting amount of tomestones here.`;
+
+export const DeleteWeekToolTip = `Click this button to delete the week. A week cannot be deleted if it is needed to complete the tome plan.`;
+
+export const AddWeekToolTip = `Click this button to add a week at the end.`;
+
+export const AddWeekStartToolTip = `Click this button to add a week at the start.`;
+
+
+
+
