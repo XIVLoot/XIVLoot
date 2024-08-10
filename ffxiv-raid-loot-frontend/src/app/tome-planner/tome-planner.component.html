@@ -32,8 +32,8 @@
             <input type="number" style="width: 50px;" [(ngModel)]="info.numberStartTomes" (change)="UpdateNeededTomes()">
         </div>
     </div>
-    <!--
-    <div class="infoShower">
+    
+    <div class="infoShower" matTooltip="{{TomestoneOffsetToolTip}}">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Offset Tome Amount</p>
         </div>
@@ -42,7 +42,7 @@
         </div>
     </div>
     
-
+    <!--
     <div class="infoShower">
         <div style="width: 60%;border-right: 2px solid black;">
             <p style="text-align: center;margin: 0;">Remaining Tomes</p>
@@ -69,7 +69,28 @@
 <div style="border-bottom: 3px solid black;width: 95%;margin-left: 2.5%;">
 </div>
 
+<div class="neededGearShower" matTooltip="{{NeededGearToolTip}}">
+    <h2 style="margin: 0;margin-left: 5px;text-align: center;">Needed Gear</h2>
+    <div style="background-color: rgba(0, 0, 0, 0.3);border-radius: 5px;padding: 5px;display: flex;flex-direction: row;justify-content: center;">     
+           
+        <p class="neededGearShowerItem" *ngIf="player.bisWeaponGear.gearStage == 'Tomes' || player.bisWeaponGear.gearStage == 'Upgraded_Tomes'">{{ player.bisWeaponGear.gearStage == "Tomes" || player.bisWeaponGear.gearStage == "Upgraded_Tomes" ? "1x Weapon" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisHeadGear.gearStage == 'Tomes' || player.bisHeadGear.gearStage == 'Upgraded_Tomes'">{{ player.bisHeadGear.gearStage == "Tomes" || player.bisHeadGear.gearStage == "Upgraded_Tomes" ? "1x Head" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisBodyGear.gearStage == 'Tomes' || player.bisBodyGear.gearStage == 'Upgraded_Tomes'">{{ player.bisBodyGear.gearStage == "Tomes" || player.bisBodyGear.gearStage == "Upgraded_Tomes" ? "1x Body" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisHandsGear.gearStage == 'Tomes' || player.bisHandsGear.gearStage == 'Upgraded_Tomes'">{{ player.bisHandsGear.gearStage == "Tomes" || player.bisHandsGear.gearStage == "Upgraded_Tomes" ? "1x Hands" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisLegsGear.gearStage == 'Tomes' || player.bisLegsGear.gearStage == 'Upgraded_Tomes'">{{ player.bisLegsGear.gearStage == "Tomes" || player.bisLegsGear.gearStage == "Upgraded_Tomes" ? "1x Legs" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisFeetGear.gearStage == 'Tomes' || player.bisFeetGear.gearStage == 'Upgraded_Tomes'">{{ player.bisFeetGear.gearStage == "Tomes" || player.bisFeetGear.gearStage == "Upgraded_Tomes" ? "1x Feet" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisEarringsGear.gearStage == 'Tomes' || player.bisEarringsGear.gearStage == 'Upgraded_Tomes'">{{ player.bisEarringsGear.gearStage == "Tomes" || player.bisEarringsGear.gearStage == "Upgraded_Tomes" ? "1x Earrings" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisNecklaceGear.gearStage == 'Tomes' || player.bisNecklaceGear.gearStage == 'Upgraded_Tomes'">{{ player.bisNecklaceGear.gearStage == "Tomes" || player.bisNecklaceGear.gearStage == "Upgraded_Tomes" ? "1x Necklace" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisBraceletsGear.gearStage == 'Tomes' || player.bisBraceletsGear.gearStage == 'Upgraded_Tomes'">{{ player.bisBraceletsGear.gearStage == "Tomes" || player.bisBraceletsGear.gearStage == "Upgraded_Tomes" ? "1x Bracelets" : "" }}</p>
+        <p class="neededGearShowerItem" *ngIf="player.bisRightRingGear.gearStage == 'Tomes' || player.bisRightRingGear.gearStage == 'Upgraded_Tomes' || player.bisLeftRingGear.gearStage == 'Tomes' || player.bisLeftRingGear.gearStage == 'Upgraded_Tomes'">{{ (player.bisRightRingGear.gearStage == "Tomes" || player.bisRightRingGear.gearStage == "Upgraded_Tomes") && (player.bisLeftRingGear.gearStage == "Tomes" || player.bisLeftRingGear.gearStage == "Upgraded_Tomes") ? 
+        
+         "2x Ring" :  player.bisRightRingGear.gearStage == "Tomes" || player.bisRightRingGear.gearStage == "Upgraded_Tomes" || player.bisLeftRingGear.gearStage == "Tomes" || player.bisLeftRingGear.gearStage == "Upgraded_Tomes" ? "1x Ring" : "" }}</p>
+    </div>
+</div>
+
 <div class="planShower">
+    <h2 style="text-align: center;margin: 0;">Week Planner</h2>
+    <div class="planShower" style="border:0;">
         <span (click)="AddWeekToTomePlan(0)" class="material-icons" style="color: rgba(0, 150, 0, 1);width: 3%;margin-left: 48.5%;font-size: 30px;cursor: pointer;" matTooltip="{{AddWeekStartToolTip}}">
             add_box
             </span>
@@ -77,7 +98,7 @@
 
         <div class="weekShower">
             <h3 style="text-align: center;margin: 0;margin-right: 5px;margin-left: 5px;">{{j+1}}</h3>
-            <span class="material-icons" (click)="SetWeekDone(j, !info.weekDone[j])" style="cursor: pointer;color: {{info.weekDone[j] ? 'green' : 'red'}}" matTooltip="{{info.weekDone[j] ? CheckWeekDoneToolTip : CheckWeekNotDoneToolTip}}">
+            <span class="material-icons" (click)="SetWeekDone(j, !info.weekDone[j])" style="cursor: pointer;" [style.color]="info.weekDone[j] ? 'green' : 'red'" matTooltip="{{!info.weekDone[j] ? CheckWeekDoneToolTip : CheckWeekNotDoneToolTip}}">
                 {{info.weekDone[j] ? 'check_box' : 'check_box_outline_blank'}}
                 </span>
                 <div style="height: 40px;border-right: 3px solid black;margin:0;margin-left: 5px;"></div>
@@ -88,18 +109,19 @@
                     <mat-icon style="color:red" (click)="RemoveFromTomePlan(j, item)">remove_circle</mat-icon>
                 </div>
                 <div>
-                    <mat-icon style="padding: 2px;" (click)="AddGearToPlan(week.optionList,j)" [style.color]="week.optionList.length > 0 ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.5)'">add_circle</mat-icon>
+                    <mat-icon style="padding: 2px;" (click)="AddGearToPlan(week.optionList,j)" [style.color]="week.optionList.length > 0 ? 'rgb(255,255,255)' : 'rgba(255,255,255,0.1)'"
+                        matTooltip="{{week.optionList.length > 0 ? AddGearToPlanToolTip : AddGearLockToolTip}}">add_circle</mat-icon>
                 </div>
             </div>
             
-            <div style="width: 45%;margin-left: 2.5%;display: flex;flex-direction: row;">
+            <div style="width: 55%;margin-left: 2.5%;display: flex;flex-direction: row;">
                 <div class="weekInfoShower">
                     <p style="margin: 0;text-align: center;">Cost of week : {{week.costOfWeek}}</p>
                 </div>
-                <div  class="weekInfoShower">
-                    <p style="margin: 0;text-align: center;">EOW Tomes : {{week.tomeAmountByEOW}}</p>
+                <div  class="weekInfoShower" matTooltip="{{EOWTomestonesToolTip}}">
+                    <p style="margin: 0;text-align: center;">E.o.W. Tomes : {{week.tomeAmountByEOW}}</p>
                 </div>
-                <div class="weekInfoShower">
+                <div class="weekInfoShower" matTooltip="{{SurplusTomestonesToolTip}}">
                     <p style="margin: 0;text-align: center;">Surplus : {{week.surplusTome}}</p>
                 </div>
                 <div style="height: 40px;border-right: 3px solid black;margin:0;margin-right: 10px;"></div>
@@ -113,6 +135,7 @@
         <span (click)="AddWeekToTomePlan(-1)" class="material-icons" style="color: rgba(0, 150, 0, 1);width: 3%;margin-left: 48.5%;font-size: 30px;cursor: pointer;" matTooltip="{{AddWeekToolTip}}">
             add_box
         </span>
+    </div>
 </div>
 
 

@@ -24,18 +24,18 @@ namespace ffxiRaidLootAPI.Models
 
     public List<List<string>> GetGearPlanOrder()
     {   
-        Console.WriteLine("GearPlanString : " + gearPlanOrder);
+        //Console.WriteLine("GearPlanString : " + gearPlanOrder);
         List<string> rList = gearPlanOrder.Split(';').ToList();
-        Console.WriteLine("HERE");
-        Console.WriteLine(string.Join(", ", rList));
+        //Console.WriteLine("HERE");
+        //Console.WriteLine(string.Join(", ", rList));
         List<List<string>> rList2 = new List<List<string>>();
         for (int i = 0; i < rList.Count; i++)
         {
-            Console.WriteLine("IN-");
+            //Console.WriteLine("IN-");
             List<string> rList3 = rList[i].Split('/').ToList();
             rList3.RemoveAll(s => s == "");
             rList2.Add(rList3);   
-            Console.WriteLine(string.Join(", ", rList[i].Split('/').ToList()));
+            //Console.WriteLine(string.Join(", ", rList[i].Split('/').ToList()));
         }
         return rList2;
     }
@@ -153,6 +153,7 @@ namespace ffxiRaidLootAPI.Models
                     default:
                         break;
                 }
+                    
                 costOfWeek += cost;
             }
             totalCost += costOfWeek;
@@ -189,7 +190,7 @@ namespace ffxiRaidLootAPI.Models
         }
 
         /* Second loop that goes in increasing order */
-        Console.WriteLine("Amount used from surplus at start : " + amountUsedFromSurplusAtStart);
+        //Console.WriteLine("Amount used from surplus at start : " + amountUsedFromSurplusAtStart);
         int curSurplus = numberStartTomes - numberOffsetTomes  - amountUsedFromSurplusAtStart;
         for(i = 0;i<rList.Count;i++)
         {   

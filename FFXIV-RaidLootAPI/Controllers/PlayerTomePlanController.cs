@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using ffxiRaidLootAPI.DTO;
 using ffxiRaidLootAPI.Models;
 using FFXIV_RaidLootAPI.Data;
 using FFXIV_RaidLootAPI.DTO;
 using FFXIV_RaidLootAPI.Models;
+using FFXIV_RaidLootAPI.User;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +18,63 @@ namespace FFXIV_RaidLootAPI.Controllers
     {
         private readonly IDbContextFactory<DataContext> _context;
         private readonly IConfiguration _configuration;
+        private readonly string _jwtKey;
         public PlayerTomePlanController(IDbContextFactory<DataContext> context,IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
+            _jwtKey = _configuration["JwtSettings:Key"];
+        }
+
+        async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
+            // Now checks if this user claimed a player from the static. In which case they can edit this player.
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
+            if (player is null)
+                return false;
+
+            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
+            foreach (Players playerToInspect in validPlayers){
+                if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
+                    return true;
+            }
+            return false;
+        }
+
+        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
+            //Console.WriteLine("Checking authorization");
+            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
+                
+                string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                if (user is null)
+                    return false;
+                if (user.UserClaimedPlayer(playerId))
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
+
+            } 
+            else if (!(User is null)){
+                //Console.WriteLine("DEFAUTL CONNECTED");
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = userIdClaim?.Value;
+
+                Console.WriteLine("USER ID FROM EMAIL IS : " + userId);
+
+                ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user is null)
+                    return false;
+
+                bool thisUserClaimed = user.UserClaimedPlayer(playerId);
+                if (thisUserClaimed)
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<ApplicationUser>(user,playerId,context);
+            }
+
+            return false;
         }
 
         [HttpPut("CreateTomePlan/{playerId}/{order}/{doneString}")]
@@ -27,6 +82,8 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {        
+                if (!await UserIsAuthorized(HttpContext,playerId.ToString(),context))
+                    return Unauthorized();
 
                 PlayerTomePlan newTomePlan = new PlayerTomePlan(){
                     playerId=playerId,
@@ -47,6 +104,9 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+                if (!await UserIsAuthorized(HttpContext,playerTomePlanDto.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == playerTomePlanDto.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
@@ -61,6 +121,11 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+
+
+                if (!await UserIsAuthorized(HttpContext,tomePlanEditDTO.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
@@ -84,6 +149,9 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+                if (!await UserIsAuthorized(HttpContext,tomePlanEditDTO.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
@@ -107,6 +175,10 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+
+                if (!await UserIsAuthorized(HttpContext,tomePlanEditDTO.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
@@ -129,6 +201,9 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+                if (!await UserIsAuthorized(HttpContext,tomePlanEditDTO.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
@@ -151,6 +226,9 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+                if (!await UserIsAuthorized(HttpContext,tomePlanEditDTO.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();
@@ -173,6 +251,9 @@ namespace FFXIV_RaidLootAPI.Controllers
         {
             using (var context = _context.CreateDbContext())
             {
+                if (!await UserIsAuthorized(HttpContext,tomePlanEditDTO.playerId.ToString(),context))
+                    return Unauthorized();
+
                 PlayerTomePlan? playerTomePlan = await context.PlayerTomePlans.FirstOrDefaultAsync(p => p.playerId == tomePlanEditDTO.playerId);
                 if (playerTomePlan is null)
                     return NotFound();

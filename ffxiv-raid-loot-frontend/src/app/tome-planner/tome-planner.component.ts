@@ -9,7 +9,12 @@ import { ConfirmDialog } from '../player-details-single/player-details-single.co
 import { catchError, throwError } from 'rxjs';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
 import { Player } from '../models/player';
-import { CheckWeekDoneToolTip, TotalTomestonesToolTip, StartingTomeToolTip, DeleteWeekToolTip, AddWeekToolTip , AddWeekStartToolTip, CheckWeekNotDoneToolTip} from '../tooltip';
+import { CheckWeekDoneToolTip, TotalTomestonesToolTip, StartingTomeToolTip, DeleteWeekToolTip, AddWeekToolTip , AddWeekStartToolTip, CheckWeekNotDoneToolTip,
+  AddGearToPlanToolTip, AddGearLockToolTip, SurplusTomestonesToolTip, TomestoneOffsetToolTip, NeededGearToolTip, EOWTomestonesToolTip,
+  GearCostToolTip
+} from '../tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-tome-planner',
@@ -26,12 +31,21 @@ export class TomePlannerComponent {
   public AddWeekToolTip = AddWeekToolTip;
   public AddWeekStartToolTip = AddWeekStartToolTip;
   public CheckWeekNotDoneToolTip = CheckWeekNotDoneToolTip;
+  public AddGearToPlanToolTip = AddGearToPlanToolTip;
+  public AddGearLockToolTip = AddGearLockToolTip;
+  public SurplusTomestonesToolTip = SurplusTomestonesToolTip;
+  public TomestoneOffsetToolTip = TomestoneOffsetToolTip;
+  public NeededGearToolTip = NeededGearToolTip;
+  public EOWTomestonesToolTip = EOWTomestonesToolTip;
 
   /**/public info:any = {};
   @Input() player : Player;
   public hasTomePlan : boolean = false;
   public numberWeeksDone : number = 0;
   private UpdateNeedManual : boolean = true;
+
+
+
   constructor(public http: HttpService,  public dialog: MatDialog,
     private _snackBar: MatSnackBar
 ) { } // Constructor with dependency injection
@@ -136,13 +150,13 @@ export class TomePlannerComponent {
   }
 
   AddGearToPlan(choiceList : any, week : number){
-    /*if (choiceList.length == 0){
+    if (choiceList.length == 0){
       return;
-    }*/
+    }
     this.dialog.open(AddGearDialog, 
       {
-        width: 'this.player.id00px',
-        height: '350px',
+        width: '400px',
+        height: '210px',
         data: {item : choiceList},
         disableClose: true
       }).afterClosed().subscribe(data =>{
@@ -167,42 +181,45 @@ export class TomePlannerComponent {
 
 }
 
+
+
 @Component({
   selector: 'add-gear',
-  template: `<h2 mat-dialog-title>Select gear to add</h2>
-              <div style="width:95%;margin-left:2.5%;">
-                  <select style="width:100%;" matNativeControl [(ngModel)]="selectedGear">
-                    <option *ngFor="let choice of [
-        'Body',
-        'Legs',
-        'Weapon',
-        'Head',
-        'Hands',
-        'Feet',
-        'Earrings',
-        'Necklace',
-        'Bracelets',
-        'LeftRing',
-        'RightRing'
-      ]">{{choice}}</option>
-                  </select>
-              </div>
-              <div>
-                <mat-dialog-content> Without changing the week amount you can add : </mat-dialog-content>
-                <mat-dialog-content>
-                  <span *ngFor="let item of this.data.item">{{item}}, </span>
+  template: `<h2 mat-dialog-title>Select gear to add to the plan.</h2>
+              <mat-dialog-content>
+                Only showing the gear you can afford.
                 </mat-dialog-content>
+              <div style="width:20%;margin-left:40%;">
+              <select style="width:100%;" matNativeControl [(ngModel)]="selectedGear">
+                    <option *ngFor="let choice of data.item; let i = index" [ngValue]="choice" style="background-color: {{i % 2 === 0 ? 'white' : 'rgba(0,0,0,0.1)'}};white-space: pre-line;">
+                      {{selectedGearValue[choice]}}
+                    </option>
+              </select>
               </div>
-            <mat-dialog-actions>
+            <mat-dialog-actions style="justify-content: space-between;border-top: 2px solid rgba(0,0,0,0.5);width:95%;margin-left:2.5%;margin-top:5px;padding-top:2px;">
               <button mat-button (click)="dialogRef.close('')">Cancel</button>
-              <button mat-button (click)="CheckAdd()">Add</button>
+              <button mat-button (click)="this.dialogRef.close(this.selectedGear)">Add</button>
             </mat-dialog-actions>`,
   standalone: true,
-  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, FormsModule, CommonModule, ConfirmDialog],
+  imports: [MatButtonModule, MatDialogActions, MatDialogClose, MatDialogTitle, MatDialogContent, FormsModule, CommonModule, ConfirmDialog, MatIconModule, MatTooltipModule],
 })
 export class AddGearDialog {
 
   public selectedGear : string = "";
+  public selectedGearValue : any = {
+    "Weapon" :     "Weapon       - 500",
+    "Head" :       "Head         - 495",
+    "Body" :       "Body         - 825",
+    "Hands" :      "Hands        - 495",
+    "Legs" :       "Legs         - 825",
+    "Feet" :       "Feet         - 495",
+    "Earrings" :   "Earrings     - 375",
+    "Necklace" :   "Necklace     - 375",
+    "Bracelets" :  "Bracelets    - 375",
+    "LeftRing" :   "Left Ring    - 375",
+    "RightRing" :  "Right Ring   - 375"
+  };
+  public GearCostToolTip = GearCostToolTip;
 
   constructor(public dialogRef: MatDialogRef<AddGearDialog>, public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: { item : any},

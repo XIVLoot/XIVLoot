@@ -19,6 +19,33 @@ mat-icon{
     padding: 10px;
     border-radius: 5px;
 }
+.neededGearShowerItem{
+    margin: 2px;
+    padding: 3px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+    text-align: center;
+}
+.white-bg {
+    background-color: white;
+  }
+  
+  .dark-bg {
+    background-color: #f0f0f0; /* Adjust the color as needed */
+  }
+.centered-text {
+    text-align: center;
+}
+.neededGearShower{
+    width: 59%;
+
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-left: 20.5%;
+    margin-top: 1%;
+    border: 2px solid black;
+    padding: 10px;
+    border-radius: 5px;
+}
 .weekShower{
     width: 98%;
     margin-left: 1%;
@@ -32,7 +59,7 @@ mat-icon{
     border-radius: 5px;
 }
 .itemShower{
-    width: 45%;
+    width: 35%;
     margin-left: 2.5%;
     display: flex;
     flex-direction: row;
@@ -43,11 +70,11 @@ mat-icon{
     overflow-x: auto;
 }
 .weekInfoShower{
-    width: 30%;
+    width: 35%;
     border: 2px solid black;
     align-items: center;
     padding: 5px;
-    margin-right: 5%;
+    margin-right: 1%;
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.3);
 }

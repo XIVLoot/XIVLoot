@@ -928,7 +928,7 @@ export class ImportGearDialog {
             <mat-dialog-content>
               {{data.content}}
             </mat-dialog-content>
-            <mat-dialog-actions>
+            <mat-dialog-actions style="justify-content: space-between;border-top: 2px solid rgba(0,0,0,0.5);width:95%;margin-left:2.5%;margin-top:5px;padding-top:2px;">
               <button mat-button (click)="dialogRef.close('No')">{{data.no_option}}</button>
               <button mat-button (click)="dialogRef.close('Yes')">{{data.yes_option}}</button>
             </mat-dialog-actions>`,
