@@ -537,6 +537,134 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
   
+  GetTomePlan(playerId : number){
+    var url = `${this.api}PlayerTomePlan/GetPlayerTomePlan/${playerId}`;
+    return this.http.get(url, {withCredentials:true});
+  }
+
+  AddToTomePlan(playerId : number, week : number, gear : string){
+    var url = `${this.api}PlayerTomePlan/AddToTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, gearToAdd : gear}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to add to tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to add to tome plan : ' + error.message));
+    }));
+  }
+
+  RemoveFromTomePlan(playerId : number, week : number, gear : string){
+    var url = `${this.api}PlayerTomePlan/RemoveFromTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, gearToRemove : gear}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to remove the week from the tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to add to tome plan : ' + error.message));
+    }));
+  }
+
+  SetStartTomes(playerId : number, numberStartTomes : number){
+    var url = `${this.api}PlayerTomePlan/SetStartTomes`;
+    return this.http.put(url, {playerId : playerId, numberStartTomes : numberStartTomes}, {withCredentials:true}).pipe(catchError(error => {      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 8000,
+      data: {
+        message: "Failed to set start tomes.",
+        subMessage: "Make sure you have claimed a player from this static and are logged in.",
+        color : "red"
+          }
+        });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  SetOffsetTomes(playerId : number, numberOffsetTomes : number){
+    var url = `${this.api}PlayerTomePlan/SetOffsetTomes`;
+    return this.http.put(url, {playerId : playerId, numberOffsetTomes : numberOffsetTomes}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to set offset tomes.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  AddWeekToTomePlan(playerId : number, week : number){
+    var url = `${this.api}PlayerTomePlan/AddWeekToTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to add week to the tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  RemoveWeekFromTomePlan(playerId : number, week : number){
+    var url = `${this.api}PlayerTomePlan/RemoveWeekFromTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to remove week from tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  CreateTomePlan(playerId : number){
+    var url = `${this.api}PlayerTomePlan/CreateTomePlan/${playerId}/;;;/0;0;0;`;
+    return this.http.put(url, {playerId : playerId}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to create tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to create tome plan : ' + error.message));
+    }));
+  }
+
+  SetWeekDone(playerId : number, week : number, done : boolean){
+    var url = `${this.api}PlayerTomePlan/SetWeekDone`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, done : done}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to set week done.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set week done : ' + error.message));
+    }));
+  }
+
+
+
+
+
   
 
 }

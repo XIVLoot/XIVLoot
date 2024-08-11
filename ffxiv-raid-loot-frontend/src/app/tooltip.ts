@@ -1,60 +1,96 @@
-export const gearAcquisitionToolTip = `This section shows the history of Gear Acquistion. To remove erroneous entries, click on the corresponding gear coffer. 
+export const gearAcquisitionToolTip = `This section shows the history of gear acquisition. To remove erroneous entries, click on the corresponding gear coffer. 
                                        This will only track Savage Raid gear and Augmented Tome items.`;
 
-export const pgsToolTip = `This is an experimental feature, we are breaking down loot based on a jobs rDPS ranking (via FFLogs), a players individual iLVL, and how well a job performs in a buff window (Dynamically checked for your group). 
-                           This will possibly give you a better idea on who should receive items throughout the tier. This data is displayed from left to right with jobs in "gold" being the best bet for item upgrades and green being the 
-                           least beneficial for an upgrade.`;
+export const pgsToolTip = `This is an experimental feature. It assigns a priority for gear distribution based on each player's iLVL and their job's rDPS rank (via FFLogs) and performance under buff windows (dynamically checked for your group's composition). Given these parameters, each player has a PGS score represented by a colour, from highest priority to lowest: gold, purple, blue, green. This will give the group an idea of which players should be prioritised for upgrades throughout the tier.`;
 
-export const pgsSettingToolTipA = `The value of this parameter is related to the individual contribution of the player. The higher this parameter's value is the more the PGS will value giving gear to players that have a high rDPS value.
-                                   This will for example favour jobs like blackmage/samurai/viper that offer high rDPS regardless of buff padding.`;
+export const pgsSettingToolTipA = `This parameter is related to a player's individual contribution. Higher values will prioritise giving gear to players that have high rDPS.
+                                   This will, for example, favour jobs such as Black Mage/Samurai/Viper that offer high rDPS regardless of buff padding.`;
 
-export const pgsSettingToolTipB = `The value of this parameter is related to the average item level distribution amounts the group. The higher this parameter's value is the more PGS will value giving gear to players whose item level is below the group's average item level. In other words the gear will be distributed evenly among the players regardless of the job.`;
+export const pgsSettingToolTipB = `This parameter is related to the average item level distribution among the group. Higher values will prioritise giving gear to players whose item level is below the group's average item level. In other words, the gear will be distributed evenly among the players regardless of job.`;
 
-export const pgsSettingToolTipC = `The value of this parameter is related to the player's contribution to buff padding. The higher this parameter's value is the more PGS will value giving gear to player who can add a lot of damage in burst. Note that this also takes into account how many raid buffs the static's teamcomp has.
-                                   This will for example favour jobs like samurai/ninja that offer a lot of burst.`;
+export const pgsSettingToolTipC = `This parameter is related to a player's contribution to buff padding. Higher values will prioritise giving gear to players that can contribute a lot of damage in burst. Note that this also takes into account how many raid buffs the static's composition has.
+                                   This will, for example, favour jobs such as Samurai/Ninja that offer a lot of burst.`;
 
-export const lockLogicToolTip = `Some Statics may employ a loot distribution system that locks out  members each week after they receive gear. This lockout will update automatically based on the settings you use below.`;
+export const lockLogicToolTip = `Your static may employ a loot distribution system that locks out members from acquiring loot again for a certain period after receiving gear. You can customise this setting to your liking below.`;
 
-export const lockOutOfGearEvenIfNotContestedToolTip = `This option lets you lock a player out of gear even if the gear the player acquired was not contested by anyone else. Otherwise a player will only
-                                                       be locked out of gear if it acquired gear someone else was contesting.`;
+export const lockOutOfGearEvenIfNotContestedToolTip = `A player is locked out of gear even if the item they acquired was not contested by anyone else. Otherwise, a player will only
+                                                       be locked out of gear they acquired an item that someone else was contesting.`;
 
-export const lockPerFightToolTip = `This option lets you lock a player as a per fight basis. So if a player receives gear from the first turn they will be (possibly) locked from only the first turn.
-                                    Otherwise a player is locked from all fights as soon as it is locked from one.`;
+export const lockPerFightToolTip = `Lock a player on a per fight basis.  Otherwise, a player is locked from all fights as soon as they are locked from one.`;
 
-export const lockPlayerForAugmentToolTip = `This option lets you lock a player for receiving augment items. If this option is turned on a player that received a gear augment item
-                                     will be locked from the fight just like if the player had received raid gear.`;
+export const lockPlayerForAugmentToolTip = `If this option is enabled, a player that receives a gear augment item will be locked from receiving more loot just as if they had received raid gear.`;
 
-export const pieceUntilLockToolTip = `THIS FEATURE IS CURRENTLY DISABLED.This allows you to configure how many gear piece a player can receive before being locked.`;
+export const pieceUntilLockToolTip = `THIS FEATURE IS CURRENTLY DISABLED. Specify how many items a player can receive before being locked.`;
 
-export const numberWeekResetToolTip = `This allows you to configure for how many weeks a player is locked once it is first locked. Note that the lock starts at the next loot pool reset (every tuesday 4 am EST) and not as soon as gear is acquired.`
+export const numberWeekResetToolTip = `Specify how many weeks a player is locked out of gear for once they are first locked. Note that the lock starts at the next loot pool reset (every Tuesday, 4 a.m. EST), and not as soon as gear is acquired.`
 
-export const etroToolTip = `To import either a current or BiS gearset click on the 'Import gear' button. If you import a BiS gearset it will be saved to this character and you can then access it on its original website using the button to the left of 'Import gear'.`;
+export const etroToolTip = `Import either a current gearset or a BiS gearset from etro.gg or xivgear.app. If imported as a BiS, the link will be saved and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button.`;
 
-export const pgsOnPlayerToolTip = `This is the current PGS value of the player. The colored indicator refers to the color grouping priority (gold, purple, blue and green in this order). The player(s) with the smallest PGS
-                                    value will be recommended to receive gear by the PGS analysis.`;
+export const pgsOnPlayerToolTip = `This is the player's current PGS value. The colour indicates priority (from highest to lowest: gold, purple, blue and green). The player(s) with the smallest PGS value will be prioritised to receive gear by the PGS analysis.`;
 
-export const lockOnPlayerToolTip = `This section shows all fights the player is currently locked from with the date the lock will be lifted. Click on a fight to remove the lock if needed.`;
+export const lockOnPlayerToolTip = `This section shows all fights the player is currently locked from and the date the lock will be lifted. Click on a fight to remove the lock if needed.`;
+                                    
+export const claimPlayerToolTip = `Claim this player to become the sole user with the ability to modify it. You will be able to see all your claimed players on the home screen. You must be logged in to claim a player.`;
 
+export const unclaimPlayerToolTip = `Unclaiming this player will enable anyone with the link to this static to modify it. This will also remove this character from your home screen.`;
+
+export const alreadyClaimedToolTip = `Someone else has already claimed this player. You therefore cannot modify it. If you think this is an error, please reach out.`;
+
+export const UseBookForGearAcqToolTip = `By default, any gear obtained will be treated as an item drop from the respective fight. Enable this option to indicate that an item was obtained using books. Please toggle this option off after the item has been added.`;
+
+export const HomeClaimPlayerToolTip = `Claimed players in a static can only be modified by you. To claim or unclaim a player, navigate to your static's page, select the desired player and click the corresponding button.`;
+
+export const UseBisToolTip = `If this option is unchecked, the gearset will be imported as your current gear. If it is checked, it will be imported as your BiS. If imported as BiS, the link will be saved and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button on the character's view page.`;
+
+export const GearBreakdownToolTip = `This section contains a breakdown of all items required by members of the static. Select the fight on the left side to see a colour-coordinated view of who needs what item for their BiS. Green indicates a player is not locked out of getting loot, while red means they are locked out based on the loot rules set by your static.`;
+
+export const FreePlayerToolTip = `Click this button to free a player from their claim. This option is only available to the static's creator.`;
+
+export const ClaimStaticToolTip = `Please have the static leader claim this group. Only users with a claimed player can become a static leader. A static leader is given the right to unclaim any previously claimed players. Additional features will come.`;
+
+export const UnclaimStaticToolTip = `If the static leader is incorrect, please have them unclaim the static. For additional assistance with this, please reach out.`;
+
+
+export const CheckWeekDoneToolTip = `Click to mark the week as done.`;
+
+export const CheckWeekNotDoneToolTip = `Click to mark the week as not done.`;
+
+export const TotalTomestonesToolTip = `This is the total number of tomestones needed to complete the tome plan.`;
+
+export const StartingTomeToolTip = `Input your starting amount of tomestones here.`;
+
+export const DeleteWeekToolTip = `Click to delete the week. A week cannot be deleted if it is needed to complete the tome plan.`;
+
+export const AddWeekToolTip = `Click to add a week at the end.`;
+
+export const AddWeekStartToolTip = `Click to add a week at the start.`;
+
+export const AddGearToPlanToolTip = `Click to add gear to the tome plan.`;
+
+export const AddGearLockToolTip = `You cannot add gear this week as you lack tomestones. Add a week at the start to have more tomestones by this point.`;
+
+export const SurplusTomestonesToolTip = `Amount of tomestones you can spend this week without changing the planned schedule. Note that this amount is cumulative, so if you spend tomestones of this surplus make sure to include it in the 'Offset Tome Amount' box so it updates the surplus accordingly.`;
+
+export const TomestoneOffsetToolTip = `Input the amount of tomestones you spent outside of the plan.`;
+
+export const NeededGearToolTip = `This section shows the tome gear that is needed to complete this character's BiS gearset.`;
+
+export const EOWTomestonesToolTip = `This is the amount of tomestones you will have by the end of this week.`;
+
+export const GearCostToolTip = `Body - 825&#13;Legs - 825\nWeapon - 500\nHead - 495\nHands - 495\nFeet - 495\nEarrings - 375\nNecklace - 375\nBracelet - 375\nRing - 495\n`;
+
+
+
+
+
+
+
+
+// This tooltip is deleted but do not remove it.
 export const gearSelectionToolTip = `This section allows you to see and edit your current and best in slot gear set. The section is seperated in two parts : one for equipement pieces (aka left side) and one for accessories (aka right side).
                                      In both those sections, the left column represents your current gearset while the right column represents the best in slot gearset of the player.`;
-                                    
-export const claimPlayerToolTip = `Claim this player to be the sole user with the ability to modify it. You will also be able to see all your claimed players on the homescreen. You must be logged in to claim a player.`;
+  
 
-export const unclaimPlayerToolTip = `Un-claiming this player will let anyone with the link to this static modify it. This will also remove this character from your homescreen.`;
 
-export const alreadyClaimedToolTip = `Someone else has already claimed the player. You therefore cannot modify it. If you think this is an error please reach out.`;
 
-export const UseBookForGearAcqToolTip = `By Default any gear obtained will be treated as an item drop from the respective fight. Use this option to indicate that an item was obtained via a book. Please toggle this option off after the item has been added.`;
 
-export const HomeClaimPlayerToolTip = `Here you will see all of your claimed players. Claimed players are players from static that only you have the ability to modify. In a way you own these players. To claim a player create a static and select a player to edit, you will then see a "Claim Player" option above the edit window if this player has not been claimed yet. To unclaim a player, navigate to a previously claimed player and above the edit window there will be a "Unclaim player" option which you click to unclaim the player.`;
-
-export const UseBisToolTip = `To import the etro.gg or xivgear.app gearset as your current gear set uncheck this option. To import it as your current BiS check this option. If you import as your BiS the link will be saved with this character
-                              and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button on the character's view page.`;
-
-export const GearBreakdownToolTip = `Within this section, you can find a breakdown of all Raid items required by members of the static. Simply select the Boss on the left side to see a color coordinated view into who needs what item for their BIS build. Green indicates a player is not locked out of getting loot, while red shows players who are locked out based on the loot rules your static follows.`;
-
-export const FreePlayerToolTip = `Click this button to free a player from all claim it has received. This option is only available to the static's creator.`;
-
-export const ClaimStaticToolTip = `Please have the Static leader claim this group. Only members with a claimed player can become the leader of the static. A static leader is given the right to unclaim any previously claimed players. Additional features will come.`;
-
-export const UnclaimStaticToolTip = `If the static leader is incorrect, please have them un-claim the static. For additional assistance with this, please contact us via email at Support@XIVLoot.com`;

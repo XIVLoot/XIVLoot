@@ -6,10 +6,10 @@ namespace FFXIV_RaidLootAPI.Models
 {
     public class Gear
     {
-        private static readonly int ACCESSORY_TOME_COST = 375;
-        private static readonly int ARMOR_LOW_COST = 495; // Head, Hands, feet
-        private static readonly int ARMOR_HIGH_COST = 825; // Body, Legs
-        private static readonly int WEAPON_TOME_COST = 500; // Body, Legs
+        public static readonly int ACCESSORY_TOME_COST = 375;
+        public static readonly int ARMOR_LOW_COST = 495; // Head, Hands, feet
+        public static readonly int ARMOR_HIGH_COST = 825; // Body, Legs
+        public static readonly int WEAPON_TOME_COST = 500; // Body, Legs
         private static readonly string TOME_GEAR = "Quetzalli";//"Credendum";
         private static readonly string RAID_GEAR = "Dark Horse";//"Ascension";
         private static readonly string AUGMENT_TOME = "Augment";
