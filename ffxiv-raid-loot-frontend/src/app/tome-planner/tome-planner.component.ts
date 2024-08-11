@@ -189,9 +189,9 @@ export class TomePlannerComponent {
               <mat-dialog-content>
                 Only showing the gear you can afford.
                 </mat-dialog-content>
-              <div style="width:20%;margin-left:40%;">
+              <div style="width:35%;margin-left:32.5%;">
               <select style="width:100%;" matNativeControl [(ngModel)]="selectedGear">
-                    <option *ngFor="let choice of data.item; let i = index" [ngValue]="choice" style="background-color: {{i % 2 === 0 ? 'white' : 'rgba(0,0,0,0.1)'}};white-space: pre-line;">
+                    <option *ngFor="let choice of data.item; let i = index" [ngValue]="choice">
                       {{selectedGearValue[choice]}}
                     </option>
               </select>

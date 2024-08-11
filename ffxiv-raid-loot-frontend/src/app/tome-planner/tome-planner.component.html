@@ -72,7 +72,19 @@
 <div class="neededGearShower" matTooltip="{{NeededGearToolTip}}">
     <h2 style="margin: 0;margin-left: 5px;text-align: center;">Needed Gear</h2>
     <div style="background-color: rgba(0, 0, 0, 0.3);border-radius: 5px;padding: 5px;display: flex;flex-direction: row;justify-content: center;">     
-           
+        <p style="margin: 0;" *ngIf="!(
+            player.bisWeaponGear.gearStage == 'Tomes' || player.bisWeaponGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisHeadGear.gearStage == 'Tomes' || player.bisHeadGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisBodyGear.gearStage == 'Tomes' || player.bisBodyGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisHandsGear.gearStage == 'Tomes' || player.bisHandsGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisLegsGear.gearStage == 'Tomes' || player.bisLegsGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisFeetGear.gearStage == 'Tomes' || player.bisFeetGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisEarringsGear.gearStage == 'Tomes' || player.bisEarringsGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisNecklaceGear.gearStage == 'Tomes' || player.bisNecklaceGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisBraceletsGear.gearStage == 'Tomes' || player.bisBraceletsGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisRightRingGear.gearStage == 'Tomes' || player.bisRightRingGear.gearStage == 'Upgraded_Tomes' || 
+            player.bisLeftRingGear.gearStage == 'Tomes' || player.bisLeftRingGear.gearStage == 'Upgraded_Tomes'
+        )">No Gear needed for BiS</p>
         <p class="neededGearShowerItem" *ngIf="player.bisWeaponGear.gearStage == 'Tomes' || player.bisWeaponGear.gearStage == 'Upgraded_Tomes'">{{ player.bisWeaponGear.gearStage == "Tomes" || player.bisWeaponGear.gearStage == "Upgraded_Tomes" ? "1x Weapon" : "" }}</p>
         <p class="neededGearShowerItem" *ngIf="player.bisHeadGear.gearStage == 'Tomes' || player.bisHeadGear.gearStage == 'Upgraded_Tomes'">{{ player.bisHeadGear.gearStage == "Tomes" || player.bisHeadGear.gearStage == "Upgraded_Tomes" ? "1x Head" : "" }}</p>
         <p class="neededGearShowerItem" *ngIf="player.bisBodyGear.gearStage == 'Tomes' || player.bisBodyGear.gearStage == 'Upgraded_Tomes'">{{ player.bisBodyGear.gearStage == "Tomes" || player.bisBodyGear.gearStage == "Upgraded_Tomes" ? "1x Body" : "" }}</p>
