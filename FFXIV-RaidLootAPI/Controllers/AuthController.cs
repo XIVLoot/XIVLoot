@@ -221,22 +221,32 @@ namespace FFXIV_RaidLootAPI.Controllers
                     return NotFound();
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = $"https://localhost:5125/reset-password?email={user.Email}&token={WebUtility.UrlEncode(token)}";
+            var resetLink = $"http://localhost:4200/reset-password?email={user.Email}&token={WebUtility.UrlEncode(token)}";
+            Console.WriteLine("RESET LINK : " + resetLink);
 
             var client = new RestClient("https://send.api.mailtrap.io/api/send");
             var request = new RestRequest();
-            request.AddHeader("Authorization", "Bearer 5ddd21984ef1c0e3f43715e6c4966aa5");
+            request.AddHeader("Authorization", "Bearer 565dd4a78917b21604c8cc612b4e0aaf");
             request.AddHeader("Content-Type", "application/json");
-            var emailJson = JsonSerializer.Serialize(new
+
+        var emailPayload = new
+        {
+            from = new { email = "mailtrap@xivloot.com", name = "Password Reset" },
+            to = new[] { new { email = email } },
+            template_uuid = "cae81b2c-2bb2-405d-9a11-6bc40087bc7c",
+            template_variables = new
             {
-                from = new { email = "mailtrap@xivloot.com", name = "XIVLoot support" },
-                to = new[] { new { email = user.Email } },
-                template_uuid = "bdb174cd-4c82-4370-842b-9bd756120775",
-                template_variables = new { }
-            });
-            request.AddParameter("application/json", emailJson, ParameterType.RequestBody);
+                user_email = email,
+                pass_reset_link = resetLink
+            }
+        };
+
+        var jsonPayload = JsonSerializer.Serialize(emailPayload);
+        request.AddParameter("application/json", jsonPayload, ParameterType.RequestBody);
+
+
             var response = client.Post(request);
-            Console.WriteLine(response.Content);
+            System.Console.WriteLine(response.Content);
 
             if (response.IsSuccessful)
             {
@@ -256,6 +266,43 @@ namespace FFXIV_RaidLootAPI.Controllers
             } 
             }
     }
+
+    [HttpPost("ResetPassword/{email}/{token}/{newPassword}")]
+    [EnableCors("AllowSpecificOrigins")]
+    public async Task<IActionResult> ResetPassword(string email, string token, string newPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            token = WebUtility.UrlDecode(token);
+
+            if (user is null)
+            {
+                Console.WriteLine("USER NOT FOUND");
+                return BadRequest(new AuthResponseDto
+                {
+                    IsSuccess = false,
+                    Message = "User does not exist with this email"
+                });
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok(new AuthResponseDto
+                {
+                    IsSuccess = true,
+                    Message = "Password reset Successfully"
+                });
+            }
+
+            return BadRequest(new AuthResponseDto
+            {
+                IsSuccess = false,
+                Message = result.Errors.FirstOrDefault()!.Description
+            });
+        }
+
+
 
     }
 }

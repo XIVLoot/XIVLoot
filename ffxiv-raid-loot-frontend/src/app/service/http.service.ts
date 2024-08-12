@@ -484,6 +484,12 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
       return throwError(() => new Error('Failed to get all claimed player : ' + error.message));
     }));
   }
+
+  ResetPassword(email : string, token : string, newPassword : string){
+    var url = `${this.api}Auth/ResetPassword/${email}/${token}/${newPassword}`;
+    return this.http.get(url).pipe();
+  }
+
   
   
 
