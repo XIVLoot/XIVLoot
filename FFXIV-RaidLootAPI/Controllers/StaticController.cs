@@ -274,7 +274,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     break;
                             }
 
-                            if (turn == Turn.turn_2){
+                            /*if (turn == Turn.turn_2){
                                 // Everything raid from 2 can drop in 3 so also add to turn_3.
                                 itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), Turn.turn_2)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                     Name=player.Name,
@@ -286,7 +286,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     NeedThisGearType=true,
                                     playerId=player.Id
                                 });
-                            } else if(turn == Turn.turn_1 && (type == GearType.RightRing || type == GearType.LeftRing)){
+                            } else */
+                            if(turn == Turn.turn_1 && (type == GearType.RightRing || type == GearType.LeftRing)){
                                 if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_1, "Ring")){
                                     itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), turn)!]["Ring"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                         Name=player.Name,

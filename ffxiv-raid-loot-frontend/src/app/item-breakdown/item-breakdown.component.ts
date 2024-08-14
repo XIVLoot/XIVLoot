@@ -18,7 +18,7 @@ export class ItemBreakdownComponent {
   public gearOrderByTurn : any = {
     "turn_1" : ["Earrings", "Necklace", "Bracelets", "Ring"],
     "turn_2" : ["Head", "Hands", "Feet", "Shine"],
-    "turn_3" : ["Head","Body", "Hands", "Legs", "Feet","Twine"],
+    "turn_3" : ["Body", "Legs","Twine"],
     "turn_4" : ["Weapon"]
   };
 
