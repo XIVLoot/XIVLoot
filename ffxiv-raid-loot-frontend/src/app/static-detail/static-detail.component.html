@@ -92,11 +92,13 @@
     <mat-grid-list [cols]="4"rowHeight="1:0.3" style="width: 100%" gutterSize="10px">
       <mat-grid-tile *ngFor="let pock of [0,1,2,3,4,5,6,7]" style="border: 3px solid rgba(255, 255, 255, 0.2);padding: 0;border-radius: 10px;max-width: 295px;max-height: 97px;margin: 0;">
         <div *ngFor="let playerInfo of PlayerListPerShower[pock]" (click)="selectPlayer(playerInfo[1])" [style.backgroundColor]="getBackgroundColor(playerInfo[1].job)" (mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)" style="margin: 0;padding: 0;">
-        <div *ngIf="selectedPlayerSubList == playerInfo[0] && playerInfo[1] === 'None'" class="no-player"><p>No Player</p></div>
+        <div *ngIf="selectedPlayerSubList == playerInfo[0] && playerInfo[1] === 'None'" class="no-player">
+          <p>No Player</p>
+        </div>
         <div *ngIf="selectedPlayerSubList == playerInfo[0] && playerInfo[1] !== 'None'">
         <div style="display: flex; flex-direction: column; height: 100%; width: 100%; margin: 0;">  
         <div style="height: 30%;width: 100%;margin: 0;">  
-            <div style="display: flex; justify-content: flex-start; margin: 5px; position: relative; top: 0; left: 0;">
+            <div style="display: flex; justify-content: flex-start; margin: 5px; margin-top: 10px;">
               <p style="margin-right: 5px;">{{playerInfo[1].name.slice(0, 18)}}</p>
               <img [src]="getJobIcon(playerInfo[1].job)" style="width: 20px;height: 20px;">
             </div>
@@ -112,7 +114,7 @@
               <div style="width:40%;display: flex;flex-direction: row;align-items: center;margin: 0;"><p style="margin:0;">PGS :</p><div [style.backgroundColor]="playerInfo[1].GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;margin: 0;margin-left: 1px;"></div></div>
           </div>
 
-          <div style="height: 44%;width: 100%;margin: 0;display: flex;flex-direction: row;">
+          <div style="height: 60%;width: 100%;margin: 0;display: flex;flex-direction: row;">
             <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_1_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/></div>
             <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_2_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/></div>
             <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_3_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/></div>

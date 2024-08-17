@@ -600,6 +600,8 @@ export class StaticDetailComponent implements OnInit {
       case "Warrior":
       case "Gunbreaker":
         return "rgba(0, 0, 255, 0.25)";
+      default:
+        return "rgba(0, 0, 0, 0)";
     }
   }
 
