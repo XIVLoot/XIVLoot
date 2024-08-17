@@ -124,6 +124,12 @@ export class StaticDetailComponent implements OnInit {
       playerCounter++;
     }
     this.selectedPlayerSubListMax = Math.ceil(playerCounter/8);
+
+
+    // Now fill the rest of the sublist with empty players
+    for (let i = playerCounter; i < 8*this.selectedPlayerSubListMax; i++){
+      this.PlayerListPerShower[i%8].push([this.selectedPlayerSubListMax-1, "None"]);
+    }
   }
 
   AddNewPlayerToStatic(){

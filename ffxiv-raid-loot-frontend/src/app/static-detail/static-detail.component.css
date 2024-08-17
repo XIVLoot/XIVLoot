@@ -17,6 +17,22 @@ div {
   padding: 2px;
 }
 
+::ng-deep .mat-grid-tile .ng-star-inserted {
+    margin: 0 !important;
+}
+
+.no-player{
+  color:white;
+  font-size: 1.7ch;
+  background-color: rgba(255,255,255,0.3);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 
 .ArrowSelection:hover {
   background-color: rgba(255,255,255,0.05);
