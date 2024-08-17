@@ -34,7 +34,7 @@ namespace FFXIV_RaidLootAPI.Models
         }
         public List<decimal> GetGearScoreParameter(){return new List<decimal>{GearScoreA, GearScoreB, GearScoreC};}
         public List<decimal> ComputeNumberRaidBuffsAndGroupAvgLevel(DataContext context){
-            var playerList = context.Players.Where(p => p.staticId == Id).ToList();
+            var playerList = context.Players.Where(p => p.staticId == Id && p.IsAlt == false).ToList(); // Only takes non alt
             decimal IlevelSum = 0.0m;
             decimal NumberRaidBuffs = 0.0m;
             foreach (Players player in playerList){

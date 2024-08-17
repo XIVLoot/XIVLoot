@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
 import { Player } from '../models/player';
 import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSettingToolTipC, pgsToolTip, lockLogicToolTip, lockOutOfGearEvenIfNotContestedToolTip,
-  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,
+  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,addNewPlayerToolTip,
   claimPlayerToolTip,
   unclaimPlayerToolTip,
   alreadyClaimedToolTip, UseBookForGearAcqToolTip, FreePlayerToolTip,
@@ -42,6 +42,7 @@ import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSett
   UnclaimStaticToolTip
 } from '../tooltip';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConfirmDialog } from '../player-details-single/player-details-single.component';
 
 interface PlayerPGS {
   name: string;
@@ -71,6 +72,7 @@ export class StaticDetailComponent implements OnInit {
   public FreePlayerToolTip = FreePlayerToolTip;
   public ClaimStaticToolTip = ClaimStaticToolTip;
   public UnclaimStaticToolTip = UnclaimStaticToolTip;
+  public addNewPlayerToolTip = addNewPlayerToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
@@ -265,6 +267,12 @@ export class StaticDetailComponent implements OnInit {
 
    }
 
+   SwapAltPlayer(player : Player){
+    this.http.SwapAltPlayer(player.id).subscribe(res => {
+      player.IsAlt = res === "true";
+    });
+   }
+
    async CheckClaimPlayer(id : number){
     var DiscordLoggedIn = await this.http.CheckAuthDiscord();
     var DefaultLoggedIn;
@@ -345,6 +353,8 @@ export class StaticDetailComponent implements OnInit {
         this.groupList = this.ComputeNumberPGSGroup();
 
         this.GeneratePlayerListShower();
+        this.selectedPlayerSubList = 0;
+
 
 
 
@@ -565,9 +575,24 @@ export class StaticDetailComponent implements OnInit {
     event.target.style.outline = "";
   }
 
-  selectPlayer(player : Player){
-    //console.log("Selected : " + player.name);
-    this.SelectedPlayer = player.id;
+  selectPlayer(player : any){
+    if (player !== "None"){
+      this.SelectedPlayer = player.id;
+    }
+  }
+
+  DeletePlayer(player : any){
+    this.dialog.open(ConfirmDialog, {
+      width: '500px',
+      height: '200px',
+      data: {title : "Delete Player", content : "Are you sure you want to permenantly delete this player ("+player.name +")?", yes_option : "Yes", no_option : "No"}
+    }).afterClosed().subscribe(result => {
+      if (result === "Yes"){
+        this.http.DeletePlayer(player.id).subscribe(res => {
+          location.reload();
+        });
+      }
+    });
   }
 
   getJobIcon(job : string){

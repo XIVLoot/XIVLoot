@@ -669,6 +669,21 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
+  DeletePlayer(id : number ){
+    var url = `${this.api}Player/DeletePlayer/${id}`;
+    return this.http.delete(url, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to delete to static : ' + error.message));
+    }));
+  }
+
+  SwapAltPlayer(id : number){
+    var url = `${this.api}Player/SetAltPlayer/${id}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to swap alt player : ' + error.message));
+    }));
+  }
+
+
 
 
   

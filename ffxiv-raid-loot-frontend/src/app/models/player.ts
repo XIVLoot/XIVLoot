@@ -51,6 +51,7 @@ export class Player {
   public PGSGroupNumber : number = 0;
   public PGSGroupColor : string = 'rgba(255, 247, 0, 1)';
   public IsClaimed : boolean;
+  public IsAlt : boolean;
   constructor(
   ){}
 
@@ -72,6 +73,7 @@ export class Player {
     p.TomestoneCost = Dict["cost"]["tomeCost"];
     p.TwineCost = Dict["cost"]["twineCost"];
     p.ShineCost = Dict["cost"]["shineCost"];
+    p.IsAlt = Dict["isAlt"];
 
     for (let key in Dict["bisGearSet"]){
       let d = Dict["bisGearSet"][key];

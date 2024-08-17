@@ -41,6 +41,10 @@ export class ItemBreakdownComponent {
   }
 
   getBackgroundColor(id : number, turn : string){
+    var player = this.playerList.find(player => player.id === id);
+    if (player.IsAlt){
+      return 'rgba(255, 140, 0, 0.6)';
+    }
     var turnInt : number = 0;
     switch(turn){
       case "turn_1":

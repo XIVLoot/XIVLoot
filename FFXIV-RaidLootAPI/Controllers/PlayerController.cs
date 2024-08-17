@@ -746,6 +746,35 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         }
 
+        [HttpDelete("DeletePlayer/{id}")]
+        public async Task<ActionResult> DeletePlayer(int id)
+        {
+            using (var context = _context.CreateDbContext())
+            {   
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+                context.Players.Remove(player);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+        [HttpPut("SetAltPlayer/{id}")]
+        public async Task<ActionResult> SetAltPlayer(int id)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+                player.IsAlt = !player.IsAlt;
+                await context.SaveChangesAsync();
+                return Ok(player.IsAlt ? "true" : "false");
+            }
+        }
+
         [HttpPut("NewJob")]
             public async Task<ActionResult> UpdateJob(PlayerDTO dto)
             {
