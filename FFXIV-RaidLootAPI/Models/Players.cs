@@ -46,6 +46,7 @@ namespace FFXIV_RaidLootAPI.Models
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
+        public bool IsAlt {get;set;} = false;
         public DateTime Turn1LockedUntilDate {get;set;}
         public DateTime Turn2LockedUntilDate {get;set;}
         public DateTime Turn3LockedUntilDate {get;set;}

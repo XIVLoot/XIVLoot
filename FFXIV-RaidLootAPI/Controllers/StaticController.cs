@@ -537,6 +537,50 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
             
         }
+
+//Add Player to static which will be flagged as alt
+        [HttpPut("AddNewPlayerToStatic/{uuid}")]
+        public async Task<IActionResult> AddNewPlayerToStatic(string uuid){
+            using (var context = _context.CreateDbContext()){
+                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound("Static not found");
+
+                Players player = new Players(){
+                        Locked=false,
+                        staticId=dbStatic.Id,
+                        Job=Job.BlackMage,
+                        BisWeaponGearId=1,
+                        CurWeaponGearId=1,
+                        BisHeadGearId=1,
+                        CurHeadGearId=1,
+                        BisBodyGearId=1,
+                        CurBodyGearId=1,
+                        BisHandsGearId=1,
+                        CurHandsGearId=1,
+                        BisLegsGearId=1,
+                        CurLegsGearId=1,
+                        BisFeetGearId=1,
+                        CurFeetGearId=1,
+                        BisEarringsGearId=1,
+                        CurEarringsGearId=1,
+                        BisNecklaceGearId=1,
+                        CurNecklaceGearId=1,
+                        BisBraceletsGearId=1,
+                        CurBraceletsGearId=1,
+                        BisRightRingGearId=1,
+                        CurRightRingGearId=1,
+                        BisLeftRingGearId=1,
+                        CurLeftRingGearId=1,
+                        IsAlt=true
+                };
+
+                await context.Players.AddAsync(player);
+                await context.SaveChangesAsync();
+                return Ok(player.get_player_info(context,dbStatic));
+            }
+        }
+
 // Add a new static        
         [HttpPut("CreateNewStatic/{name}")]
         public async Task<ActionResult<string>> AddStatic(string name)
@@ -607,6 +651,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         CurRightRingGearId=1,
                         BisLeftRingGearId=1,
                         CurLeftRingGearId=1,
+                        IsAlt=false
                     };
                     players.Add(newPlayer);
                 }

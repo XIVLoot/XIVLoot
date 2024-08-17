@@ -90,32 +90,36 @@
 
   <div>
     <mat-grid-list [cols]="4"rowHeight="1:0.3" style="width: 100%" gutterSize="10px">
-      <mat-grid-tile *ngFor="let player of staticDetail.players" (click)="selectPlayer(player)" [style.backgroundColor]="getBackgroundColor(player.job)" style="border: 3px solid rgba(255, 255, 255, 0.2);padding: 0;border-radius: 10px;max-width: 295px;max-height: 97px;"(mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)">
+      <mat-grid-tile *ngFor="let pock of [0,1,2,3,4,5,6,7]" style="border: 3px solid rgba(255, 255, 255, 0.2);padding: 0;border-radius: 10px;max-width: 295px;max-height: 97px;">
+        <div *ngFor="let playerInfo of PlayerListPerShower[pock]" (click)="selectPlayer(playerInfo[1])" [style.backgroundColor]="getBackgroundColor(playerInfo[1].job)" (mouseenter)="onMouseEnter($event)" (mouseleave)="onMouseLeave($event)" style="margin: 0;padding: 0;">
+        <div *ngIf="selectedPlayerSubList == playerInfo[0]">
         <div style="display: flex; flex-direction: column; height: 100%; width: 100%; margin: 0;">  
         <div style="height: 30%;width: 100%;margin: 0;">  
             <div style="display: flex; justify-content: flex-start; margin: 5px; position: relative; top: 0; left: 0;">
-              <p style="margin-right: 5px;">{{player.name.slice(0, 18)}}</p>
-              <img [src]="getJobIcon(player.job)" style="width: 20px;height: 20px;">
+              <p style="margin-right: 5px;">{{playerInfo[1].name.slice(0, 18)}}</p>
+              <img [src]="getJobIcon(playerInfo[1].job)" style="width: 20px;height: 20px;">
             </div>
             <div style="position: absolute; top: 0; right: 0;margin: 5px;">
-              <p>Avg. Ilevel : {{player.CurrentAverageItemLevel}}/{{player.BisAverageItemLevel}}</p>
+              <p>Avg. Ilevel : {{playerInfo[1].CurrentAverageItemLevel}}/{{playerInfo[1].BisAverageItemLevel}}</p>
             </div>
           </div>
 
           <div style="height: 25%; width: 100%; margin: 0;display: flex;flex-direction: row;margin-bottom: 1%;">
-              <div style="height: 100%;width: 26%;margin: 0;margin-left: 5px;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{player.TomestoneCost}}</p></div>
-              <div style="height: 100%;width: 20%;margin: 0;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.TwineCost}}</p></div>
-              <div style="height: 100%;width: 20%;margin: 0;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{player.ShineCost}}</p></div>
-              <div style="width:40%;display: flex;flex-direction: row;align-items: center;margin: 0;"><p style="margin:0;">PGS :</p><div [style.backgroundColor]="player.GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;margin: 0;margin-left: 1px;"></div></div>
+              <div style="height: 100%;width: 26%;margin: 0;margin-left: 5px;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/gear_tome_icon.png" style="width: 20px;height: 20px;vertical-align: middle;"/> : {{playerInfo[1].TomestoneCost}}</p></div>
+              <div style="height: 100%;width: 20%;margin: 0;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/twine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{playerInfo[1].TwineCost}}</p></div>
+              <div style="height: 100%;width: 20%;margin: 0;margin-right: 5px;"><p style="margin-bottom: 0;"><img src="assets/shine_icon.png" style="width: 20px;height: 20px;vertical-align: middle;border-radius: 2px;"/> : {{playerInfo[1].ShineCost}}</p></div>
+              <div style="width:40%;display: flex;flex-direction: row;align-items: center;margin: 0;"><p style="margin:0;">PGS :</p><div [style.backgroundColor]="playerInfo[1].GetGroupColorNoAlpha()" style="width: 15px;height: 15px;border-radius: 4px;border: 2px solid black;margin: 0;margin-left: 1px;"></div></div>
           </div>
 
           <div style="height: 44%;width: 100%;margin: 0;display: flex;flex-direction: row;">
-            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_1_d.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/></div>
-            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_2_d.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/></div>
-            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_3_d.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/></div>
-            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_4_d.png" style="width: 100%;height: 100%;" [style.opacity]="player.IsLockedOutOfTurn(4) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(4) ? 'Locked from turn 4.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_1_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_2_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_3_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/></div>
+            <div style="height: 100%;width: 25%;margin: 0;"><img src="assets/raid/turn_4_d.png" style="width: 100%;height: 100%;" [style.opacity]="playerInfo[1].IsLockedOutOfTurn(4) ? '0.5' : '1'" [title]="playerInfo[1].IsLockedOutOfTurn(4) ? 'Locked from turn 4.' : 'Not locked.'"/></div>
           </div>
         </div>
+      </div>
+      </div>
       </mat-grid-tile>
     </mat-grid-list>
   </div>
@@ -125,6 +129,11 @@
       <div style="height: 20px;border-right: 3px solid black;margin:0;margin-left: 10px;margin-right: 10px;"></div>
       <mat-slide-toggle class="param-toggle" style="margin:0;" [(ngModel)]="staticDetail.useBookForGearAcq">Use books for gear acquisition</mat-slide-toggle>
       <mat-icon  matTooltip="{{useBookForGearAcqToolTip}}" style="cursor: pointer;color:white;margin: 0;margin-left: 5px;">help_outline</mat-icon>
+      <div style="height: 20px;border-right: 3px solid black;margin:0;margin-left: 10px;margin-right: 10px;"></div>
+      <mat-icon class="ArrowSelection" (click)="DecrementselectedPlayerSubList()" [style.opacity]="selectedPlayerSubList == 0 ? '0.5' : '1'">arrow_back</mat-icon>
+      <span style="margin: 0;color: white;margin-left: 5px;margin-right: 5px;">{{selectedPlayerSubList+1}}/{{selectedPlayerSubListMax}}</span>
+      <mat-icon class="ArrowSelection" (click)="IncrementselectedPlayerSubList()" [style.opacity]="selectedPlayerSubList == selectedPlayerSubListMax-1 ? '0.5' : '1'">arrow_forward</mat-icon>
+      <button mat-raised-button color="primary" (click)="AddNewPlayerToStatic()" style="margin-left: 10px;">Add New Player</button>
     </div>
     <h2 *ngIf="staticDetail.useBookForGearAcq" style="text-align: center;color: red;">BOOKS ARE USED FOR GEAR ACQUISITION. MAKE SURE TO REVERT IT ONCE DONE.</h2>
   </div>

@@ -88,6 +88,9 @@ export class StaticDetailComponent implements OnInit {
   public IsLoading : boolean = true;
   public userOwns : any = {};
   public staticLeaderName : string = "";
+  public PlayerListPerShower : any = [[],[],[],[],[],[],[],[]]; // Each sublist contains all players for a shower
+  public selectedPlayerSubList : number = 1;
+  public selectedPlayerSubListMax : number = 1;
 
   public UserIsOwnerOfStatic : boolean = false;
 
@@ -99,6 +102,36 @@ export class StaticDetailComponent implements OnInit {
   };
 
   public curViewingTool : string = "GearBrk";
+
+  IncrementselectedPlayerSubList(){
+    if (this.selectedPlayerSubList < this.selectedPlayerSubListMax-1){
+      this.selectedPlayerSubList++;
+    }
+  }
+
+  DecrementselectedPlayerSubList(){
+    if (this.selectedPlayerSubList > 0){
+      this.selectedPlayerSubList--;
+    }
+  }
+
+  GeneratePlayerListShower(){
+            //Generate player list shower
+    this.PlayerListPerShower = [[],[],[],[],[],[],[],[]];
+    var playerCounter = 0;
+    for (let player of this.staticDetail.players){
+      this.PlayerListPerShower[playerCounter%8].push([Math.floor(playerCounter/8), player]);
+      playerCounter++;
+    }
+    this.selectedPlayerSubListMax = Math.ceil(playerCounter/8);
+  }
+
+  AddNewPlayerToStatic(){
+    this.http.AddNewPlayerToStatic(this.uuid).subscribe(data => {
+      this.staticDetail.players.push(Player.CreatePlayerFromDict(data));
+      this.GeneratePlayerListShower();
+    });
+  }
 
   changeCurViewingTool(newtool : string){
     this.curViewingTool=newtool;
@@ -304,6 +337,12 @@ export class StaticDetailComponent implements OnInit {
         this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
         ////console.log(this.staticDetail); // Log the static details to the console
         this.groupList = this.ComputeNumberPGSGroup();
+
+        this.GeneratePlayerListShower();
+
+
+
+
         this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
           this.GearAcqHistory = data["info"];
           const keys = Object.keys(this.GearAcqHistory);

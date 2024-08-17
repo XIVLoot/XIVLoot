@@ -662,6 +662,12 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   }
 
 
+  AddNewPlayerToStatic(uuid : string){
+    var url = `${this.api}Static/AddNewPlayerToStatic/${uuid}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to add new player to static : ' + error.message));
+    }));
+  }
 
 
 

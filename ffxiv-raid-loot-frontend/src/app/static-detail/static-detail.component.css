@@ -5,6 +5,23 @@ div {
   margin: 20px;
 }
 
+.ArrowSelection{
+  cursor: pointer;
+  color:white;
+  margin: 0;
+  margin-left: 5px;
+  font-size: 20px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0;
+  padding: 2px;
+}
+
+
+.ArrowSelection:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
 
 /* Styling for the cards */
 mat-card {
