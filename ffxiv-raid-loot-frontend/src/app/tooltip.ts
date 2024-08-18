@@ -80,7 +80,11 @@ export const EOWTomestonesToolTip = `This is the amount of tomestones you will h
 export const GearCostToolTip = `Body - 825&#13;Legs - 825\nWeapon - 500\nHead - 495\nHands - 495\nFeet - 495\nEarrings - 375\nNecklace - 375\nBracelet - 375\nRing - 495\n`;
 
 
-export const addNewPlayerToolTip = `Add a new player to the static. New players are tagged as being 'alt' players and they will appear differently in the 'Raid Loot Breakdown'.`;
+export const addNewPlayerToolTip = `Add a new player to the static. New players are tagged as being 'alt' by default.`;
+
+export const swapAltPlayerToolTip = `Check this box to mark this player to an 'Alt'. Alt players do not appear in the PGS system and are not considered in it either. Alt players have the same functionalities as a non alt player, but they appear orange in the 'Raid Loot Breakdown' window. New players are set to alt by default and original players (first players of the static) are non-alt by default.`;
+
+export const deletePlayerToolTip = `Click to delete the player. Only static members can delete players. This action is non reversible.`;
 
 
 

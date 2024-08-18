@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
 import { Player } from '../models/player';
 import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSettingToolTipC, pgsToolTip, lockLogicToolTip, lockOutOfGearEvenIfNotContestedToolTip,
-  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,addNewPlayerToolTip,
+  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,addNewPlayerToolTip,swapAltPlayerToolTip,deletePlayerToolTip,
   claimPlayerToolTip,
   unclaimPlayerToolTip,
   alreadyClaimedToolTip, UseBookForGearAcqToolTip, FreePlayerToolTip,
@@ -73,6 +73,8 @@ export class StaticDetailComponent implements OnInit {
   public ClaimStaticToolTip = ClaimStaticToolTip;
   public UnclaimStaticToolTip = UnclaimStaticToolTip;
   public addNewPlayerToolTip = addNewPlayerToolTip;
+  public swapAltPlayerToolTip= swapAltPlayerToolTip;
+  public deletePlayerToolTip = deletePlayerToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
@@ -268,7 +270,7 @@ export class StaticDetailComponent implements OnInit {
    }
 
    SwapAltPlayer(player : Player){
-    this.http.SwapAltPlayer(player.id).subscribe(res => {
+    this.http.SwapAltPlayer(player).subscribe(res => {
       //player.IsAlt = res === "true";
     });
    }
