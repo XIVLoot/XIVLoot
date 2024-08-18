@@ -269,7 +269,7 @@ export class StaticDetailComponent implements OnInit {
 
    SwapAltPlayer(player : Player){
     this.http.SwapAltPlayer(player.id).subscribe(res => {
-      player.IsAlt = res === "true";
+      //player.IsAlt = res === "true";
     });
    }
 
@@ -589,7 +589,19 @@ export class StaticDetailComponent implements OnInit {
     }).afterClosed().subscribe(result => {
       if (result === "Yes"){
         this.http.DeletePlayer(player.id).subscribe(res => {
-          location.reload();
+          for (let puck of this.PlayerListPerShower){
+            for (let i = 0;i<puck[this.selectedPlayerSubList].length;i++){
+              if (puck[this.selectedPlayerSubList][i].id === player.id){
+                //Found player
+                if (player.id === this.SelectedPlayer){
+                  this.SelectedPlayer = 0;
+                }
+                puck[this.selectedPlayerSubList].splice(i, 1);
+                puck[this.selectedPlayerSubList].push("None");
+                
+              }
+            }
+          }
         });
       }
     });
@@ -657,7 +669,9 @@ export class StaticDetailComponent implements OnInit {
     let PGSList = [];
     let groupList = [];
     for (let i = 0;i<this.staticDetail.players.length;i++){
-      PGSList.push(this.staticDetail.players[i]);
+      if (!this.staticDetail.players[i].IsAlt){
+        PGSList.push(this.staticDetail.players[i]);
+      }
     }
     let highestPGS = Math.max(...PGSList.map(player => player.playerGearScore));
     let lowestPGS = Math.min(...PGSList.map(player => player.playerGearScore));
@@ -710,10 +724,13 @@ export class StaticDetailComponent implements OnInit {
         return group.nGroup;
       }
     }
+    return -1;
   }
 
   GetGroupColor(nGroup : number){
     switch(nGroup){
+      case -1:
+        return 'rgba(0, 0, 0, 0.3)';
       case 0:
         return 'rgba(255, 247, 0, 0.3)';
       case 1:

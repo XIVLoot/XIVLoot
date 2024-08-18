@@ -154,7 +154,7 @@
             <button mat-raised-button *ngIf="!staticDetail.userOwn[player.id]" (click)="ClaimPlayer(player)" style="margin-bottom: 10px;" [disabled]="player.IsClaimed" [style.backgroundColor]="player.IsClaimed ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 255, 0.5)'">Claim Player</button>
             <button mat-raised-button *ngIf="staticDetail.userOwn[player.id]" (click)="UnclaimPlayer(player)" style="margin-bottom: 10px;background-color: rgba(255, 0, 0, 0.5);" >Unclaim Player</button>
             <mat-icon matTooltip="{{staticDetail.userOwn[player.id] ? unclaimPlayerToolTip : player.IsClaimed ? alreadyClaimedToolTip : claimPlayerToolTip }}" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 10px;">help_outline</mat-icon>
-            <mat-checkbox style="margin-left: 10px;" (change)="SwapAltPlayer(player)">Alt. Player</mat-checkbox>
+            <mat-checkbox style="margin-left: 10px;" [(ngModel)]="player.IsAlt" (change)="SwapAltPlayer(player)">Alt. Player</mat-checkbox>
             <mat-icon matTooltip="Delete Player" style="cursor: pointer;color:white;margin-top: 3%;margin-left: 20px;border-left: 3px solid black;padding-left: 10px;" (click)="DeletePlayer(player)">delete</mat-icon>
           </div>
           <div *ngIf="UserIsOwnerOfStatic" style="display: flex;flex-direction: row;margin: 0;height: 40px;background-color: rgba(0, 0, 0, 0.4);border:3px solid rgba(0, 0, 0, 0.2);border-radius: 10px;margin-bottom: 10px;padding: 5px;width:150px;margin-left: 10px;">

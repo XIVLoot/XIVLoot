@@ -48,7 +48,7 @@ export class Player {
   public BraceletsChoice : Gear[] = [];
   public RightRingChoice : Gear[] = [];
   public LeftRingChoice : Gear[] = [];
-  public PGSGroupNumber : number = 0;
+  public PGSGroupNumber : number = -1;
   public PGSGroupColor : string = 'rgba(255, 247, 0, 1)';
   public IsClaimed : boolean;
   public IsAlt : boolean;
@@ -207,6 +207,8 @@ export class Player {
         return'rgba(0, 21, 255, 1)';
       case 3:
         return'rgba(38, 255, 0, 1)';
+      case -1:
+        return'rgba(0, 0, 0, 0.3)';
     }
   }
 }
