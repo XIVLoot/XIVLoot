@@ -246,7 +246,7 @@ export class PlayerDetailsSingleComponent {
         case "Feet":
         case "Hands":
         case "Head":
-          Turn = -1
+          Turn = 2
           break;
         case "Necklace":
         case "Earrings":
@@ -928,6 +928,9 @@ export class ImportGearDialog {
             <mat-dialog-content>
               {{data.content}}
             </mat-dialog-content>
+            <mat-dialog-content style="color:red;text-align:center;">
+              {{data.subContent}}
+            </mat-dialog-content>
             <mat-dialog-actions style="justify-content: space-between;border-top: 2px solid rgba(0,0,0,0.5);width:95%;margin-left:2.5%;margin-top:5px;padding-top:2px;">
               <button mat-button (click)="dialogRef.close('No')">{{data.no_option}}</button>
               <button mat-button (click)="dialogRef.close('Yes')">{{data.yes_option}}</button>
@@ -937,7 +940,7 @@ export class ImportGearDialog {
 })
 export class ConfirmDialog {
   constructor(public dialogRef: MatDialogRef<ConfirmDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: { title : string, content : string , yes_option : string, no_option : string },
+    @Inject(MAT_DIALOG_DATA) public data: { title : string, content : string , yes_option : string, no_option : string, subContent : string },
   ) {}
 
   

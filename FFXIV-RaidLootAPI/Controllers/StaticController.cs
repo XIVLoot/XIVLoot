@@ -27,13 +27,15 @@ namespace FFXIV_RaidLootAPI.Controllers
             
         }
 
-                async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
+                async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context, int staticId) where T : IUserInterface{
             // Now checks if this user claimed a player from the static. In which case they can edit this player.
-            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
-            if (player is null)
-                return false;
 
-            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
+            if (player is null && staticId == 0)
+                return false;
+            if (player != null)
+                staticId = player.staticId;
+            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == staticId);
             foreach (Players playerToInspect in validPlayers){
                 if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
                     return true;
@@ -41,10 +43,10 @@ namespace FFXIV_RaidLootAPI.Controllers
             return false;
         }
 
-        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
-            //Console.WriteLine("Checking authorization");
+        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context, int staticId){
+            Console.WriteLine("Checking authorization");
             if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
-                
+
                 string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
 
                 Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
@@ -53,7 +55,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 if (user.UserClaimedPlayer(playerId))
                     return true;
 
-                return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
+                return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context, staticId);
 
             } 
             else if (!(User is null)){
@@ -72,7 +74,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                 if (thisUserClaimed)
                     return true;
 
-                return await UserHasClaimedPlayerFromSameStatic<ApplicationUser>(user,playerId,context);
+                return await UserHasClaimedPlayerFromSameStatic<ApplicationUser>(user,playerId,context, staticId);
             }
 
             return false;
@@ -626,7 +628,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         IsAlt=true
                 };
 
-                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context); // Must be in the static to add a player.
+                bool isAuthorized = await UserIsAuthorized(HttpContext, "0", context, dbStatic.Id); // Must be in the static to add a player.
                 if(!isAuthorized)
                     return Unauthorized("Not Authorized");
 

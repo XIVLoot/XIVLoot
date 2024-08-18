@@ -103,6 +103,7 @@ export class GearAcqHistorySingleComponent {
           data: {
             title: "Confirm choice",
             content: "Are you sure you want to delete this gear acquisition event? ("+gearAcq.gearType+", "+(gearAcq.isAugment ? "Augment, " : "")+playerName+", turn "+turn+")",
+            subContent : "THIS ACTION IS IRREVERSIBLE.",
             yes_option: "Yes",
             no_option: "No"
           }

@@ -584,10 +584,18 @@ export class StaticDetailComponent implements OnInit {
   }
 
   DeletePlayer(player : any){
+
+    if(!player.IsAlt){
+      // Can only delete alts
+      return;
+    }
+
+
+
     this.dialog.open(ConfirmDialog, {
       width: '500px',
       height: '200px',
-      data: {title : "Delete Player", content : "Are you sure you want to permenantly delete this player ("+player.name +")?", yes_option : "Yes", no_option : "No"}
+      data: {title : "Delete Player", content : "Are you sure you want to permenantly delete this player ("+player.name +")?", yes_option : "Yes", no_option : "No", subContent : "THIS ACTION IS IRREVERSIBLE.",}
     }).afterClosed().subscribe(result => {
       if (result === "Yes"){
         this.http.DeletePlayer(player.id).subscribe(res => {
