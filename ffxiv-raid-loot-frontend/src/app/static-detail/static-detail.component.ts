@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
 import { Player } from '../models/player';
 import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSettingToolTipC, pgsToolTip, lockLogicToolTip, lockOutOfGearEvenIfNotContestedToolTip,
-  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,
+  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,addNewPlayerToolTip,swapAltPlayerToolTip,deletePlayerToolTip,
   claimPlayerToolTip,
   unclaimPlayerToolTip,
   alreadyClaimedToolTip, UseBookForGearAcqToolTip, FreePlayerToolTip,
@@ -42,6 +42,7 @@ import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSett
   UnclaimStaticToolTip
 } from '../tooltip';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConfirmDialog } from '../player-details-single/player-details-single.component';
 
 interface PlayerPGS {
   name: string;
@@ -71,6 +72,9 @@ export class StaticDetailComponent implements OnInit {
   public FreePlayerToolTip = FreePlayerToolTip;
   public ClaimStaticToolTip = ClaimStaticToolTip;
   public UnclaimStaticToolTip = UnclaimStaticToolTip;
+  public addNewPlayerToolTip = addNewPlayerToolTip;
+  public swapAltPlayerToolTip= swapAltPlayerToolTip;
+  public deletePlayerToolTip = deletePlayerToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
@@ -88,6 +92,9 @@ export class StaticDetailComponent implements OnInit {
   public IsLoading : boolean = true;
   public userOwns : any = {};
   public staticLeaderName : string = "";
+  public PlayerListPerShower : any = [[],[],[],[],[],[],[],[]]; // Each sublist contains all players for a shower
+  public selectedPlayerSubList : number = 1;
+  public selectedPlayerSubListMax : number = 1;
 
   public UserIsOwnerOfStatic : boolean = false;
 
@@ -99,6 +106,42 @@ export class StaticDetailComponent implements OnInit {
   };
 
   public curViewingTool : string = "GearBrk";
+
+  IncrementselectedPlayerSubList(){
+    if (this.selectedPlayerSubList < this.selectedPlayerSubListMax-1){
+      this.selectedPlayerSubList++;
+    }
+  }
+
+  DecrementselectedPlayerSubList(){
+    if (this.selectedPlayerSubList > 0){
+      this.selectedPlayerSubList--;
+    }
+  }
+
+  GeneratePlayerListShower(){
+            //Generate player list shower
+    this.PlayerListPerShower = [[],[],[],[],[],[],[],[]];
+    var playerCounter = 0;
+    for (let player of this.staticDetail.players){
+      this.PlayerListPerShower[playerCounter%8].push([Math.floor(playerCounter/8), player]);
+      playerCounter++;
+    }
+    this.selectedPlayerSubListMax = Math.ceil(playerCounter/8);
+
+
+    // Now fill the rest of the sublist with empty players
+    for (let i = playerCounter; i < 8*this.selectedPlayerSubListMax; i++){
+      this.PlayerListPerShower[i%8].push([this.selectedPlayerSubListMax-1, "None"]);
+    }
+  }
+
+  AddNewPlayerToStatic(){
+    this.http.AddNewPlayerToStatic(this.uuid).subscribe(data => {
+      this.staticDetail.players.push(Player.CreatePlayerFromDict(data));
+      this.GeneratePlayerListShower();
+    });
+  }
 
   changeCurViewingTool(newtool : string){
     this.curViewingTool=newtool;
@@ -226,6 +269,12 @@ export class StaticDetailComponent implements OnInit {
 
    }
 
+   SwapAltPlayer(player : Player){
+    this.http.SwapAltPlayer(player).subscribe(res => {
+      //player.IsAlt = res === "true";
+    });
+   }
+
    async CheckClaimPlayer(id : number){
     var DiscordLoggedIn = await this.http.CheckAuthDiscord();
     var DefaultLoggedIn;
@@ -304,6 +353,14 @@ export class StaticDetailComponent implements OnInit {
         this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
         ////console.log(this.staticDetail); // Log the static details to the console
         this.groupList = this.ComputeNumberPGSGroup();
+
+        this.GeneratePlayerListShower();
+        this.selectedPlayerSubList = 0;
+
+
+
+
+
         this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
           this.GearAcqHistory = data["info"];
           const keys = Object.keys(this.GearAcqHistory);
@@ -520,9 +577,36 @@ export class StaticDetailComponent implements OnInit {
     event.target.style.outline = "";
   }
 
-  selectPlayer(player : Player){
-    //console.log("Selected : " + player.name);
-    this.SelectedPlayer = player.id;
+  selectPlayer(player : any){
+    if (player !== "None"){
+      this.SelectedPlayer = player.id;
+    }
+  }
+
+  DeletePlayer(player : any){
+    this.dialog.open(ConfirmDialog, {
+      width: '500px',
+      height: '200px',
+      data: {title : "Delete Player", content : "Are you sure you want to permenantly delete this player ("+player.name +")?", yes_option : "Yes", no_option : "No"}
+    }).afterClosed().subscribe(result => {
+      if (result === "Yes"){
+        this.http.DeletePlayer(player.id).subscribe(res => {
+          for (let puck of this.PlayerListPerShower){
+            for (let i = 0;i<puck[this.selectedPlayerSubList].length;i++){
+              if (puck[this.selectedPlayerSubList][i].id === player.id){
+                //Found player
+                if (player.id === this.SelectedPlayer){
+                  this.SelectedPlayer = 0;
+                }
+                puck[this.selectedPlayerSubList].splice(i, 1);
+                puck[this.selectedPlayerSubList].push("None");
+                
+              }
+            }
+          }
+        });
+      }
+    });
   }
 
   getJobIcon(job : string){
@@ -555,6 +639,8 @@ export class StaticDetailComponent implements OnInit {
       case "Warrior":
       case "Gunbreaker":
         return "rgba(0, 0, 255, 0.25)";
+      default:
+        return "rgba(0, 0, 0, 0)";
     }
   }
 
@@ -585,7 +671,9 @@ export class StaticDetailComponent implements OnInit {
     let PGSList = [];
     let groupList = [];
     for (let i = 0;i<this.staticDetail.players.length;i++){
-      PGSList.push(this.staticDetail.players[i]);
+      if (!this.staticDetail.players[i].IsAlt){
+        PGSList.push(this.staticDetail.players[i]);
+      }
     }
     let highestPGS = Math.max(...PGSList.map(player => player.playerGearScore));
     let lowestPGS = Math.min(...PGSList.map(player => player.playerGearScore));
@@ -638,10 +726,13 @@ export class StaticDetailComponent implements OnInit {
         return group.nGroup;
       }
     }
+    return -1;
   }
 
   GetGroupColor(nGroup : number){
     switch(nGroup){
+      case -1:
+        return 'rgba(0, 0, 0, 0.3)';
       case 0:
         return 'rgba(255, 247, 0, 0.3)';
       case 1:

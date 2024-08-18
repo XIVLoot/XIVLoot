@@ -106,7 +106,7 @@ namespace FFXIV_RaidLootAPI.Controllers
             return false;
         }
 
-        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
+        async public Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
             //Console.WriteLine("Checking authorization");
             if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
                 
@@ -744,6 +744,47 @@ namespace FFXIV_RaidLootAPI.Controllers
             context.SaveChanges();
             return Ok();
         }
+        }
+
+        [HttpDelete("DeletePlayer/{id}")]
+        public async Task<ActionResult> DeletePlayer(int id)
+        {
+            using (var context = _context.CreateDbContext())
+            {   
+
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context); // Even if unclaimed player must be in static to delete it.
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+
+                context.Players.Remove(player);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+        [HttpPut("SetAltPlayer/{id}")]
+        public async Task<ActionResult> SetAltPlayer(int id)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+
+                player.IsAlt = !player.IsAlt;
+                await context.SaveChangesAsync();
+                return Ok(player.IsAlt ? "true" : "false");
+            }
         }
 
         [HttpPut("NewJob")]

@@ -27,6 +27,57 @@ namespace FFXIV_RaidLootAPI.Controllers
             
         }
 
+                async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
+            // Now checks if this user claimed a player from the static. In which case they can edit this player.
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
+            if (player is null)
+                return false;
+
+            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
+            foreach (Players playerToInspect in validPlayers){
+                if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
+                    return true;
+            }
+            return false;
+        }
+
+        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
+            //Console.WriteLine("Checking authorization");
+            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
+                
+                string discordId = await PlayerController.GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                if (user is null)
+                    return false;
+                if (user.UserClaimedPlayer(playerId))
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
+
+            } 
+            else if (!(User is null)){
+                //Console.WriteLine("DEFAUTL CONNECTED");
+                var claimsIdentity = User.Identity as ClaimsIdentity;
+                var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+                var userId = userIdClaim?.Value;
+
+                Console.WriteLine("USER ID FROM EMAIL IS : " + userId);
+
+                ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (user is null)
+                    return false;
+
+                bool thisUserClaimed = user.UserClaimedPlayer(playerId);
+                if (thisUserClaimed)
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<ApplicationUser>(user,playerId,context);
+            }
+
+            return false;
+        }
+
 
         [HttpGet("UserIsOwner/{uuid}")]
         public async Task<IActionResult> CheckUserOwnsStatic(string uuid){
@@ -537,6 +588,54 @@ namespace FFXIV_RaidLootAPI.Controllers
             }
             
         }
+
+//Add Player to static which will be flagged as alt
+        [HttpPut("AddNewPlayerToStatic/{uuid}")]
+        public async Task<IActionResult> AddNewPlayerToStatic(string uuid){
+            using (var context = _context.CreateDbContext()){
+                var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound("Static not found");
+
+                Players player = new Players(){
+                        Locked=false,
+                        staticId=dbStatic.Id,
+                        Job=Job.BlackMage,
+                        BisWeaponGearId=1,
+                        CurWeaponGearId=1,
+                        BisHeadGearId=1,
+                        CurHeadGearId=1,
+                        BisBodyGearId=1,
+                        CurBodyGearId=1,
+                        BisHandsGearId=1,
+                        CurHandsGearId=1,
+                        BisLegsGearId=1,
+                        CurLegsGearId=1,
+                        BisFeetGearId=1,
+                        CurFeetGearId=1,
+                        BisEarringsGearId=1,
+                        CurEarringsGearId=1,
+                        BisNecklaceGearId=1,
+                        CurNecklaceGearId=1,
+                        BisBraceletsGearId=1,
+                        CurBraceletsGearId=1,
+                        BisRightRingGearId=1,
+                        CurRightRingGearId=1,
+                        BisLeftRingGearId=1,
+                        CurLeftRingGearId=1,
+                        IsAlt=true
+                };
+
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context); // Must be in the static to add a player.
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+
+                await context.Players.AddAsync(player);
+                await context.SaveChangesAsync();
+                return Ok(player.get_player_info(context,dbStatic));
+            }
+        }
+
 // Add a new static        
         [HttpPut("CreateNewStatic/{name}")]
         public async Task<ActionResult<string>> AddStatic(string name)
@@ -607,6 +706,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                         CurRightRingGearId=1,
                         BisLeftRingGearId=1,
                         CurLeftRingGearId=1,
+                        IsAlt=false
                     };
                     players.Add(newPlayer);
                 }

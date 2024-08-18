@@ -42,7 +42,7 @@ export const HomeClaimPlayerToolTip = `Claimed players in a static can only be m
 
 export const UseBisToolTip = `If this option is unchecked, the gearset will be imported as your current gear. If it is checked, it will be imported as your BiS. If imported as BiS, the link will be saved and you will be able to view the gearset on its original website by clicking the button next to the 'Import' button on the character's view page.`;
 
-export const GearBreakdownToolTip = `This section contains a breakdown of all items required by members of the static. Select the fight on the left side to see a colour-coordinated view of who needs what item for their BiS. Green indicates a player is not locked out of getting loot, while red means they are locked out based on the loot rules set by your static.`;
+export const GearBreakdownToolTip = `This section contains a breakdown of all items required by members of the static. Select the fight on the left side to see a colour-coordinated view of who needs what item for their BiS. Green indicates a player is not locked out of getting loot, while red means they are locked out based on the loot rules set by your static. An orange player indicates an 'alt' account that is not locked out of gear.`;
 
 export const FreePlayerToolTip = `Click this button to free a player from their claim. This option is only available to the static's creator.`;
 
@@ -80,7 +80,11 @@ export const EOWTomestonesToolTip = `This is the amount of tomestones you will h
 export const GearCostToolTip = `Body - 825&#13;Legs - 825\nWeapon - 500\nHead - 495\nHands - 495\nFeet - 495\nEarrings - 375\nNecklace - 375\nBracelet - 375\nRing - 495\n`;
 
 
+export const addNewPlayerToolTip = `Add a new player to the static. New players are tagged as being 'alt' by default.`;
 
+export const swapAltPlayerToolTip = `Check this box to mark this player to an 'Alt'. Alt players do not appear in the PGS system and are not considered in it either. Alt players have the same functionalities as a non alt player, but they appear orange in the 'Raid Loot Breakdown' window. New players are set to alt by default and original players (first players of the static) are non-alt by default.`;
+
+export const deletePlayerToolTip = `Click to delete the player. Only static members can delete players. This action is non reversible.`;
 
 
 

@@ -5,6 +5,39 @@ div {
   margin: 20px;
 }
 
+.ArrowSelection{
+  cursor: pointer;
+  color:white;
+  margin: 0;
+  margin-left: 5px;
+  font-size: 20px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0;
+  padding: 2px;
+}
+
+::ng-deep .mat-grid-tile .ng-star-inserted {
+    margin: 0 !important;
+}
+
+.no-player{
+  color:white;
+  font-size: 1.7ch;
+  background-color: rgba(0,0,0,0.3);
+  padding:150px;
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+.ArrowSelection:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
 
 /* Styling for the cards */
 mat-card {

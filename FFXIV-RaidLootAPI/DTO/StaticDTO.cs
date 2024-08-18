@@ -22,7 +22,9 @@ public class StaticDTO
         public int AverageItemLevelBis {get;set;}
         public decimal PlayerGearScore {get;set;}
         public CostDTO Cost {get;set;} = new CostDTO();
+        public bool IsAlt {get;set;}
     }
+
 
     public class PlayerInfoSoftDTO
     {

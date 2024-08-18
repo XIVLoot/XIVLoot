@@ -662,6 +662,52 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   }
 
 
+  AddNewPlayerToStatic(uuid : string){
+    var url = `${this.api}Static/AddNewPlayerToStatic/${uuid}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to add new player to static.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to add new player to static : ' + error.message));
+    }));
+  }
+
+  DeletePlayer(id : number ){
+    var url = `${this.api}Player/DeletePlayer/${id}`;
+    return this.http.delete(url, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to delete the player.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to delete to static : ' + error.message));
+    }));
+  }
+
+  SwapAltPlayer(player : Player){
+    var url = `${this.api}Player/SetAltPlayer/${player.id}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to swap this player's alt status.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      player.IsAlt = !player.IsAlt;
+      return throwError(() => new Error('Failed to swap alt player : ' + error.message));
+    }));
+  }
+
 
 
 

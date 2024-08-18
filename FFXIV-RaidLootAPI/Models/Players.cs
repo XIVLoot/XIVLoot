@@ -46,6 +46,7 @@ namespace FFXIV_RaidLootAPI.Models
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
+        public bool IsAlt {get;set;} = false;
         public DateTime Turn1LockedUntilDate {get;set;}
         public DateTime Turn2LockedUntilDate {get;set;}
         public DateTime Turn3LockedUntilDate {get;set;}
@@ -160,6 +161,9 @@ namespace FFXIV_RaidLootAPI.Models
         }
 
         public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff, DataContext context){
+            if (IsAlt){
+                return 999999999m;
+            }
             int PlayerILevel = get_avg_item_level(context:context);
 
             if (GroupAvgLevel == 0){
@@ -595,7 +599,8 @@ namespace FFXIV_RaidLootAPI.Models
                 PlayerGearScore=PlayerGearScore,
                 Cost=Cost,
                 LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate},
-                IsClaimed=IsClaimed
+                IsClaimed=IsClaimed,
+                IsAlt=IsAlt
             };
         }
 
