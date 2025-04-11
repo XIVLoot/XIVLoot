@@ -1,13 +1,18 @@
-x = "INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES (1, N'No Equipment', 0, 0, 0, 0, 0, N'0', 0)"
+x = "INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId], [Tier]) VALUES (1, N'No Equipment', 0, 0, 0, 0, 0, N'0', 0, -1)"
 
-GearToGen = [(710, "Normal raid", 6), (710, "Crafted", 1), (720, "Tome gear", 2), (730,"Augmented tome", 3), (730, "Raid", 4), (710, "Extreme", 5), (700, "Neo Kingdom", 7), (690, "Artifact", 8)]
-
+GearToGen = [(740, "Normal raid", 6), 
+             (740, "Crafted", 1), 
+             (750, "Tome gear", 2), 
+             (760,"Augmented tome", 3), 
+             (760, "Raid", 4), 
+             (745, "Extreme", 5)]
+tier = 1
 genSQLString = """
 USE [LootManagementDB]
 GO
 SET IDENTITY_INSERT [dbo].[Gears] ON 
 
-INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES (1, N'No Equipment', 0, 0, 0, 0, 0, N'0', 0)
+INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId], [Tier]) VALUES (1, N'No Equipment', 0, 0, 0, 0, 0, N'0', 0, -1)
 """
 
 GearCategory = [1,2,3,4,5,6,7,8]
@@ -38,26 +43,26 @@ GearType=[2,3,4,5,6,7,8,9,10,11]
 #RightRing = 10,
 #LeftRing = 11
 
-id = 2
+id = 1000
 
 for gearInfo in GearToGen:
     name = gearInfo[1]
     iLevel = gearInfo[0]
     stage=gearInfo[2]
     for type in GearType:  
-        if name == "Extreme" and type in [1,2,3,4,5,6]: # Only acc and weapon
+        if name == "Extreme" and type in [2,3,4,5,6,7,8,9,10,11]:# only weapon ,2,3,4,5,6]: # Only acc and weapon
             continue
         for cat in GearCategory:
-            genSQLString+= (f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel}, {type}, {stage}, {cat}, N'0', N'0', 0)\n")
+            genSQLString+= (f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId], [Tier]) VALUES ({id}, N'{name}', {iLevel}, {type}, {stage}, {cat}, N'0', N'0', 0, {tier})\n")
             id+=1
 
     # Generating weapon
     for i in range(1,22):
         if name == "Raid":
-            genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel+5}, 1, {stage}, 9, N'{i}', N'0', 0)\n"
+            genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId], [Tier]) VALUES ({id}, N'{name}', {iLevel+5}, 1, {stage}, 9, N'{i}', N'0', 0, {tier})\n"
             id+=1
         else :
-            genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId]) VALUES ({id}, N'{name}', {iLevel}, 1, {stage}, 9, N'{i}', N'0', 0)\n"
+            genSQLString+= f"INSERT [dbo].[Gears] ([Id], [Name], [GearLevel], [GearType], [GearStage], [GearCategory], [GearWeaponCategory], [IconPath], [EtroGearId], [Tier]) VALUES ({id}, N'{name}', {iLevel}, 1, {stage}, 9, N'{i}', N'0', 0, {tier})\n"
             id+=1
 
         # Open a file in write mode

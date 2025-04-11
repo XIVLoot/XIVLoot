@@ -4,6 +4,7 @@
 <div>
     <div>
         <p style="color:white">Username : <span>{{data.username}}</span></p>
+        <p *ngIf="data.isDiscord">Discord id : <span>{{data.discordId}}</span></p>
     </div>
 </div>
 

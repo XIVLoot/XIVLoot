@@ -42,10 +42,9 @@ namespace FFXIV_RaidLootAPI.Controllers
             "fingerR"
                     };
 
-        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
-            //Console.WriteLine("Checking authorization");
-            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
-                //Console.WriteLine("Discord : " + jwt.ToString());
+
+        async public static Task<string> GetUserDiscordIdFromJwt(string jwt, string _jwtKey){
+            //Console.WriteLine("Discord : " + jwt.ToString());
                 // Logged in discord
                 // Decode the JWT to get the access_token
                 var handler = new JwtSecurityTokenHandler();
@@ -67,7 +66,7 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                 if (string.IsNullOrEmpty(accessToken))
                 {
-                    return false;
+                    return string.Empty;
                 }
 
                 using (var client = new HttpClient())
@@ -88,12 +87,39 @@ namespace FFXIV_RaidLootAPI.Controllers
 
                         // Access the 'id' value from the dictionary
                         string discordId = responseData["id"].ToString()!;
-
-                        Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
-                        if (user is null)
-                            return false;
-                        return user.UserClaimedPlayer(playerId);
+                        return discordId;
                 }
+        }
+
+
+        async private Task<bool> UserHasClaimedPlayerFromSameStatic<T>(T user, string playerId, DataContext context) where T : IUserInterface{
+            // Now checks if this user claimed a player from the static. In which case they can edit this player.
+            Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id == int.Parse(playerId));
+            if (player is null)
+                return false;
+
+            IEnumerable<Players> validPlayers = context.Players.Where(p => p.staticId == player.staticId);
+            foreach (Players playerToInspect in validPlayers){
+                if (user.UserClaimedPlayer(playerToInspect.Id.ToString()))
+                    return true;
+            }
+            return false;
+        }
+
+        async private Task<bool> UserIsAuthorized(HttpContext HttpContext, string playerId, DataContext context){
+            //Console.WriteLine("Checking authorization");
+            if (HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)){
+                
+                string discordId = await GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                if (user is null)
+                    return false;
+                if (user.UserClaimedPlayer(playerId))
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<Users>(user,playerId,context);
+
             } 
             else if (!(User is null)){
                 //Console.WriteLine("DEFAUTL CONNECTED");
@@ -101,11 +127,17 @@ namespace FFXIV_RaidLootAPI.Controllers
                 var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
                 var userId = userIdClaim?.Value;
 
+                Console.WriteLine("USER ID FROM EMAIL IS : " + userId);
+
                 ApplicationUser? user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 if (user is null)
                     return false;
 
-                return user.UserClaimedPlayer(playerId);
+                bool thisUserClaimed = user.UserClaimedPlayer(playerId);
+                if (thisUserClaimed)
+                    return true;
+
+                return await UserHasClaimedPlayerFromSameStatic<ApplicationUser>(user,playerId,context);
             }
 
             return false;
@@ -257,6 +289,79 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         }
 
+        [HttpPut("FreePlayer/{uuid}/{playerId}")]
+        public async Task<IActionResult> FreePlayer(string uuid, string playerId)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                Static? dbStatic = await context.Statics.FirstOrDefaultAsync(s => s.UUID == uuid);
+                if (dbStatic is null)
+                    return NotFound();
+
+                // Check if can actually do it in case the user was evil):
+                if(HttpContext.Request.Cookies.TryGetValue("jwt_xivloot", out var jwt)) // Discord user
+                {
+                    string discordId = await GetUserDiscordIdFromJwt(jwt, _jwtKey);
+
+                    Users? user = await context.User.FirstOrDefaultAsync(u => u.user_discord_id == discordId);
+                    if (!(user is null) && user.Id.ToString() != dbStatic.ownerIdString)
+                        return Unauthorized();
+
+
+                    // Looking for owner
+                    ApplicationUser? userWhoClaimed = await context.Users.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    Users? userWhoClaimedDiscord = null;
+
+                    if (userWhoClaimed is null)
+                        userWhoClaimedDiscord = await context.User.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    if (!(userWhoClaimed is null))
+                        userWhoClaimed.removePlayerClaim(playerId);
+                    else if (!(userWhoClaimedDiscord is null))
+                        userWhoClaimedDiscord.removePlayerClaim(playerId);
+
+                    Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
+                    if (!(player is null))
+                        player.IsClaimed = false;
+                    
+                } 
+                    else if (!(User is null)) // Email user. Note - email user id are uuid while discord userid are integer id
+                    {
+                    var claimsIdentity = User.Identity as ClaimsIdentity;
+                    var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+
+                    if (userIdClaim != null && userIdClaim.Value != dbStatic.ownerIdString)
+                        return Unauthorized();
+
+                    if(userIdClaim is null)
+                        return NotFound();
+
+                    // Looking for owner
+                    ApplicationUser? userWhoClaimed = await context.Users.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    Users? userWhoClaimedDiscord = null;
+
+                    if (userWhoClaimed is null)
+                        userWhoClaimedDiscord = await context.User.FirstOrDefaultAsync(u => EF.Functions.Like(u.user_claimed_playerId, $"%;{playerId};%") || EF.Functions.Like(u.user_claimed_playerId, $"{playerId};%"));
+
+                    if (!(userWhoClaimed is null))
+                        userWhoClaimed.removePlayerClaim(playerId);
+                    else if (!(userWhoClaimedDiscord is null))
+                        userWhoClaimedDiscord.removePlayerClaim(playerId);
+
+                    Players? player = await context.Players.FirstOrDefaultAsync(p => p.Id.ToString() == playerId);
+                    if (!(player is null))
+                        player.IsClaimed = false;
+                    } 
+                    else
+                        return Unauthorized(); // Has to be a logged in user
+
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
 
 
         [HttpPut("RemovePlayerLock/{turn}")]
@@ -309,20 +414,31 @@ namespace FFXIV_RaidLootAPI.Controllers
                 {
                     client.BaseAddress = new Uri("https://api.xivgear.app/shortlink/");
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                     Console.WriteLine("HERE4");
+                    //Console.WriteLine("HERE4");
                     Object items = new object();
-                     Console.WriteLine("HERE5");
+                    //Console.WriteLine("HERE5");
 
                     // Extracting uuid from link
 
                    /* https://xivgear.app/?page=sl%7C ac66ee64-8ecd-4382-a52e-2a179f4f991d */
-                    Console.WriteLine(dto.NewEtro);
-                    Console.WriteLine(dto.NewEtro.Split("https://xivgear.app/?page=sl|")[0]);
+                   /* or https://xivgear.app/?page=sl%7C8f2e2ba8-082b-4fd4-912b-a7851ec3e50c&onlySetIndex=6 */
+                    //Console.WriteLine(dto.NewEtro);
+                    //Console.WriteLine(dto.NewEtro.Split("https://xivgear.app/?page=sl|")[0]);
                     
                     List<string> firstTry = dto.NewEtro.Split("xivgear.app/?page=sl|").ToList();
                     List<string> secondTry = dto.NewEtro.Split("xivgear.app/?page=sl%7C").ToList();
                     string uuid = firstTry.Count > 1 ? firstTry[1] : secondTry[1];
-                    Console.WriteLine("HERE6");
+
+                    // XIVGear url sometime specify a page index. 
+                    // In order to avoir error where the url contains additional information
+                    // we will only take the first 36 characters of the uuid which should
+                    // always correspond to the actual uuid of the gearset.
+                    if (uuid.Length >= 36)
+                    {
+                        uuid = uuid.Substring(0, 36);
+                    }
+
+                    //Console.WriteLine("HERE6");
                     Console.WriteLine("Detected uuid : " + uuid);
 
                     try{
@@ -641,6 +757,47 @@ namespace FFXIV_RaidLootAPI.Controllers
         }
         }
 
+        [HttpDelete("DeletePlayer/{id}")]
+        public async Task<ActionResult> DeletePlayer(int id)
+        {
+            using (var context = _context.CreateDbContext())
+            {   
+
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context); // Even if unclaimed player must be in static to delete it.
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+
+                context.Players.Remove(player);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+        }
+        [HttpPut("SetAltPlayer/{id}")]
+        public async Task<ActionResult> SetAltPlayer(int id)
+        {
+            using (var context = _context.CreateDbContext())
+            {
+                Players? player = await context.Players.FindAsync(id);
+                if (player is null)
+                    return NotFound("Player not found");
+
+            if (player.IsClaimed)
+            {   
+                bool isAuthorized = await UserIsAuthorized(HttpContext, player.Id.ToString(), context);
+                if(!isAuthorized)
+                    return Unauthorized("Not Authorized");
+            }
+
+                player.IsAlt = !player.IsAlt;
+                await context.SaveChangesAsync();
+                return Ok(player.IsAlt ? "true" : "false");
+            }
+        }
+
         [HttpPut("NewJob")]
             public async Task<ActionResult> UpdateJob(PlayerDTO dto)
             {
@@ -662,6 +819,49 @@ namespace FFXIV_RaidLootAPI.Controllers
                 return Ok();
             }
             }
+
+        /*[HttpGet("FixDatabase")]
+        public async Task<ActionResult> FixDatabase(){
+            using (var context = _context.CreateDbContext())
+            {
+                List<Players> players = context.Players.Where(p => p.IsClaimed).ToList();
+                List<Users> discordUsers = context.User.Where(u => u.user_claimed_playerId != "").ToList();
+                List<ApplicationUser> emailUsers = context.Users.Where(u => u.user_claimed_playerId != "").ToList();
+
+                string msg = "";
+
+                foreach (Players player in players){
+                    // Checks if the player is actually claimed.
+
+                    bool HasFoundClaimer = false;
+                    foreach (Users discord in discordUsers){
+                        if (discord.UserClaimedPlayer(player.Id.ToString())){
+                            HasFoundClaimer = true;
+                            msg += "Verified player : " + player.Id.ToString() + ";\n";
+                            break;
+                        }
+                    }
+                    if (!HasFoundClaimer){
+                        foreach (ApplicationUser email in emailUsers){
+                            if (email.UserClaimedPlayer(player.Id.ToString())){
+                                HasFoundClaimer = true;
+                                msg += "Verified player : " + player.Id.ToString() + ";\n";
+                                break;
+                            }
+                        }
+                        if(!HasFoundClaimer){
+                            player.IsClaimed = false;
+                            msg += "Unclaimed player : " + player.Id.ToString() + ";\n";
+                            
+                        }
+                    }
+
+                }
+                await context.SaveChangesAsync();
+                return Ok(msg);
+            }
+        }*/
+
         
 
     }

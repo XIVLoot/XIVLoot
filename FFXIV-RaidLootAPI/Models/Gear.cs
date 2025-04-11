@@ -6,18 +6,68 @@ namespace FFXIV_RaidLootAPI.Models
 {
     public class Gear
     {
-        private static readonly int ACCESSORY_TOME_COST = 375;
-        private static readonly int ARMOR_LOW_COST = 495; // Head, Hands, feet
-        private static readonly int ARMOR_HIGH_COST = 825; // Body, Legs
-        private static readonly int WEAPON_TOME_COST = 500; // Body, Legs
-        private static readonly string TOME_GEAR = "Credendum";
-        private static readonly string RAID_GEAR = "Ascension";
-        private static readonly string AUGMENT_TOME = "Augment";
-        private static readonly string CRAFTED_GEAR = "Crafted";
-        private static readonly string NORMAL_RAID = "Light-heavy";
-        private static readonly string EX_TRIAL = "Resilient";
-        private static readonly string EX_WEAPON = "Skyruin";
-        private static readonly string EARLY_TOME = "Neo Kingdom";
+        public static readonly List<Tuple<Tier, int>> LIST_TIER_AND_I_LEVEL = new List<Tuple<Tier, int>>()
+        {
+            new Tuple<Tier, int>(Tier.SEVEN_ZERO, 700),
+            new Tuple<Tier, int>(Tier.SEVEN_TWO, 740),
+            new Tuple<Tier, int>(Tier.SEVEN_TWO, 770),
+        };
+        public static readonly int ACCESSORY_TOME_COST = 375;
+        public static readonly int ARMOR_LOW_COST = 495; // Head, Hands, feet
+        public static readonly int ARMOR_HIGH_COST = 825; // Body, Legs
+        public static readonly int WEAPON_TOME_COST = 500; // Body, Legs
+        private static readonly Dictionary<Tier, string> TOME_GEAR = new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Quetzalli"},
+            {Tier.SEVEN_TWO, "Historia"}
+        };
+        private static readonly Dictionary<Tier, string> RAID_GEAR = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Dark Horse"},
+            {Tier.SEVEN_TWO, "Babyface"}
+        };
+        private static readonly Dictionary<Tier, string> AUGMENT_TOME = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Augment"},
+            {Tier.SEVEN_TWO, "Augment"}
+        };
+
+        private static readonly Dictionary<Tier, string> CRAFTED_GEAR = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Archeo"},
+            {Tier.SEVEN_TWO, "Ceremonial"}
+        };
+        private static readonly Dictionary<Tier, string> NORMAL_RAID = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Light-heavy"},
+            {Tier.SEVEN_TWO, "Cruiser"}
+        };
+        private static readonly Dictionary<Tier, string> EX_TRIAL = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Resilient"},
+            {Tier.SEVEN_TWO, "NO_NAME"}
+        };
+
+        private static readonly Dictionary<Tier, string> EARLY_TOME = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Neo Kingdom"},
+            {Tier.SEVEN_TWO, "NO_NAME"}
+        };
+
+        private static readonly Dictionary<Tier, string> EX_WEAPON = 
+        new Dictionary<Tier, string>()
+        {
+            {Tier.SEVEN_ZERO, "Skyruin"},
+            {Tier.SEVEN_TWO, "Queensknight"}
+        }; 
+
+
         private static readonly Dictionary<string,List<string>> GEAR_TYPE_NAME = new Dictionary<string,List<string>> 
         {
             {"Head",new List<string> {"Circlet", "Face", "Blinder", "Hat", "Turban", "Headband", "Beret","Hood", "Chapeau", "Bandana", ""}},
@@ -109,6 +159,7 @@ namespace FFXIV_RaidLootAPI.Models
         public Job GearWeaponCategory {get; set;} = Job.Empty;
         public string IconPath {get; set;} = string.Empty;
         public int EtroGearId {get;set;}
+        public Tier Tier {get;set;}
         //public int XivApiGearId {get;set;}
         
         // XIVGear and Etro both share Ids matching with XIVAPI. To facilitate we will simply use the field EtroGearId which represents the ID available on XIVAPI.
@@ -117,22 +168,33 @@ namespace FFXIV_RaidLootAPI.Models
 
         public static Gear CreateGearFromInfo(string ItemLevel, string name, bool IsWeapon, string JobName, string IconPath, int Externalid, GearType gearType)
         {   
+            // First figure out the tier of the gear.
+            int.TryParse(ItemLevel, out int iLevel);
+            Tuple<Tier, int> tierofGear = LIST_TIER_AND_I_LEVEL.FirstOrDefault(t => t.Item2 >= iLevel) ?? LIST_TIER_AND_I_LEVEL.First();
+            Tier gearTier = Tier.SEVEN_TWO;
+            if (tierofGear != null)
+            {
+                gearTier = tierofGear.Item1;
+            }
+
             GearStage stage = GearStage.Preparation; // If nothing it will be preperation, ie : crafted.
-            if (name.IndexOf(TOME_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
+            if (name.IndexOf(TOME_GEAR[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Tomes;
              // Not doing else if here so it will catch the upgrade if it is but won't if its only tome.
-            if (name.IndexOf(AUGMENT_TOME, StringComparison.OrdinalIgnoreCase) >= 0)
+            if (name.IndexOf(AUGMENT_TOME[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Upgraded_Tomes;
-            else if (name.IndexOf(RAID_GEAR, StringComparison.OrdinalIgnoreCase) >= 0)
+            else if (name.IndexOf(RAID_GEAR[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Raid;
-            else if (name.IndexOf(EX_TRIAL, StringComparison.OrdinalIgnoreCase) >= 0)
+            else if (name.IndexOf(EX_TRIAL[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Extreme;
-            else if (name.IndexOf(NORMAL_RAID, StringComparison.OrdinalIgnoreCase) >= 0)
+            else if (name.IndexOf(NORMAL_RAID[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Raid_Normal;
-            else if (name.IndexOf(EARLY_TOME, StringComparison.OrdinalIgnoreCase) >= 0)
+            else if (name.IndexOf(EARLY_TOME[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Tome_Early;
-            else if (name.IndexOf(EX_WEAPON, StringComparison.OrdinalIgnoreCase) >= 0)
+            else if (name.IndexOf(EX_WEAPON[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
                 stage = GearStage.Extreme;
+            else if (name.IndexOf(CRAFTED_GEAR[gearTier], StringComparison.OrdinalIgnoreCase) >= 0)
+                stage = GearStage.Preparation;
 
             GearType type = gearType;
             bool FoundMatch = true;
@@ -201,7 +263,8 @@ namespace FFXIV_RaidLootAPI.Models
                 GearCategory=category,
                 GearWeaponCategory=WeaponCategory,
                 IconPath=IconPath,
-                EtroGearId=Externalid
+                EtroGearId=Externalid,
+                Tier=gearTier
             };
 
         }   
@@ -292,7 +355,7 @@ namespace FFXIV_RaidLootAPI.Models
 
         }
 
-        public static GearOptionsDTO GetGearOptions(GearType GearType, Job Job, DataContext context)
+        public static GearOptionsDTO GetGearOptions(GearType GearType, Job Job, DataContext context, Tier Tier)
         {   /*Returns a GearOptionsDTO which is a list of GearOption. Each gear options
               has the gear name, the gear ilevel and the gear stage (raid/augmented/crafted/tome)
               Job -> Job to request the gear for 
@@ -310,7 +373,7 @@ namespace FFXIV_RaidLootAPI.Models
             };
             if (GearType == GearType.Weapon)
             {
-                List<Gear> GearIterFromDb = context.Gears.Where(g => g.GearWeaponCategory == Job && g.GearCategory == GearCategory.Weapon).OrderBy(g => g.GearLevel).ToList();
+                List<Gear> GearIterFromDb = context.Gears.Where(g => g.GearWeaponCategory == Job && g.GearCategory == GearCategory.Weapon && (g.Tier == Tier || g.Tier == Tier.None)).OrderBy(g => g.GearLevel).ToList();
                 foreach (Gear gear in GearIterFromDb)
                 {
                     if (gear.GearLevel >= MIN_LEVEL)
@@ -327,7 +390,7 @@ namespace FFXIV_RaidLootAPI.Models
             {
                 GearCategory GearToChooseFrom = Gear.JOB_TO_GEAR_CATEGORY_MAP[Job][(int) GearType >=7 ? 1 : 0];
                 // Left side is index 0 right side is index 1
-                List<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom && g.GearType == GearType).OrderBy(g => g.GearLevel).ToList();
+                List<Gear> GearIterFromDb = context.Gears.Where(g => g.GearCategory == GearToChooseFrom && g.GearType == GearType && (g.Tier == Tier || g.Tier == Tier.None)).OrderBy(g => g.GearLevel).ToList();
                 foreach (Gear gear in GearIterFromDb)
                 {   
                     if (gear.GearLevel >= MIN_LEVEL)
@@ -370,7 +433,8 @@ namespace FFXIV_RaidLootAPI.Models
         Extreme = 5,
         Raid_Normal = 6,
         Tome_Early = 7,
-        Artifact = 8
+        Artifact = 8,
+        Alliance_Raid = 9
     }
 
     public enum GearType

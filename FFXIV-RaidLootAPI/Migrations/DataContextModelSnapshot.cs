@@ -17,7 +17,7 @@ namespace FFXIV_RaidLootAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -133,6 +133,9 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Tier")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Gears");
@@ -247,6 +250,9 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.Property<int>("GearScore")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsAlt")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsClaimed")
                         .HasColumnType("bit");
 
@@ -322,7 +328,14 @@ namespace FFXIV_RaidLootAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Tier")
+                        .HasColumnType("int");
+
                     b.Property<string>("UUID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ownerIdString")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -487,6 +500,39 @@ namespace FFXIV_RaidLootAPI.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ffxiRaidLootAPI.Models.PlayerTomePlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("gearPlanOrder")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("numberOffsetTomes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("numberStartTomes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("numberWeeks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("playerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("weekDoneString")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlayerTomePlans");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

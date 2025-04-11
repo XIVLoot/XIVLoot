@@ -41,6 +41,7 @@ export class PlayerDetailsSingleComponent {
                     "Scholar", "Ninja", "Samurai", "Reaper", "Monk", "Dragoon", "Gunbreaker", "DarkKnight",
                     "Paladin", "Warrior", "Machinist", "Bard", "Dancer", "Pictomancer", "Viper"];
   @Input({required:true}) player! : Player;
+  @Input({required:true}) tier! : number;
   @ViewChild('etroField') etroInputRef: ElementRef;
 
   public GetGroupColorNoAlpha : string;
@@ -74,11 +75,52 @@ export class PlayerDetailsSingleComponent {
     this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "You have not claimed this player. Only its owner can modify it.",
+        message: "You have not claimed this player. Only its owner and static members can modify it.",
         subMessage: "The changes will be reverted",
         color : "red"
       }
     });
+  }
+
+  getTurnImage(turn : number){
+    switch(turn){
+      case 1:
+        switch (this.tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_1_d.png";
+        }
+      case 2:
+        switch (this.tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_2_d.png";
+        }
+      case 3:
+        switch (this.tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_3_d.png";
+        }
+      case 4:
+        switch (this.tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_4_d.png";
+        }
+    }
   }
 
   async onChangeGear(GearType : string, bis : boolean, event: Event){
@@ -246,7 +288,7 @@ export class PlayerDetailsSingleComponent {
         case "Feet":
         case "Hands":
         case "Head":
-          Turn = -1
+          Turn = 2
           break;
         case "Necklace":
         case "Earrings":
@@ -841,7 +883,7 @@ export class ImportGearDialog {
     this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
       duration: 3500,
       data: {
-        message: "You have not claimed this player. Only its owner can modify it.",
+        message: "You have not claimed this player. Only its owner and static members can modify it.",
         subMessage: "The changes will be reverted",
         color : "red"
       }
@@ -928,7 +970,10 @@ export class ImportGearDialog {
             <mat-dialog-content>
               {{data.content}}
             </mat-dialog-content>
-            <mat-dialog-actions>
+            <mat-dialog-content style="color:red;text-align:center;">
+              {{data.subContent}}
+            </mat-dialog-content>
+            <mat-dialog-actions style="justify-content: space-between;border-top: 2px solid rgba(0,0,0,0.5);width:95%;margin-left:2.5%;margin-top:5px;padding-top:2px;">
               <button mat-button (click)="dialogRef.close('No')">{{data.no_option}}</button>
               <button mat-button (click)="dialogRef.close('Yes')">{{data.yes_option}}</button>
             </mat-dialog-actions>`,
@@ -937,7 +982,7 @@ export class ImportGearDialog {
 })
 export class ConfirmDialog {
   constructor(public dialogRef: MatDialogRef<ConfirmDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: { title : string, content : string , yes_option : string, no_option : string },
+    @Inject(MAT_DIALOG_DATA) public data: { title : string, content : string , yes_option : string, no_option : string, subContent : string },
   ) {}
 
   

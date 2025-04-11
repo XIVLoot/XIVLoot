@@ -34,12 +34,15 @@ import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environments';
 import { Player } from '../models/player';
 import { gearAcquisitionToolTip, pgsSettingToolTipA, pgsSettingToolTipB, pgsSettingToolTipC, pgsToolTip, lockLogicToolTip, lockOutOfGearEvenIfNotContestedToolTip,
-  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,
+  lockPerFightToolTip, lockPlayerForAugmentToolTip, pieceUntilLockToolTip, numberWeekResetToolTip,addNewPlayerToolTip,swapAltPlayerToolTip,deletePlayerToolTip,
   claimPlayerToolTip,
   unclaimPlayerToolTip,
-  alreadyClaimedToolTip, UseBookForGearAcqToolTip
+  alreadyClaimedToolTip, UseBookForGearAcqToolTip, FreePlayerToolTip,
+  ClaimStaticToolTip,
+  UnclaimStaticToolTip
 } from '../tooltip';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ConfirmDialog } from '../player-details-single/player-details-single.component';
 
 interface PlayerPGS {
   name: string;
@@ -66,6 +69,12 @@ export class StaticDetailComponent implements OnInit {
   public unclaimPlayerToolTip = unclaimPlayerToolTip;
   public alreadyClaimedToolTip = alreadyClaimedToolTip;
   public useBookForGearAcqToolTip = UseBookForGearAcqToolTip;
+  public FreePlayerToolTip = FreePlayerToolTip;
+  public ClaimStaticToolTip = ClaimStaticToolTip;
+  public UnclaimStaticToolTip = UnclaimStaticToolTip;
+  public addNewPlayerToolTip = addNewPlayerToolTip;
+  public swapAltPlayerToolTip= swapAltPlayerToolTip;
+  public deletePlayerToolTip = deletePlayerToolTip;
 
   public staticDetail: Static; // Holds the details of a static
   public uuid: string; // UUID of the static
@@ -82,6 +91,13 @@ export class StaticDetailComponent implements OnInit {
   public HistoryGear : any = [];
   public IsLoading : boolean = true;
   public userOwns : any = {};
+  public staticLeaderName : string = "";
+  public PlayerListPerShower : any = [[],[],[],[],[],[],[],[]]; // Each sublist contains all players for a shower
+  public selectedPlayerSubList : number = 1;
+  public selectedPlayerSubListMax : number = 1;
+
+  public UserIsOwnerOfStatic : boolean = false;
+
   public itemBreakdownInfo : any = {
     "turn_1" : {},
     "turn_2" : {},
@@ -90,6 +106,83 @@ export class StaticDetailComponent implements OnInit {
   };
 
   public curViewingTool : string = "GearBrk";
+
+  IncrementselectedPlayerSubList(){
+    if (this.selectedPlayerSubList < this.selectedPlayerSubListMax-1){
+      this.selectedPlayerSubList++;
+    }
+  }
+
+  getTurnImage(turn : number){
+    switch(turn){
+      case 1:
+        switch (this.staticDetail.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_1_d.png";
+        }
+      case 2:
+        switch (this.staticDetail.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_2_d.png";
+        }
+      case 3:
+        switch (this.staticDetail.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_3_d.png";
+        }
+      case 4:
+        switch (this.staticDetail.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_4_d.png";
+        }
+    }
+  }
+
+  DecrementselectedPlayerSubList(){
+    if (this.selectedPlayerSubList > 0){
+      this.selectedPlayerSubList--;
+    }
+  }
+
+  GeneratePlayerListShower(){
+            //Generate player list shower
+    this.PlayerListPerShower = [[],[],[],[],[],[],[],[]];
+    var playerCounter = 0;
+    for (let player of this.staticDetail.players){
+      this.PlayerListPerShower[playerCounter%8].push([Math.floor(playerCounter/8), player]);
+      playerCounter++;
+    }
+    this.selectedPlayerSubListMax = Math.ceil(playerCounter/8);
+
+
+    // Now fill the rest of the sublist with empty players
+    for (let i = playerCounter; i < 8*this.selectedPlayerSubListMax; i++){
+      this.PlayerListPerShower[i%8].push([this.selectedPlayerSubListMax-1, "None"]);
+    }
+  }
+
+  AddNewPlayerToStatic(){
+    this.http.AddNewPlayerToStatic(this.uuid).subscribe(data => {
+      this.staticDetail.players.push(Player.CreatePlayerFromDict(data));
+      this.GeneratePlayerListShower();
+    });
+  }
 
   changeCurViewingTool(newtool : string){
     this.curViewingTool=newtool;
@@ -148,6 +241,22 @@ export class StaticDetailComponent implements OnInit {
 
    }
 
+   FreePlayer(player : Player){
+    var id = player.id;
+    this.http.FreePlayer(player.staticRef.uuid, player).subscribe(data => {
+      player.IsClaimed = false;
+      player.staticRef.userOwn[id] = false;
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data : {
+          message : "Successfully freed the player", 
+          subMessage : "",
+          color : "Green"
+        }
+      });
+    });
+   }
+
    async ClaimPlayer(player : Player){
     var id = player.id;
     var DiscordLoggedIn = await this.http.CheckAuthDiscord();
@@ -198,7 +307,12 @@ export class StaticDetailComponent implements OnInit {
         });
       });
     }
+   }
 
+   SwapAltPlayer(player : Player){
+    this.http.SwapAltPlayer(player).subscribe(res => {
+      //player.IsAlt = res === "true";
+    });
    }
 
    async CheckClaimPlayer(id : number){
@@ -236,7 +350,7 @@ export class StaticDetailComponent implements OnInit {
 
   async ngOnInit() {
     this.test = true;
-    this.staticDetail = new Static(0, "", "", [], {});
+    this.staticDetail = new Static(0, "", "",0, [], {});
 
     // Subscribe to route parameters to get the 'uuid'
     this.route.params.subscribe(params => {
@@ -266,54 +380,130 @@ export class StaticDetailComponent implements OnInit {
 
 
     this.dialog.open(LoadingDialogComponent, {
-      disableClose:true,
+      //disableClose:true,
       data : {uuid : this.uuid}
     });
 
     //console.log("Trying details");
     // Fetch static details from the server using the uuid
-    this.http.getStatic(this.uuid).subscribe(details => {
-      ////console.log("Received details");
-      this.staticDetail = details; // Assign the fetched details to staticDetail
-      this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
-      ////console.log(this.staticDetail); // Log the static details to the console
-      this.groupList = this.ComputeNumberPGSGroup();
-      this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
-        this.GearAcqHistory = data["info"];
-        const keys = Object.keys(this.GearAcqHistory);
+    try {
+      this.http.getStatic(this.uuid).subscribe(details => {
+        ////console.log("Received details");
+        this.staticDetail = details; // Assign the fetched details to staticDetail
+        this.OriginalLockParam = JSON.parse(JSON.stringify(this.staticDetail.LockParam)); // Deepcopy
+        ////console.log(this.staticDetail); // Log the static details to the console
+        this.groupList = this.ComputeNumberPGSGroup();
 
-        for (let x = keys.length-1;x>=0;x--){
-          this.HistoryGear.push(keys[x]);
+        this.GeneratePlayerListShower();
+        this.selectedPlayerSubList = 0;
+
+        this.http.GetGearAcqHistory(this.uuid, this.ShowNumberLastWeekHistory).subscribe(async data => {
+          this.GearAcqHistory = data["info"];
+          const keys = Object.keys(this.GearAcqHistory);
+
+          for (let x = keys.length-1;x>=0;x--){
+            this.HistoryGear.push(keys[x]);
+          }
+          this.staticDetail.userOwn = {};
+          for(let player of this.staticDetail.players){
+            this.CheckClaimPlayer(player.id).then((result: boolean) => {
+              this.staticDetail.userOwn[player.id] = result;
+          });;
+          }
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const pId = urlParams.get('pId');
+          if (pId) {
+              this.SelectedPlayer = parseInt(pId);
+          }
+
+          this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
+            this.itemBreakdownInfo = rData.itemBreakdown;
+            this.http.UserOwnStatic(this.uuid).subscribe(pData => {
+              this.UserIsOwnerOfStatic = (pData.toLowerCase() === 'true');
+              console.log("This static is owned : " + this.UserIsOwnerOfStatic);
+              this.http.GetOwnerName(this.uuid).subscribe(datar => {
+                this.staticLeaderName = datar
+                this.IsLoading = false;
+                this.dialog.closeAll();
+                this.cdr.detectChanges();
+              });
+
+            });
+          });
+
+
+
+      });
+      });
+    } catch (error){
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 3500,
+        data: {
+          message: "An error occured while loading the static.",
+          subMessage: "if you see any issues please reach out.",
+          color: "red"
         }
-        this.staticDetail.userOwn = {};
-        for(let player of this.staticDetail.players){
-          this.CheckClaimPlayer(player.id).then((result: boolean) => {
-            this.staticDetail.userOwn[player.id] = result;
-        });;
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const pId = urlParams.get('pId');
-        if (pId) {
-            this.SelectedPlayer = parseInt(pId);
-        }
-
-        this.http.GetItemBreakdownInfo(this.uuid).subscribe(rData => {
-          this.itemBreakdownInfo = rData.itemBreakdown;
-          this.IsLoading = false;
-          this.dialog.closeAll();
-          this.cdr.detectChanges();
-        });
-
-
-
-    });
-    });
+      });
+      this.IsLoading = false;
+      this.dialog.closeAll();
+      this.cdr.detectChanges();
+    }
     this.onResize(null); // Call onResize to set initial gridColumns based on window size
   }
 
-  c(){
-    
+  UnclaimThisStatic(){
+    this.http.UnclaimStaticOwnerShip(this.uuid).subscribe(data => {
+      if (data === "true"){
+        this.staticLeaderName = "REFRESH TO SEE";
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly Unclaimed static.",
+            subMessage: "",
+            color : "green"
+          }
+        });
+        this.UserIsOwnerOfStatic = false;
+        this.staticLeaderName = "";
+      } else {
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 8000,
+          data: {
+            message: "Failed to unclaim static.",
+            subMessage: "Reach out.",
+            color : "red"
+          }
+        });
+      }
+    });
+  }
+
+  ClaimThisStatic(){
+    this.http.ClaimStaticOwnerShip(this.uuid).subscribe(data =>{
+      if (data === "true"){
+        
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 3500,
+          data: {
+            message: "Successfuly Claimed static.",
+            subMessage: "",
+            color : "green"
+          }
+        });
+        this.staticLeaderName = "REFRESH TO SEE";
+        this.UserIsOwnerOfStatic = true;
+      } else {
+        this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+          duration: 8000,
+          data: {
+            message: "Failed to claim static.",
+            subMessage: "Make sure you have claimed a player from this static and are logged in.",
+            color : "red"
+          }
+        });
+      }
+    });
   }
 
   ChangeHistoryLoaded(){
@@ -423,9 +613,44 @@ export class StaticDetailComponent implements OnInit {
     event.target.style.outline = "";
   }
 
-  selectPlayer(player : Player){
-    //console.log("Selected : " + player.name);
-    this.SelectedPlayer = player.id;
+  selectPlayer(player : any){
+    if (player !== "None"){
+      this.SelectedPlayer = player.id;
+    }
+  }
+
+  DeletePlayer(player : any){
+
+    if(!player.IsAlt){
+      // Can only delete alts
+      return;
+    }
+
+
+
+    this.dialog.open(ConfirmDialog, {
+      width: '500px',
+      height: '200px',
+      data: {title : "Delete Player", content : "Are you sure you want to permenantly delete this player ("+player.name +")?", yes_option : "Yes", no_option : "No", subContent : "THIS ACTION IS IRREVERSIBLE.",}
+    }).afterClosed().subscribe(result => {
+      if (result === "Yes"){
+        this.http.DeletePlayer(player.id).subscribe(res => {
+          for (let puck of this.PlayerListPerShower){
+            for (let i = 0;i<puck[this.selectedPlayerSubList].length;i++){
+              if (puck[this.selectedPlayerSubList][i].id === player.id){
+                //Found player
+                if (player.id === this.SelectedPlayer){
+                  this.SelectedPlayer = 0;
+                }
+                puck[this.selectedPlayerSubList].splice(i, 1);
+                puck[this.selectedPlayerSubList].push("None");
+                
+              }
+            }
+          }
+        });
+      }
+    });
   }
 
   getJobIcon(job : string){
@@ -458,6 +683,8 @@ export class StaticDetailComponent implements OnInit {
       case "Warrior":
       case "Gunbreaker":
         return "rgba(0, 0, 255, 0.25)";
+      default:
+        return "rgba(0, 0, 0, 0)";
     }
   }
 
@@ -488,7 +715,9 @@ export class StaticDetailComponent implements OnInit {
     let PGSList = [];
     let groupList = [];
     for (let i = 0;i<this.staticDetail.players.length;i++){
-      PGSList.push(this.staticDetail.players[i]);
+      if (!this.staticDetail.players[i].IsAlt){
+        PGSList.push(this.staticDetail.players[i]);
+      }
     }
     let highestPGS = Math.max(...PGSList.map(player => player.playerGearScore));
     let lowestPGS = Math.min(...PGSList.map(player => player.playerGearScore));
@@ -541,10 +770,13 @@ export class StaticDetailComponent implements OnInit {
         return group.nGroup;
       }
     }
+    return -1;
   }
 
   GetGroupColor(nGroup : number){
     switch(nGroup){
+      case -1:
+        return 'rgba(0, 0, 0, 0.3)';
       case 0:
         return 'rgba(255, 247, 0, 0.3)';
       case 1:
@@ -711,6 +943,7 @@ export class SettingPGS {
     <div style="text-align: center; padding: 20px;">
       <h1 style="color:white;">Loading Static : {{data.uuid}}</h1>
       <img src="assets/loading_gif.gif" style="width:100px;height:100px;">
+      <p>(Click out to close if it is stuck on loading)</p>
     </div>
   `,
 })

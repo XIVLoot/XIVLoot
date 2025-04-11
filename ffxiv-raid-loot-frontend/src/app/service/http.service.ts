@@ -6,6 +6,7 @@ import { DataService } from './data.service';
 import { environment } from '../../environments/environments';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PizzaPartyAnnotatedComponent } from '../static-detail/static-detail.component';
+import { Player } from '../models/player';
 @Injectable({
   providedIn: 'root'
 })
@@ -23,7 +24,7 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
         map(response => {
           //console.log("Get Static Answer");
           //console.log(response);
-          let currentStatic = new Static(response['id'], response['name'], response['uuid'], response['playersInfoList'], response['lockParam']);
+          let currentStatic = new Static(response['id'], response['name'], response['uuid'],  response['tier'], response['playersInfoList'], response['lockParam']);
           return currentStatic;
         }),
         catchError(error => throwError(error))
@@ -169,10 +170,10 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     );
   }
 
-  AddStatic(name : string) : Observable<any>{
-    const url = `${this.api}Static/CreateNewStatic/${name}`;
+  AddStatic(name : string, Tier : number) : Observable<any>{
+    const url = `${this.api}Static/CreateNewStatic/${name}/${Tier}`;
 
-    return this.http.put(url, {}, { responseType: 'text' }).pipe(
+    return this.http.put(url, {}, { withCredentials : true,responseType: 'text'}).pipe(
       catchError(error => throwError(() => new Error('Failed to add static: ' + error.message)))
     );
   }
@@ -393,6 +394,50 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     }));
   }
 
+  UserOwnStatic(uuid : string){
+    var url = `${this.api}Static/UserisOwner/${uuid}`;
+    return this.http.get(url, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to chck ownership: ' + error.message));
+    }));
+  }
+
+  GetOwnerName(uuid : string){
+    var url = `${this.api}Static/GetOwnerName/${uuid}`;
+    return this.http.get(url, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to get owner name : ' + error.message));
+    }));
+  }
+
+  UnclaimStaticOwnerShip(uuid : string){
+    var url = `${this.api}Static/UnclaimStaticOwnerShip/${uuid}`;
+    return this.http.put(url,{}, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to unclaim static.",
+          subMessage: "Reach out.2",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed unclaim ownership : ' + error.message));
+    }));
+  }
+
+  ClaimStaticOwnerShip(uuid : string){
+    var url = `${this.api}Static/ClaimStaticOwnerShip/${uuid}`;
+    return this.http.put(url,{}, { withCredentials: true , responseType: 'text'}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to claim static.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed claim ownership : ' + error.message));
+    }));
+  }
+
   LogoutDiscord(){
     var url = `${this.api}Auth/LogoutDiscord`;
     return this.http.get(url, { withCredentials: true });
@@ -430,6 +475,13 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
     var url = `${this.api}Auth/GetDiscordUserInfo`;
     return this.http.get(url, { withCredentials: true }).pipe(catchError(error => {
       return throwError(() => new Error('Failed to get discord user info: ' + error.message));
+    }));
+  }
+
+  FreePlayer(uuid : string, player : Player){
+    var url = `${this.api}Player/FreePlayer/${uuid}/${player.id}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      return throwError(() => new Error('Failed to free the player ' + error.message));
     }));
   }
 
@@ -491,6 +543,180 @@ constructor(public http: HttpClient, public data: DataService, private _snackBar
   }
 
   
+  GetTomePlan(playerId : number){
+    var url = `${this.api}PlayerTomePlan/GetPlayerTomePlan/${playerId}`;
+    return this.http.get(url, {withCredentials:true});
+  }
+
+  AddToTomePlan(playerId : number, week : number, gear : string){
+    var url = `${this.api}PlayerTomePlan/AddToTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, gearToAdd : gear}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to add to tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to add to tome plan : ' + error.message));
+    }));
+  }
+
+  RemoveFromTomePlan(playerId : number, week : number, gear : string){
+    var url = `${this.api}PlayerTomePlan/RemoveFromTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, gearToRemove : gear}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to remove the week from the tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to add to tome plan : ' + error.message));
+    }));
+  }
+
+  SetStartTomes(playerId : number, numberStartTomes : number){
+    var url = `${this.api}PlayerTomePlan/SetStartTomes`;
+    return this.http.put(url, {playerId : playerId, numberStartTomes : numberStartTomes}, {withCredentials:true}).pipe(catchError(error => {      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+      duration: 8000,
+      data: {
+        message: "Failed to set start tomes.",
+        subMessage: "Make sure you have claimed a player from this static and are logged in.",
+        color : "red"
+          }
+        });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  SetOffsetTomes(playerId : number, numberOffsetTomes : number){
+    var url = `${this.api}PlayerTomePlan/SetOffsetTomes`;
+    return this.http.put(url, {playerId : playerId, numberOffsetTomes : numberOffsetTomes}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to set offset tomes.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  AddWeekToTomePlan(playerId : number, week : number){
+    var url = `${this.api}PlayerTomePlan/AddWeekToTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to add week to the tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  RemoveWeekFromTomePlan(playerId : number, week : number){
+    var url = `${this.api}PlayerTomePlan/RemoveWeekFromTomePlan`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to remove week from tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set start tomes : ' + error.message));
+    }));
+  }
+
+  CreateTomePlan(playerId : number){
+    var url = `${this.api}PlayerTomePlan/CreateTomePlan/${playerId}/;;;/0;0;0;`;
+    return this.http.put(url, {playerId : playerId}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to create tome plan.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to create tome plan : ' + error.message));
+    }));
+  }
+
+  SetWeekDone(playerId : number, week : number, done : boolean){
+    var url = `${this.api}PlayerTomePlan/SetWeekDone`;
+    return this.http.put(url, {playerId : playerId, weekToEdit : week, done : done}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to set week done.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to set week done : ' + error.message));
+    }));
+  }
+
+
+  AddNewPlayerToStatic(uuid : string){
+    var url = `${this.api}Static/AddNewPlayerToStatic/${uuid}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to add new player to static.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to add new player to static : ' + error.message));
+    }));
+  }
+
+  DeletePlayer(id : number ){
+    var url = `${this.api}Player/DeletePlayer/${id}`;
+    return this.http.delete(url, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to delete the player.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      return throwError(() => new Error('Failed to delete to static : ' + error.message));
+    }));
+  }
+
+  SwapAltPlayer(player : Player){
+    var url = `${this.api}Player/SetAltPlayer/${player.id}`;
+    return this.http.put(url, {}, {withCredentials:true}).pipe(catchError(error => {
+      this._snackBar.openFromComponent(PizzaPartyAnnotatedComponent, {
+        duration: 8000,
+        data: {
+          message: "Failed to swap this player's alt status.",
+          subMessage: "Make sure you have claimed a player from this static and are logged in.",
+          color : "red"
+        }
+      });
+      player.IsAlt = !player.IsAlt;
+      return throwError(() => new Error('Failed to swap alt player : ' + error.message));
+    }));
+  }
+
+
+
+
   
 
 }

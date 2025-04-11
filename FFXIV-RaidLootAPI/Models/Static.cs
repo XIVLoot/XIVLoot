@@ -4,18 +4,48 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FFXIV_RaidLootAPI.Models
 {
+
+public enum Tier
+{
+    None = -1,
+    SEVEN_ZERO = 0,
+    SEVEN_TWO,
+    SEVEN_4,
+    EIGhT_ZERO,
+    EIGHT_TWO,
+    HEIGHT_FOUR
+}
+
     public class Static
     {
+        /// <summary>
+        /// Id of the static. Unique identifier used to identify the static.
+        /// </summary>
         public int Id { get; set; }
         
+        /// <summary>
+        /// UUID of the static. What is in URL of static.
+        /// </summary>
         public string UUID { get; set; } = "";
 
+        /// <summary>
+        /// Name of the static.
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Tier of the static.
+        /// </summary>
+        public Tier Tier {get;set;} = Tier.SEVEN_ZERO;
+
+
+
+
 
         public decimal GearScoreA {get;set;} = 0.0m;
         public decimal GearScoreB {get;set;} = 0.0m;
         public decimal GearScoreC {get;set;} = 0.0m;
-
+        public string ownerIdString {get;set;} = string.Empty;
         public string LOCK_PARAM {get;set;} = "FALSE;FALSE;1;TRUE;1;FALSE;FALSE;1;1;1"; // Default values.
         /*
         - BOOL_LOCK_PLAYERS; (FALSE)
@@ -34,7 +64,7 @@ namespace FFXIV_RaidLootAPI.Models
         }
         public List<decimal> GetGearScoreParameter(){return new List<decimal>{GearScoreA, GearScoreB, GearScoreC};}
         public List<decimal> ComputeNumberRaidBuffsAndGroupAvgLevel(DataContext context){
-            var playerList = context.Players.Where(p => p.staticId == Id).ToList();
+            var playerList = context.Players.Where(p => p.staticId == Id && p.IsAlt == false).ToList(); // Only takes non alt
             decimal IlevelSum = 0.0m;
             decimal NumberRaidBuffs = 0.0m;
             foreach (Players player in playerList){

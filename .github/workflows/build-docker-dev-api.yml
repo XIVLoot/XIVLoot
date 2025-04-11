@@ -1,0 +1,31 @@
+name: Docker image
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Variable substitution
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: '**/appsettings.json'
+      env:
+        ConnectionStrings.DockerConnection: ${{ secrets.DB_CONNECTION_STRING }}
+        JwtSettings.Key: ${{ secrets.JWT_KEY }}
+    - name: Build the API Docker image
+      run: |
+        docker build -f FFXIV-RaidLootAPI/Dockerfile -t rickchinois/ffxivraidlootapi:latest .
+        
+    - name: Push API image to docker hub
+      run: |
+        docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_TOKEN}}
+        docker push ${{secrets.DOCKER_HUB_REPOSITORY}}

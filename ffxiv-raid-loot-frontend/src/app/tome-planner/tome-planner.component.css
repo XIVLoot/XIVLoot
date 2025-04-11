@@ -1,0 +1,91 @@
+mat-icon{
+    cursor: pointer;
+}
+.infoShower{
+    display: flex; 
+    flex-direction: row;
+    border: 2px solid black;
+    align-items: center;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px;
+}
+.planShower{
+    width: 95%;
+    margin-left: 2.5%;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin: 1%;
+    border: 2px solid black;
+    padding: 10px;
+    border-radius: 5px;
+}
+.neededGearShowerItem{
+    margin: 2px;
+    padding: 3px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+    text-align: center;
+}
+.white-bg {
+    background-color: white;
+  }
+  
+  .dark-bg {
+    background-color: #f0f0f0; /* Adjust the color as needed */
+  }
+.centered-text {
+    text-align: center;
+}
+.neededGearShower{
+    width: 59%;
+
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-left: 20.5%;
+    margin-top: 1%;
+    border: 2px solid black;
+    padding: 10px;
+    border-radius: 5px;
+}
+.weekShower{
+    width: 98%;
+    margin-left: 1%;
+    margin-bottom: 0.5%;
+    margin-top:0.5%;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+.itemShower{
+    width: 35%;
+    margin-left: 2.5%;
+    display: flex;
+    flex-direction: row;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 3px;
+    margin:5px;
+    padding: 5px;
+    overflow-x: auto;
+}
+.weekInfoShower{
+    width: 35%;
+    border: 2px solid black;
+    align-items: center;
+    padding: 5px;
+    margin-right: 1%;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.noTomePlan{
+    margin: 10px;
+    width: 100%;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}

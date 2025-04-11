@@ -28,9 +28,9 @@ export class StaticComponent {
   private url = environment.site_url;
 
   // Asynchronous method to add a new static entity
-  async AddStatic(name: string) {
+  async AddStatic(name: string, Tier : number) {
     // Making a POST request to the API to add a new static
-    this.http.AddStatic(name)
+    this.http.AddStatic(name, Tier)
       .pipe(map(response => {
         // Mapping the response to a Static model
         //let newStatic = new Static(response['id'], response['name'], response['uuid'], response['players']);

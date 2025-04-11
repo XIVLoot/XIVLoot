@@ -196,7 +196,7 @@ export class NavbarComponent {
   }
 
   openAcountInfo(){
-    this._dialog.open(ProfileDialog, {height:'530px',width:'500px', data:{username : this.username, isDiscord : this.isLoggedInDiscord}}).afterClosed().subscribe(res => {
+    this._dialog.open(ProfileDialog, {height:'530px',width:'500px', data:{username : this.username, isDiscord : this.isLoggedInDiscord, discordId : this.discordInfo["id"]}}).afterClosed().subscribe(res => {
     });
   }
 

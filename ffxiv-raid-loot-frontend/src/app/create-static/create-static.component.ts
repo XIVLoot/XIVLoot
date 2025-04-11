@@ -13,9 +13,10 @@ export class CreateStaticComponent {
   // Asynchronous method to add a new static entity
   constructor(public http: HttpService, public data: DataService, public router: Router){}
   public staticName : string = "";
-  async AddStatic(name: string) {
+  public Tier : number = 1;
+  async AddStatic(name: string, Tier : number) {
     // Making a POST request to the API to add a new static
-    this.http.AddStatic(name)
+    this.http.AddStatic(name, Tier)
       .pipe(map(response => {
         // Mapping the response to a Static model
         //let newStatic = new Static(response['id'], response['name'], response['uuid'], response['players']);

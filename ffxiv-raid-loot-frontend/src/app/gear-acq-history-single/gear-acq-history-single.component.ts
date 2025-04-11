@@ -70,6 +70,47 @@ export class GearAcqHistorySingleComponent {
     }
   }
 
+  getTurnImage(turn : number){
+    switch(turn){
+      case 1:
+        switch (this.staticRef.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_1_d.png";
+        }
+      case 2:
+        switch (this.staticRef.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_2_d.png";
+        }
+      case 3:
+        switch (this.staticRef.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_3_d.png";
+        }
+      case 4:
+        switch (this.staticRef.Tier){
+          case 2:
+            return "assets/raid/no_image.png";
+          case 1:
+            return "assets/raid/no_image.png";
+          case 0:
+            return "assets/raid/turn_4_d.png";
+        }
+  }
+}
+
   GetIcon(v){
     if (v.isAugment){
       switch(v.gearType){
@@ -103,6 +144,7 @@ export class GearAcqHistorySingleComponent {
           data: {
             title: "Confirm choice",
             content: "Are you sure you want to delete this gear acquisition event? ("+gearAcq.gearType+", "+(gearAcq.isAugment ? "Augment, " : "")+playerName+", turn "+turn+")",
+            subContent : "THIS ACTION IS IRREVERSIBLE.",
             yes_option: "Yes",
             no_option: "No"
           }

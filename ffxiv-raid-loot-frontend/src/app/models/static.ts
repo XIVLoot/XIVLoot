@@ -20,12 +20,14 @@ export class Static {
     public id: number,
     public name: string,
     public uuid: string,
+    public Tier : number,
     playersInfoList,
     lockParam
   ){
     this.uuid = uuid;
     this.name = name;
     this.id = id;
+    this.Tier = Tier
     this.test = false;
     this.userOwn = {};
     for (let key in lockParam){

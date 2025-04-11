@@ -1,0 +1,22 @@
+name: Build and push website to docker hub
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the website image to docker hub
+      run: docker build -f ffxiv-raid-loot-frontend/Dockerfile -t rickchinois/xivloot-app:dev .
+    - name: Push website image to docker hub
+      run: |
+        docker login -u rickchinois -p ${{secrets.DOCKER_HUB_TOKEN}}
+        docker push rickchinois/xivloot-app:dev

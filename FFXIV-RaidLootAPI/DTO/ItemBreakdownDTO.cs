@@ -54,9 +54,9 @@ public class ItemBreakdownDTO
         {
             {Enum.GetName(typeof(GearType), GearType.Legs)!, new List<PlayerInfoItemBreakdown>()},
             {Enum.GetName(typeof(GearType), GearType.Body)!, new List<PlayerInfoItemBreakdown>()},
-            {Enum.GetName(typeof(GearType), GearType.Feet)!, new List<PlayerInfoItemBreakdown>()},
-            {Enum.GetName(typeof(GearType), GearType.Head)!, new List<PlayerInfoItemBreakdown>()},
-            {Enum.GetName(typeof(GearType), GearType.Hands)!, new List<PlayerInfoItemBreakdown>()},
+            //{Enum.GetName(typeof(GearType), GearType.Feet)!, new List<PlayerInfoItemBreakdown>()},
+            //{Enum.GetName(typeof(GearType), GearType.Head)!, new List<PlayerInfoItemBreakdown>()},
+            //{Enum.GetName(typeof(GearType), GearType.Hands)!, new List<PlayerInfoItemBreakdown>()},
             {"Twine", new List<PlayerInfoItemBreakdown>()},
         }},
         {Enum.GetName(typeof(Turn), Turn.turn_4)!, new Dictionary<string, List<PlayerInfoItemBreakdown>>()

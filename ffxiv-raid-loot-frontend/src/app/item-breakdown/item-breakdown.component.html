@@ -3,26 +3,26 @@
 <div style="width: 15%;display: flex;flex-direction: column;margin-right: 10px;">
 
     <div>
-        <h2 style="text-align: center;margin-bottom: 0px;">Arcadion tier 1</h2>
+        <h2 style="text-align: center;margin-bottom: 0px;">{{ getTierName() }}</h2>
     </div>
 
     <div style="width: 90%;margin-left: 5%;border-bottom: 2px solid black;"></div>
 
     <div style="width: 98%;margin-left: 1%;margin-top: 20px;">
-        <img src="assets/raid/turn_1_d.png" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;" (click)="updateSelectedTurn('turn_1')"
+        <img [src]="getTurnImage(1)" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;" (click)="updateSelectedTurn('turn_1')"
         [style.outline]="curSelectedTurn == 'turn_1' ? '2px solid white' : 'none'"
         >
     </div>
     <div style="width: 98%;margin-left: 1%;margin-top: 20px;">
-        <img src="assets/raid/turn_2_d.png" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;"  (click)="updateSelectedTurn('turn_2')"
+        <img [src]="getTurnImage(2)" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;"  (click)="updateSelectedTurn('turn_2')"
         [style.outline]="curSelectedTurn == 'turn_2' ? '2px solid white' : 'none'">
     </div>
     <div style="width: 98%;margin-left: 1%;margin-top: 20px;">
-        <img src="assets/raid/turn_3_d.png" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;"  (click)="updateSelectedTurn('turn_3')"
+        <img [src]="getTurnImage(3)" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;"  (click)="updateSelectedTurn('turn_3')"
         [style.outline]="curSelectedTurn == 'turn_3' ? '2px solid white' : 'none'">
     </div>
     <div style="width: 98%;margin-left: 1%;margin-top: 20px;">
-        <img src="assets/raid/turn_4_d.png" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;"  (click)="updateSelectedTurn('turn_4')"
+        <img [src]="getTurnImage(4)" style="width: 100%;border-radius: 5px;border:2px solid rgba(0, 0, 0, 0.5);cursor: pointer;"  (click)="updateSelectedTurn('turn_4')"
         [style.outline]="curSelectedTurn == 'turn_4' ? '2px solid white' : 'none'">
     </div>
 
@@ -32,7 +32,7 @@
 
 <div style="height: 50px;width: 100%;">
 
-    <h2 style="text-align: center;margin-bottom: 0px;">{{curSelectTurnName}}<mat-icon matTooltip="{{GearBreakdownToolTip}}" style="cursor: pointer;color:white;">help_outline</mat-icon></h2>
+    <h2 style="text-align: center;margin-bottom: 0px;">{{getTurnName()}}<mat-icon matTooltip="{{GearBreakdownToolTip}}" style="cursor: pointer;color:white;">help_outline</mat-icon></h2>
     <div style="width: 30%;margin-left: 35%;border-bottom: 2px solid black;"></div>
 
 </div>

@@ -334,28 +334,28 @@
   <div style="width: 100%;height: 90%; display: flex;flex-direction: column;padding-left: 0.5%;">
 
     <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;" (click)="RemoveLockOnTurn(1)" (mouseenter)="onMouseEnter(1, $event)" (mouseleave)="onMouseLeave($event)">
-      <img src="assets/raid/turn_1_d.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/>
+      <img [src]="getTurnImage(1)" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(1) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(1) ? 'Locked from turn 1.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(1)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[0] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>
     </div>
 
     <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;" (click)="RemoveLockOnTurn(2)" (mouseenter)="onMouseEnter(2, $event)" (mouseleave)="onMouseLeave($event)">
-      <img src="assets/raid/turn_2_d.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/>
+      <img [src]="getTurnImage(2)" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(2) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(2) ? 'Locked from turn 2.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(2)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[1] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>
     </div>
 
     <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;" (click)="RemoveLockOnTurn(3)" (mouseenter)="onMouseEnter(3, $event)" (mouseleave)="onMouseLeave($event)">
-      <img src="assets/raid/turn_3_d.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/>
+      <img [src]="getTurnImage(3)" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(3) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(3) ? 'Locked from turn 3.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(3)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[2] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>
     </div>
 
     <div style="height: 23%;width: 95%;margin-bottom:1%;display: flex;flex-direction: column; position: relative;border-radius: 10px;margin-top: 1%;margin-left: 2.5%;" (click)="RemoveLockOnTurn(4)" (mouseenter)="onMouseEnter(4, $event)" (mouseleave)="onMouseLeave($event)">
-      <img src="assets/raid/turn_4_d.png" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(4) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(4) ? 'Locked from turn 1.' : 'Not locked.'"/>
+      <img [src]="getTurnImage(4)" style="width: 100%; height: 100%; border-radius: 10px;" [style.opacity]="player.IsLockedOutOfTurn(4) ? '0.5' : '1'" [title]="player.IsLockedOutOfTurn(4) ? 'Locked from turn 1.' : 'Not locked.'"/>
       <div *ngIf="player.IsLockedOutOfTurn(4)" style="position: absolute; bottom: 0; width: 100%; height: 40%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; display: flex; align-items: center; justify-content: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <p>Locked until : {{ player.LockedList[3] | date:'MMMM dd HH:mm' }} AM EST</p>
       </div>

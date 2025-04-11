@@ -37,7 +37,7 @@ export class PlayerDetailComponent {
           this.player.curWeaponGear = NewGear;
         break;
       case "Head":
-        Turn = -1;
+        Turn = 2;
         NewGear = this.player.HeadChoice[selectedIndex];
         GearTypeNumber = 2;
         if(bis)
@@ -46,7 +46,7 @@ export class PlayerDetailComponent {
           this.player.curHeadGear = NewGear;
         break;
       case "Hands":
-        Turn = -1;
+        Turn = 2;
         NewGear = this.player.HandsChoice[selectedIndex];
         GearTypeNumber = 4;
         if(bis)
@@ -73,7 +73,7 @@ export class PlayerDetailComponent {
           this.player.curLegsGear = NewGear;
         break;
       case "Feet":
-        Turn = -1;
+        Turn = 2;
         NewGear = this.player.FeetChoice[selectedIndex];
         GearTypeNumber = 6;
         if(bis)

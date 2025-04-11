@@ -1,9 +1,10 @@
 
 
 using System.ComponentModel.DataAnnotations;
+using FFXIV_RaidLootAPI.Models;
 
 namespace FFXIV_RaidLootAPI.User{
-    public class Users
+    public class Users : IUserInterface
     { 
         public string user_discord_id {get;set;} = "1";
         public string user_saved_static {get;set;} = string.Empty;
@@ -19,9 +20,11 @@ namespace FFXIV_RaidLootAPI.User{
         }
 
         public void removePlayerClaim(string playerId){
+            Console.WriteLine("Removing : " + playerId);
             List<string> uuidList = user_claimed_playerId.Split(';').ToList();
             uuidList.Remove(playerId);
             user_claimed_playerId = String.Join(";", uuidList);
+            Console.WriteLine("After changed : " + user_claimed_playerId);
         }
 
         public List<string> getAllClaimedPlayerId(){

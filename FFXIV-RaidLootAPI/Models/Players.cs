@@ -46,6 +46,7 @@ namespace FFXIV_RaidLootAPI.Models
         public Job Job {get; set; }
 
         public bool Locked { get; set; }
+        public bool IsAlt {get;set;} = false;
         public DateTime Turn1LockedUntilDate {get;set;}
         public DateTime Turn2LockedUntilDate {get;set;}
         public DateTime Turn3LockedUntilDate {get;set;}
@@ -160,15 +161,35 @@ namespace FFXIV_RaidLootAPI.Models
         }
 
         public decimal ComputePlayerGearScore(decimal a, decimal b, decimal c, decimal GroupAvgLevel, decimal NRaidBuff, DataContext context){
+            if (IsAlt){
+                return 999999999m;
+            }
             int PlayerILevel = get_avg_item_level(context:context);
 
             if (GroupAvgLevel == 0){
+                Console.WriteLine("GroupAvgLevel is 0");
                 return 0;
             }
+            
 
-            decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-660) +  
+            Static playerStatic = context.Statics.Find(this.staticId);
+            int staticExpectedMinLevel = 660;
+            if (playerStatic != null)
+            {
+                if (playerStatic.Tier == Tier.SEVEN_TWO)
+                {
+                    staticExpectedMinLevel = 710;
+                }
+                else if (playerStatic.Tier == Tier.SEVEN_4)
+                {
+                    staticExpectedMinLevel = 740;
+                }
+            }
+
+            decimal score = a * 10 * JobScoreMultiplier[Job] * (PlayerILevel/GroupAvgLevel) + b * 100 * (GroupAvgLevel-PlayerILevel)/(GroupAvgLevel-staticExpectedMinLevel) +  
                             c * NRaidBuff * JobGroupMultiplier[Job];
             //Console.WriteLine($"PlayerILevel: {PlayerILevel} PlayerId : {Id}");
+            //Console.WriteLine(score.ToString());
             return score;
         }
 
@@ -562,7 +583,7 @@ namespace FFXIV_RaidLootAPI.Models
             Dictionary<string, GearOptionsDTO> GearOptionPerGearType = new Dictionary<string, GearOptionsDTO>();
 
             foreach (GearType GearType in Enum.GetValues(typeof(GearType))){
-                GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context);
+                GearOptionPerGearType[GearType.ToString()] = Gear.GetGearOptions(GearType, Job, context, Static.Tier);
             }
             List<decimal> GearInfo = Static.ComputeNumberRaidBuffsAndGroupAvgLevel(context);
             decimal NumberRaidBuffs = GearInfo[0];
@@ -595,7 +616,8 @@ namespace FFXIV_RaidLootAPI.Models
                 PlayerGearScore=PlayerGearScore,
                 Cost=Cost,
                 LockedList = new List<DateTime>(){Turn1LockedUntilDate, Turn2LockedUntilDate, Turn3LockedUntilDate, Turn4LockedUntilDate},
-                IsClaimed=IsClaimed
+                IsClaimed=IsClaimed,
+                IsAlt=IsAlt
             };
         }
 

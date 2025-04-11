@@ -1,5 +1,5 @@
 # XIVLoot
-![example workflow](https://github.com/RickyChittaphone/FFXIV-RaidLootAPI/actions/workflows/dotnet.yml/badge.svg)<br>
+![.net build workflow](https://github.com/RickyChittaphone/FFXIV-RaidLootAPI/actions/workflows/dotnet.yml/badge.svg) &nbsp; ![Docker Image Workflow](https://github.com/XIVLoot/XIVLoot/actions/workflows/build-docker-dev-api.yml/badge.svg)<br>
 This is a FFXIV raid loot management project. This includes a front-end and a back-end. Front-end is in Angular and the Backend is in .NET using EntityFramework.
 ## Prepare your environment
 
