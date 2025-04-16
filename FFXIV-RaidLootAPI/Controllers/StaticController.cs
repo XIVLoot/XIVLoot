@@ -283,32 +283,50 @@ namespace FFXIV_RaidLootAPI.Controllers
             
         }
 
+        /// <summary>
+        /// Gets the item breakdown needed for all players in the static
+        /// </summary>
+        /// <param name="uuid">UUID of the static.</param>
+        /// <returns></returns>
         [HttpGet("GetItemNeedForPlayers/{uuid}")]
         public async Task<ActionResult<ItemBreakdownDTO>> GetItemNeedForPlayers(string uuid)
         {
             using (var context = _context.CreateDbContext())
             {
+                // Get static
                 var dbStatic = await context.Statics.FirstAsync(s => s.UUID == uuid);
                 if (dbStatic is null)
                     return NotFound("Static not found");
 
+                // Get all players in the static
                 List<Players> players = await context.Players.Where(p => p.staticId == dbStatic.Id).ToListAsync();
+
+                // Create itemBreakdownobject
                 ItemBreakdownDTO itemBreakdown = new ItemBreakdownDTO();
+
+                // For each gear type (head, hands, body, etc...) we will
+                // check if any player needs them in Raid or Tome Augmented form.
+                // If they do we will add it to itemBreakdown.
                 foreach (GearType type in Enum.GetValues(typeof(GearType)))
                 {
+                    // Ignore empty gear type
                     if (type == GearType.Empty)
                         continue;
 
+                    // Go through each player to see which one need the gearType
                     foreach (Players player in players)
                     {
+                        // Ignore empty player
                         if (player is null)
                             continue;
                         
+                        // The turn represent from what fight the gear drops.
                         Turn turn = Turn.turn_0;
 
-                        // Need raid?
+                        // If the player need raid gears.
                         if (await player.need_this_gear(type, GearStage.Raid, context))
                         {
+                            //Find from what turn the gear drops.
                             switch(type){
                                 case GearType.Weapon:
                                     turn = Turn.turn_4;
@@ -327,19 +345,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     break;
                             }
 
-                            /*if (turn == Turn.turn_2){
-                                // Everything raid from 2 can drop in 3 so also add to turn_3.
-                                itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), Turn.turn_2)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
-                                    Name=player.Name,
-                                    NeedThisGearType=true,
-                                    playerId=player.Id
-                                });
-                                itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), Turn.turn_3)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
-                                    Name=player.Name,
-                                    NeedThisGearType=true,
-                                    playerId=player.Id
-                                });
-                            } else */
+                            // If the gear is a right ring or ring we add it as a ring.
                             if(turn == Turn.turn_1 && (type == GearType.RightRing || type == GearType.LeftRing)){
                                 if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_1, "Ring")){
                                     itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), turn)!]["Ring"].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
@@ -349,6 +355,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     });
                                 }
                             }
+                            // We add the gear to the itemBreakdown.
                             else{
                                 itemBreakdown.ItemBreakdown[Enum.GetName(typeof(Turn), turn)!][type.ToString()].Add(new ItemBreakdownDTO.PlayerInfoItemBreakdown(){
                                     Name=player.Name,
@@ -359,11 +366,10 @@ namespace FFXIV_RaidLootAPI.Controllers
                             turn = Turn.turn_0; // Reset
                         }
 
-                        
-
                         // Need tome augment
                         if (await player.need_this_gear(type, GearStage.Upgraded_Tomes, context))
                         {
+                            //Find from what turn the gear augment drops.
                             switch(type){
                                 case GearType.Weapon:
                                     turn = Turn.turn_4;
@@ -380,8 +386,7 @@ namespace FFXIV_RaidLootAPI.Controllers
                                     break;
                             }
 
-                            //if (turn == Turn.turn_4)// TODO SUPPORT WEAPON UPGRADE
-                            //    continue;
+                            // Add or increment the shine or twine counter
                             if (turn == Turn.turn_2){
                                 // Check if the player already needs a shine. If they do we add to the counter
                                 if(!itemBreakdown.PlayerAlreadyNeed(player.Id, Turn.turn_2, "Shine")){
@@ -404,6 +409,8 @@ namespace FFXIV_RaidLootAPI.Controllers
                     }
 
                 }
+                // Order the breakdown
+                itemBreakdown.OrderItemBreakdown(context);
                 return Ok(itemBreakdown);
             }
         }

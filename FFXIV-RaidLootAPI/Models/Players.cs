@@ -670,6 +670,55 @@ namespace FFXIV_RaidLootAPI.Models
                     return;
             }
         }
+
+        /// <summary>
+        /// Returns true if the player is locked from the given turn.
+        /// </summary>
+        /// <param name="a_turn">Turn</param>
+        /// <returns></returns>
+        public bool IsPlayerLockedFromTurn(Turn a_turn)
+        {
+            switch(a_turn)
+            {
+                case Turn.turn_1: 
+                    return Turn1LockedUntilDate > DateTime.Now;
+                case Turn.turn_2: 
+                    return Turn2LockedUntilDate > DateTime.Now;
+                case Turn.turn_3: 
+                    return Turn3LockedUntilDate > DateTime.Now;
+                case Turn.turn_4: 
+                    return Turn4LockedUntilDate > DateTime.Now;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the class (DPS - Tank - Healer) of the player
+        /// </summary>
+        /// <returns></returns>
+        public Class GetClassOfPlayer()
+        {
+            Class playerClass;
+            switch(this.Job)
+            {
+                case Job.Astrologian:
+                case Job.WhiteMage:
+                case Job.Sage:
+                case Job.Scholar:
+                    playerClass = Class.Healer;
+                    break;
+                case Job.Gunbreaker:
+                case Job.Warrior:
+                case Job.DarkKnight:
+                case Job.Paladin:
+                    playerClass = Class.Tank;
+                    break;
+                default:
+                    playerClass = Class.DPS;
+                    break;
+            }
+            return playerClass;
+        }
     }
     
 
@@ -698,5 +747,12 @@ namespace FFXIV_RaidLootAPI.Models
     Bard = 18,
     Dancer = 19,
     
+    }
+
+    public enum Class
+    {
+        DPS = 0,
+        Tank, 
+        Healer
     }
 }
