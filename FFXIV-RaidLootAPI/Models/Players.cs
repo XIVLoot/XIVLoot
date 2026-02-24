@@ -17,7 +17,7 @@ namespace FFXIV_RaidLootAPI.Models
 
     public class Players
     {   
-        private static readonly int GEARSETSIZE = 11;
+        private static readonly int GEARSETSIZE = 12;
         public int Id { get; set; }
         public int GearScore {get;set;}
         /*
@@ -254,8 +254,13 @@ namespace FFXIV_RaidLootAPI.Models
             int TotalItemLevel = 0;
             foreach (KeyValuePair<GearType, Gear?> pair in GearDict)
             {
-                if (!(pair.Value is null)) 
-                    TotalItemLevel += pair.Value.GearLevel;
+                if (!(pair.Value is null)) {
+                    if (pair.Value.GearType == GearType.Weapon) {
+                        TotalItemLevel += pair.Value.GearLevel*2;
+                    } else {
+                        TotalItemLevel += pair.Value.GearLevel;
+                    }
+                }
             }
 
             return TotalItemLevel/GEARSETSIZE;
